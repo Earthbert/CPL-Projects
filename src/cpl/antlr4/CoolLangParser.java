@@ -1,4 +1,5 @@
 // Generated from c:/Users/earthbert/University/CPL/Cool-AST/CoolLangParser.g4 by ANTLR 4.13.1
+package cpl.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -139,6 +140,11 @@ public class CoolLangParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CoolLangParserVisitor ) return ((CoolLangParserVisitor<? extends T>)visitor).visitExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {
@@ -258,6 +264,11 @@ public class CoolLangParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_def; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CoolLangParserVisitor ) return ((CoolLangParserVisitor<? extends T>)visitor).visitDef(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final DefContext def() throws RecognitionException {
@@ -312,6 +323,11 @@ public class CoolLangParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_let; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CoolLangParserVisitor ) return ((CoolLangParserVisitor<? extends T>)visitor).visitLet(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final LetContext let() throws RecognitionException {
@@ -357,6 +373,11 @@ public class CoolLangParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_if; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CoolLangParserVisitor ) return ((CoolLangParserVisitor<? extends T>)visitor).visitIf(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final IfContext if_() throws RecognitionException {
@@ -407,6 +428,11 @@ public class CoolLangParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_while; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CoolLangParserVisitor ) return ((CoolLangParserVisitor<? extends T>)visitor).visitWhile(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final WhileContext while_() throws RecognitionException {
@@ -469,6 +495,11 @@ public class CoolLangParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_case; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CoolLangParserVisitor ) return ((CoolLangParserVisitor<? extends T>)visitor).visitCase(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CaseContext case_() throws RecognitionException {

@@ -1,4 +1,5 @@
 // Generated from c:/Users/earthbert/University/CPL/Cool-AST/CoolLangLexer.g4 by ANTLR 4.13.1
+package cpl.antlr4;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

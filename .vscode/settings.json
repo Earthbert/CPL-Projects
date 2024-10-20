@@ -1,6 +1,16 @@
 {
+	"java.project.sourcePaths": [
+		"src",
+	],
 	"java.project.referencedLibraries": [
 		"lib/**/*.jar",
 		"c:\\Users\\earthbert\\University\\CPL\\Antlr4\\antlr-4.13.0-complete.jar"
-	]
+	],
+	"antlr4.generation": {
+		"mode": "external",
+		"listeners": false,
+		"visitors": true,
+		"outputDir": "src/cpl/antlr4",
+		"package": "cpl.antlr4"
+	}
 }
