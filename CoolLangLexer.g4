@@ -50,9 +50,11 @@ NEW: N E W;
 CLASS: C L A S S;
 INHERITS: I N H E R I T S;
 
-TRUE: 't' R U E;
-FALSE: 'f' A L S E;
-BOOL_VAL: TRUE | FALSE;
+SELF: S E L F;
+
+fragment TRUE: 't' R U E;
+fragment FALSE: 'f' A L S E;
+BOOL_VAL: FALSE | TRUE;
 
 
 // Special symbols

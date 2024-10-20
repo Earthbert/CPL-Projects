@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "configurations": [
+		{
+			"name": "ANTLR4 Debug",
+			"type": "antlr-debug",
+			"request": "launch",
+			"input": "${workspaceFolder}/main.cl",
+			"grammar": "${workspaceFolder}/CoolLangParser.g4",
+			"startRule": "program",
+			"printParseTree": true,
+			"visualParseTree": true
+		}
+	]
+}
