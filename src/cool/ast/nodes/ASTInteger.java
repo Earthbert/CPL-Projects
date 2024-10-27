@@ -4,7 +4,8 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTInteger extends ASTExpression {
+public class ASTInteger extends ASTLiteral {
+
 	private int value;
 
 	public ASTInteger(Token token) {

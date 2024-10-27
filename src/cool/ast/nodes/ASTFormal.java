@@ -1,26 +1,19 @@
 package cool.ast.nodes;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTMethod extends ASTNode {
-
+public class ASTFormal extends ASTNode {
+	
 	private ASTId id;
 	private ASTType type;
-	private List<ASTFormal> args;
-	private ASTExpression body;
 
 	private Token token;
-
-	public ASTMethod(Token token, ASTId id, ASTType type, List<ASTFormal> args, ASTExpression body) {
+	
+	public ASTFormal(Token token, ASTId id, ASTType type) {
 		this.id = id;
 		this.type = type;
-		this.args = args;
-		this.body = body;
 		this.token = token;
 	}
 
@@ -37,16 +30,7 @@ public class ASTMethod extends ASTNode {
 		return type;
 	}
 
-	public List<ASTFormal> getArgs() {
-		return Collections.unmodifiableList(args);
-	}
-
-	public ASTExpression getBody() {
-		return body;
-	}
-
 	public Token getToken() {
 		return token;
 	}
-
 }

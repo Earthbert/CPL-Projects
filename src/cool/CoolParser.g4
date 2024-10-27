@@ -4,7 +4,7 @@ options {
     tokenVocab = CoolLexer;
 }
 
-program : (class SEMICOLON)* EOF
+program : (class SEMICOLON)+ EOF
 	;
 
 expr :
@@ -41,14 +41,16 @@ expr :
 	 | expr (AT TYPE)? DOT ID OPEN_PAR (expr (COMMA expr)*)? CLOSE_PAR # methodCall
 	;
 
-def : ID COLON TYPE (ASSIGN expr)?
+def : name=ID COLON type=TYPE (ASSIGN expr)?
 	;
 
-method : ID OPEN_PAR (ID COLON TYPE (COMMA ID COLON TYPE)*)? CLOSE_PAR 
-	   COLON TYPE OPEN_BRACE expr CLOSE_BRACE;
+method : name=ID OPEN_PAR (formal (COMMA ID formal)*)? CLOSE_PAR 
+	   COLON type=TYPE OPEN_BRACE expr CLOSE_BRACE;
 
-member : def | method
-	;
+formal: ID COLON TYPE;
 
-class : CLASS name=TYPE (INHERITS parent=TYPE)? OPEN_BRACE (member SEMICOLON)* CLOSE_BRACE
+feature : def
+		| method;
+
+class : CLASS name=TYPE (INHERITS parent=TYPE)? OPEN_BRACE (feature SEMICOLON)* CLOSE_BRACE
 	;

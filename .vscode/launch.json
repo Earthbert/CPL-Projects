@@ -3,6 +3,13 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "Test",
+			"request": "launch",
+			"mainClass": "Test",
+			"projectName": "Tema1_d9f256fa"
+		},
+		{
+			"type": "java",
 			"name": "Tester1",
 			"request": "launch",
 			"mainClass": "cool.tester.Tester1",

@@ -278,15 +278,25 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitMethod(CoolParser.MethodContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CoolParser#member}.
+	 * Enter a parse tree produced by {@link CoolParser#formal}.
 	 * @param ctx the parse tree
 	 */
-	void enterMember(CoolParser.MemberContext ctx);
+	void enterFormal(CoolParser.FormalContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CoolParser#member}.
+	 * Exit a parse tree produced by {@link CoolParser#formal}.
 	 * @param ctx the parse tree
 	 */
-	void exitMember(CoolParser.MemberContext ctx);
+	void exitFormal(CoolParser.FormalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CoolParser#feature}.
+	 * @param ctx the parse tree
+	 */
+	void enterFeature(CoolParser.FeatureContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CoolParser#feature}.
+	 * @param ctx the parse tree
+	 */
+	void exitFeature(CoolParser.FeatureContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CoolParser#class}.
 	 * @param ctx the parse tree

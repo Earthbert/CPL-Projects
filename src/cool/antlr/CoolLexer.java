@@ -217,6 +217,7 @@ public class CoolLexer extends Lexer {
 						  					             .replace("\\t", "\t")
 											             .replace("\\f", "\f")
 			                                             .replace("\\b", "\b")
+														 .replaceAll("\\\\([a-zA-Z])", "$1")
 			                                             .replace("\\\n", "")
 			                                             .replace("\\\r", "")); 
 			break;

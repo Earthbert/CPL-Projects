@@ -18,14 +18,15 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitClass(ClassContext ctx) {
 		System.out.println(ctx.children);
-		return new ASTClass(ctx.CLASS().getSymbol(), ctx.name.getText(),
-				ctx.parent == null ? Optional.empty() : Optional.of(ctx.parent.getText()),
-				ctx.member().stream().map(this::visit).collect(Collectors.toList()), ctx);
+		return new ASTClass(ctx.start, new ASTType(ctx.name),
+				ctx.parent == null ? Optional.empty() : Optional.of(new ASTType(ctx.parent)),
+				ctx.feature().stream().map(this::visit).collect(Collectors.toList()), ctx);
 	}
 
 	@Override
 	public ASTNode visitDef(DefContext ctx) {
-		return super.visitDef(ctx);
+		return new ASTDef(ctx.start, new ASTId(ctx.ID().getSymbol()),
+				new ASTType(ctx.type), (ASTExpression) visit(ctx.expr()));
 	}
 
 	@Override
@@ -46,5 +47,13 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 	@Override
 	public ASTNode visitId(IdContext ctx) {
 		return new ASTId(ctx.ID().getSymbol());
+	}
+
+	@Override
+	public ASTNode visitFeature(FeatureContext ctx) {
+		if (ctx.method() != null)
+			return visit(ctx.method());
+
+		return new ASTField((ASTDef) visit(ctx.def()));
 	}
 }
