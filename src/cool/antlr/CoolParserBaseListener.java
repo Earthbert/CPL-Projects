@@ -293,6 +293,18 @@ public class CoolParserBaseListener implements CoolParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMember(CoolParser.MemberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMember(CoolParser.MemberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterClass(CoolParser.ClassContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -47,5 +47,8 @@ def : ID COLON TYPE (ASSIGN expr)?
 method : ID OPEN_PAR (ID COLON TYPE (COMMA ID COLON TYPE)*)? CLOSE_PAR 
 	   COLON TYPE OPEN_BRACE expr CLOSE_BRACE;
 
-class : CLASS TYPE (INHERITS TYPE)? OPEN_BRACE ((def | method) SEMICOLON)* CLOSE_BRACE
+member : def | method
+	;
+
+class : CLASS name=TYPE (INHERITS parent=TYPE)? OPEN_BRACE (member SEMICOLON)* CLOSE_BRACE
 	;

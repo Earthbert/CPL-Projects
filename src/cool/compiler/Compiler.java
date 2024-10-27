@@ -4,9 +4,10 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import cool.antlr.*;
+import cool.ast.*;
+import cool.ast.nodes.*;
 
 import java.io.*;
-import java.util.List;
 
 public class Compiler {
     // Annotates class nodes with the names of files where they are defined.
@@ -106,6 +107,10 @@ public class Compiler {
             return;
         }
 
-        // TODO Print tree
+        ASTNode root = globalTree.accept(new ASTBuilderVisitor());
+        if (root == null || !(root instanceof ASTRoot)) {
+            System.err.println("AST construction failed");
+            return;
+        }
     }
 }

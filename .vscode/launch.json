@@ -12,7 +12,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema1/18-error-string.cl",
+			"args": "tests/tema1/04-method.cl",
 			"mainClass": "cool.compiler.Compiler"
 		}
 	],

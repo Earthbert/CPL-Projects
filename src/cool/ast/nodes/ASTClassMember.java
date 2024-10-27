@@ -2,10 +2,11 @@ package cool.ast.nodes;
 
 import org.antlr.v4.runtime.Token;
 
-public abstract class ASTExpression extends ASTNode {
+public class ASTClassMember {
+	
 	protected Token token;
 
-	public ASTExpression(Token token) {
+	public ASTClassMember(Token token) {
 		this.token = token;
 	}
 
