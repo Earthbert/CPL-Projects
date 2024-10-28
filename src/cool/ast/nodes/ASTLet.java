@@ -1,15 +1,17 @@
 package cool.ast.nodes;
 
+import java.util.List;
+
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
 public class ASTLet extends ASTExpression {
 
-	private ASTDef def;
+	private List<ASTDef> def;
 	private ASTExpression expr;
 
-	public ASTLet(Token token, ASTDef def, ASTExpression expr) {
+	public ASTLet(Token token, List<ASTDef> def, ASTExpression expr) {
 		super(token);
 		this.def = def;
 		this.expr = expr;
@@ -20,7 +22,7 @@ public class ASTLet extends ASTExpression {
 		return visitor.visit(this);
 	}
 
-	public ASTDef getDef() {
+	public List<ASTDef> getDefs() {
 		return def;
 	}
 

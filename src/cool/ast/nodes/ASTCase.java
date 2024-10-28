@@ -9,7 +9,7 @@ import cool.ast.ASTVisitor;
 public class ASTCase extends ASTExpression {
 
 	private ASTExpression value;
-	private List<ASTCaseBranch> branches;
+	private List<ASTCaseBranch> branches = new java.util.ArrayList<>();
 
 	public ASTCase(Token token, ASTExpression value, List<ASTType> types, List<ASTId> ids, List<ASTExpression> bodies) {
 		super(token);
@@ -32,7 +32,7 @@ public class ASTCase extends ASTExpression {
 		return Collections.unmodifiableList(branches);
 	}
 
-	public static class ASTCaseBranch {
+	public static class ASTCaseBranch extends ASTNode {
 		private ASTType type;
 		private ASTId id;
 		private ASTExpression body;
@@ -41,6 +41,11 @@ public class ASTCase extends ASTExpression {
 			this.type = type;
 			this.id = id;
 			this.body = body;
+		}
+
+		@Override
+		public <T> T accept(ASTVisitor<T> visitor) {
+			return visitor.visit(this);
 		}
 
 		public ASTType getType() {

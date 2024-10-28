@@ -132,7 +132,7 @@ ERROR_UMATCHED_BLOCK_COMMENT: '*)' { raiseError("Unmatched *\u0029"); };
 ERROR_EOF_IN_STRING: '"' STRING_CHAR* EOF { raiseError("EOF in string constant"); };
 
 ERROR_EOF_IN_COMMENT:
-	'(*' (BLOCK_COMMENT | .)*? EOF { raiseError("EOF in comment"); };
+	'(*' (BLOCK_COMMENT | (~'*' | ('*' ~')')))*? EOF { raiseError("EOF in comment"); };
 
 STRING:
 	'"' STRING_CHAR* '"' {  setText(getText().substring(1, getText().length() - 1)); 
@@ -141,7 +141,7 @@ STRING:
 								             .replace("\\f", "\f")
                                              .replace("\\b", "\b")
 											 .replaceAll("\\\\([a-zA-Z])", "$1")
-                                             .replace("\\\n", "")
+                                             .replace("\\\n", "\n")
                                              .replace("\\\r", "")); };
 
 BLOCK_COMMENT: '(*' (BLOCK_COMMENT | .)*? '*)' -> skip;

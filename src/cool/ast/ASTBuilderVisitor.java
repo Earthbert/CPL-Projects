@@ -79,15 +79,9 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitLet(LetContext ctx) {
-		List<DefContext> defs = ctx.def();
-		Collections.reverse(defs);
-		ASTLet acc = new ASTLet(ctx.LET().getSymbol(), (ASTDef) visit(defs.get(0)),
+		return new ASTLet(ctx.LET().getSymbol(),
+				ctx.def().stream().map(this::visit).map(ASTDef.class::cast).toList(),
 				(ASTExpression) visit(ctx.expr()));
-
-		defs.stream().skip(1).forEachOrdered((def) -> new ASTLet(ctx.start, (ASTDef) visit(def),
-				(ASTExpression) acc));
-
-		return acc;
 	}
 
 	@Override

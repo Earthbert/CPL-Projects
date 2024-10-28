@@ -1,8 +1,7 @@
 package cool.ast;
 
 import cool.ast.nodes.*;
-import cool.lexer.CoolLexer;
-import cool.utils.Utils;
+import cool.ast.nodes.ASTCase.ASTCaseBranch;
 
 public class ASTPrintVisitor implements ASTVisitor<Void> {
 
@@ -113,8 +112,17 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTLet astLet) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent("let");
+		increaseIndent();
+		astLet.getDefs().forEach(d -> {
+			printIndent("local");
+			increaseIndent();
+			d.accept(this);
+			decreaseIndent();
+		});
+		astLet.getExpr().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
@@ -140,14 +148,21 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTCase astCase) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent("case");
+		increaseIndent();
+		astCase.getValue().accept(this);
+		astCase.getBranches().forEach(b -> b.accept(this));
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTBlock astBlock) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent("block");
+		increaseIndent();
+		astBlock.getExpressions().forEach(e -> e.accept(this));
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
@@ -229,6 +244,17 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 		printIndent("program");
 		increaseIndent();
 		astRoot.getClasses().forEach(c -> c.accept(this));
+		decreaseIndent();
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTCaseBranch astCaseBranch) {
+		printIndent("case branch");
+		increaseIndent();
+		astCaseBranch.getId().accept(this);
+		astCaseBranch.getType().accept(this);
+		astCaseBranch.getBody().accept(this);
 		decreaseIndent();
 		return null;
 	}

@@ -1,9 +1,12 @@
 package cool.ast;
 
 import cool.ast.nodes.*;
+import cool.ast.nodes.ASTCase.ASTCaseBranch;
 
 public interface ASTVisitor<T> {
 	T visit(ASTAssignment astAssignment);
+
+	T visit(ASTCaseBranch astCaseBranch);
 
 	T visit(ASTInteger node);
 
