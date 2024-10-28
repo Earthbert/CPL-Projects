@@ -106,7 +106,7 @@ TIMES: '*';
 DIV: '/';
 NEG: '~';
 
-NOT: 'not';
+NOT: N O T;
 
 EQ: '=';
 LT: '<';

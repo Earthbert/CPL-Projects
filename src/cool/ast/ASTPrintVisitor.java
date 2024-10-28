@@ -1,6 +1,8 @@
 package cool.ast;
 
 import cool.ast.nodes.*;
+import cool.lexer.CoolLexer;
+import cool.utils.Utils;
 
 public class ASTPrintVisitor implements ASTVisitor<Void> {
 
@@ -137,20 +139,28 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTArithmetic astArithmetic) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astArithmetic.getOperator());
+		increaseIndent();
+		astArithmetic.getLeft().accept(this);
+		astArithmetic.getRight().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTComparison astComparison) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astComparison.getOperator());
+		increaseIndent();
+		astComparison.getLeft().accept(this);
+		astComparison.getRight().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTId astId) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astId.getToken().getText());
+		return null;
 	}
 
 	@Override
@@ -161,8 +171,11 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTNeg astNeg) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(Utils.NEG_OP);
+		increaseIndent();
+		astNeg.getExpression().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
