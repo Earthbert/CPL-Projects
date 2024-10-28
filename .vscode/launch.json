@@ -19,8 +19,17 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema1/05-literal-id.cl",
+			"args": "tests/tema1/07-relational.cl",
 			"mainClass": "cool.compiler.Compiler"
+		},
+		{
+			"type": "antlr-debug",
+			"request": "launch",
+			"name": "Parser Testing",
+			"startRule": "expr",
+			"grammar": "src/cool/parser/CoolParser.g4",
+			"input": "testing.txt",
+			"visualParseTree": true
 		}
 	],
 }

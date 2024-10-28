@@ -23,8 +23,12 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTAssignment astAssignment) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astAssignment.getToken().getText());
+		increaseIndent();
+		astAssignment.getId().accept(this);
+		astAssignment.getExpr().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
@@ -47,8 +51,8 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTSelf astSelf) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astSelf.getToken().getText().toLowerCase());
+		return null;
 	}
 
 	@Override
@@ -81,17 +85,17 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTType astType) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astType.getToken().getText());
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTMethod astMethod) {
 		printIndent("method");
 		increaseIndent();
-		printIndent(astMethod.getId().getToken().getText());
-		astMethod.getArgs().forEach(f -> f.accept(this));
-		printIndent(astMethod.getType().getToken().getText());
+		astMethod.getId().accept(this);
+		astMethod.getArguments().forEach(f -> f.accept(this));
+		astMethod.getType().accept(this);
 		astMethod.getBody().accept(this);
 		decreaseIndent();
 		return null;
@@ -101,8 +105,8 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 	public Void visit(ASTFormal astFormal) {
 		printIndent("formal");
 		increaseIndent();
-		printIndent(astFormal.getId().getToken().getText());
-		printIndent(astFormal.getType().getToken().getText());
+		astFormal.getId().accept(this);
+		astFormal.getType().accept(this);
 		decreaseIndent();
 		return null;
 	}
@@ -115,14 +119,23 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTIf astIf) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astIf.getToken().getText().toLowerCase());
+		increaseIndent();
+		astIf.getCondition().accept(this);
+		astIf.getThenBranch().accept(this);
+		astIf.getElseBranch().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTWhile astWhile) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astWhile.getToken().getText().toLowerCase());
+		increaseIndent();
+		astWhile.getCondition().accept(this);
+		astWhile.getBody().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
@@ -165,13 +178,16 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTNot astNot) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astNot.getToken().getText().toLowerCase());
+		increaseIndent();
+		astNot.getExpression().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTNeg astNeg) {
-		printIndent(Utils.NEG_OP);
+		printIndent(astNeg.getToken().getText().toLowerCase());
 		increaseIndent();
 		astNeg.getExpression().accept(this);
 		decreaseIndent();
@@ -180,20 +196,32 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTIsVoid astIsVoid) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astIsVoid.getToken().getText().toLowerCase());
+		increaseIndent();
+		astIsVoid.getExpression().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTNew astNew) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		printIndent(astNew.getToken().getText().toLowerCase());
+		increaseIndent();
+		astNew.getType().accept(this);
+		decreaseIndent();
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTCall astCall) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+		astCall.getObject().ifPresentOrElse(p -> printIndent("."), () -> printIndent("implicit dispatch"));
+		increaseIndent();
+		astCall.getObject().ifPresent(o -> o.accept(this));
+		astCall.getStaticDispatchType().ifPresent(t -> t.accept(this));
+		astCall.getMethod().accept(this);
+		astCall.getArguments().forEach(a -> a.accept(this));
+		decreaseIndent();
+		return null;
 	}
 
 	@Override

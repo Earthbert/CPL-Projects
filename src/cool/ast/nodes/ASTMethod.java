@@ -37,7 +37,7 @@ public class ASTMethod extends ASTFeature {
 		return type;
 	}
 
-	public List<ASTFormal> getArgs() {
+	public List<ASTFormal> getArguments() {
 		return Collections.unmodifiableList(args);
 	}
 

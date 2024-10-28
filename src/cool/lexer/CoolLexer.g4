@@ -11,8 +11,7 @@ tokens {
     }
 }
 
-
-@header{
+@header {
     package cool.lexer;	
 }
 
@@ -95,6 +94,9 @@ INT: DIGIT+;
 fragment LETTER: [a-zA-Z];
 fragment LOWER: [a-z];
 fragment UPPER: [A-Z];
+
+NOT: N O T;
+
 ID: (LOWER | '_') (LETTER | '_' | DIGIT)*;
 
 TYPE: UPPER (LETTER | '_' | DIGIT)* | 'SELF_TYPE';
@@ -105,8 +107,6 @@ MINUS: '-';
 TIMES: '*';
 DIV: '/';
 NEG: '~';
-
-NOT: N O T;
 
 EQ: '=';
 LT: '<';
@@ -131,7 +131,8 @@ ERROR_UMATCHED_BLOCK_COMMENT: '*)' { raiseError("Unmatched *\u0029"); };
 
 ERROR_EOF_IN_STRING: '"' STRING_CHAR* EOF { raiseError("EOF in string constant"); };
 
-ERROR_EOF_IN_COMMENT: '(*' (BLOCK_COMMENT | .)*? EOF { raiseError("EOF in comment"); };
+ERROR_EOF_IN_COMMENT:
+	'(*' (BLOCK_COMMENT | .)*? EOF { raiseError("EOF in comment"); };
 
 STRING:
 	'"' STRING_CHAR* '"' {  setText(getText().substring(1, getText().length() - 1)); 

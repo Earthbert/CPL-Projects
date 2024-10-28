@@ -11,11 +11,9 @@ options {
 program: (class SEMICOLON)+ EOF;
 
 expr:
-	// Assignments
-	ID ASSIGN expr # assign
 
 	// Calls
-	| (SELF)? (AT TYPE)? ID OPEN_PAR (
+	(SELF)? (AT TYPE)? ID OPEN_PAR (
 		arg += expr (COMMA arg += expr)*
 	)? CLOSE_PAR # thisCall
 	| object = expr (AT TYPE)? DOT ID OPEN_PAR (
@@ -46,7 +44,10 @@ expr:
 	| ID		# id
 	| INT		# int
 	| STRING	# string
-	| BOOL_VAL	# boolean;
+	| BOOL_VAL	# boolean
+
+	// Assignments
+	| ID ASSIGN expr # assign;
 
 def: name = ID COLON type = TYPE (ASSIGN expr)?;
 

@@ -20,7 +20,4 @@ public class Utils {
 	public static final String BOOL = "Bool";
 	public static final String SELF = "self";
 
-	public static final String NEG_OP = "~";
-	public static final String NOT_OP = "not";
-	public static final String ISVOID_OP = "isvoid";
 }

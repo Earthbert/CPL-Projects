@@ -134,9 +134,10 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitThisCall(ThisCallContext ctx) {
-		return new ASTCall(ctx.ID().getSymbol(), new ASTId(ctx.ID().getSymbol()), Optional.empty(),
+		return new ASTCall(ctx.ID().getSymbol(), new ASTId(ctx.ID().getSymbol()),
+				ctx.SELF() == null ? Optional.empty() : Optional.of(new ASTSelf(ctx.SELF().getSymbol())),
 				ctx.AT() == null ? Optional.empty() : Optional.of(new ASTType(ctx.TYPE().getSymbol())),
-				ctx.expr().stream().map(this::visit).map(ASTExpression.class::cast).toList());
+				ctx.arg.stream().map(this::visit).map(ASTExpression.class::cast).toList());
 	}
 
 	@Override
@@ -144,7 +145,7 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 		return new ASTCall(ctx.ID().getSymbol(), new ASTId(ctx.ID().getSymbol()),
 				Optional.of((ASTExpression) visit(ctx.object)),
 				ctx.AT() == null ? Optional.empty() : Optional.of(new ASTType(ctx.TYPE().getSymbol())),
-				ctx.expr().stream().map(this::visit).map(ASTExpression.class::cast).toList());
+				ctx.arg.stream().map(this::visit).map(ASTExpression.class::cast).toList());
 	}
 
 	@Override
