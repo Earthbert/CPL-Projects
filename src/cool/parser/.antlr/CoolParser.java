@@ -1,5 +1,7 @@
-// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/CoolParser.g4 by ANTLR 4.13.1
-package cool.antlr;
+// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
+
+    package cool.parser;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -135,11 +137,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitProgram(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitProgram(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ProgramContext program() throws RecognitionException {
@@ -208,11 +205,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitPar(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitPar(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class ComparisonContext extends ExprContext {
@@ -235,11 +227,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitComparison(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitComparison(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class StringContext extends ExprContext {
@@ -252,11 +239,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitString(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitString(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -274,11 +256,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitIsvoid(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitIsvoid(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class ConstructorContext extends ExprContext {
@@ -293,23 +270,20 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitConstructor(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitConstructor(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class WhileContext extends ExprContext {
+		public ExprContext cond;
+		public ExprContext body;
 		public TerminalNode WHILE() { return getToken(CoolParser.WHILE, 0); }
+		public TerminalNode LOOP() { return getToken(CoolParser.LOOP, 0); }
+		public TerminalNode POOL() { return getToken(CoolParser.POOL, 0); }
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode LOOP() { return getToken(CoolParser.LOOP, 0); }
-		public TerminalNode POOL() { return getToken(CoolParser.POOL, 0); }
 		public WhileContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -318,11 +292,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitWhile(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitWhile(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -352,11 +321,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitThisCall(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitThisCall(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class IntContext extends ExprContext {
@@ -369,11 +333,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitInt(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitInt(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -391,11 +350,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitNeg(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitNeg(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class NotContext extends ExprContext {
@@ -412,11 +366,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitNot(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitNot(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class BooleanContext extends ExprContext {
@@ -430,11 +379,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitBoolean(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitBoolean(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class SelfContext extends ExprContext {
@@ -447,11 +391,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitSelf(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitSelf(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -480,11 +419,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitLet(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitLet(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class BlockContext extends ExprContext {
@@ -509,11 +443,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitBlock(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitBlock(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class IdContext extends ExprContext {
@@ -527,24 +456,22 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitId(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitId(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class IfContext extends ExprContext {
+		public ExprContext cond;
+		public ExprContext then;
+		public ExprContext else_;
 		public TerminalNode IF() { return getToken(CoolParser.IF, 0); }
+		public TerminalNode THEN() { return getToken(CoolParser.THEN, 0); }
+		public TerminalNode ELSE() { return getToken(CoolParser.ELSE, 0); }
+		public TerminalNode FI() { return getToken(CoolParser.FI, 0); }
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode THEN() { return getToken(CoolParser.THEN, 0); }
-		public TerminalNode ELSE() { return getToken(CoolParser.ELSE, 0); }
-		public TerminalNode FI() { return getToken(CoolParser.FI, 0); }
 		public IfContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -554,23 +481,21 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitIf(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitIf(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class CaseContext extends ExprContext {
+		public ExprContext value;
+		public Token type;
+		public ExprContext branch;
 		public TerminalNode CASE() { return getToken(CoolParser.CASE, 0); }
+		public TerminalNode OF() { return getToken(CoolParser.OF, 0); }
+		public TerminalNode ESAC() { return getToken(CoolParser.ESAC, 0); }
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode OF() { return getToken(CoolParser.OF, 0); }
-		public TerminalNode ESAC() { return getToken(CoolParser.ESAC, 0); }
 		public List<TerminalNode> ID() { return getTokens(CoolParser.ID); }
 		public TerminalNode ID(int i) {
 			return getToken(CoolParser.ID, i);
@@ -578,10 +503,6 @@ public class CoolParser extends Parser {
 		public List<TerminalNode> COLON() { return getTokens(CoolParser.COLON); }
 		public TerminalNode COLON(int i) {
 			return getToken(CoolParser.COLON, i);
-		}
-		public List<TerminalNode> TYPE() { return getTokens(CoolParser.TYPE); }
-		public TerminalNode TYPE(int i) {
-			return getToken(CoolParser.TYPE, i);
 		}
 		public List<TerminalNode> RIGHT_ARROW() { return getTokens(CoolParser.RIGHT_ARROW); }
 		public TerminalNode RIGHT_ARROW(int i) {
@@ -591,6 +512,10 @@ public class CoolParser extends Parser {
 		public TerminalNode SEMICOLON(int i) {
 			return getToken(CoolParser.SEMICOLON, i);
 		}
+		public List<TerminalNode> TYPE() { return getTokens(CoolParser.TYPE); }
+		public TerminalNode TYPE(int i) {
+			return getToken(CoolParser.TYPE, i);
+		}
 		public CaseContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -599,11 +524,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitCase(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitCase(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -621,11 +541,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitAssign(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitAssign(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -649,11 +564,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitArtihmetic(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitArtihmetic(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
@@ -682,11 +592,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitMethodCall(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitMethodCall(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -794,15 +699,15 @@ public class CoolParser extends Parser {
 				setState(41);
 				match(IF);
 				setState(42);
-				expr(0);
+				((IfContext)_localctx).cond = expr(0);
 				setState(43);
 				match(THEN);
 				setState(44);
-				expr(0);
+				((IfContext)_localctx).then = expr(0);
 				setState(45);
 				match(ELSE);
 				setState(46);
-				expr(0);
+				((IfContext)_localctx).else_ = expr(0);
 				setState(47);
 				match(FI);
 				}
@@ -815,11 +720,11 @@ public class CoolParser extends Parser {
 				setState(49);
 				match(WHILE);
 				setState(50);
-				expr(0);
+				((WhileContext)_localctx).cond = expr(0);
 				setState(51);
 				match(LOOP);
 				setState(52);
-				expr(0);
+				((WhileContext)_localctx).body = expr(0);
 				setState(53);
 				match(POOL);
 				}
@@ -832,7 +737,7 @@ public class CoolParser extends Parser {
 				setState(55);
 				match(CASE);
 				setState(56);
-				expr(0);
+				((CaseContext)_localctx).value = expr(0);
 				setState(57);
 				match(OF);
 				setState(65); 
@@ -846,11 +751,11 @@ public class CoolParser extends Parser {
 					setState(59);
 					match(COLON);
 					setState(60);
-					match(TYPE);
+					((CaseContext)_localctx).type = match(TYPE);
 					setState(61);
 					match(RIGHT_ARROW);
 					setState(62);
-					expr(0);
+					((CaseContext)_localctx).branch = expr(0);
 					setState(63);
 					match(SEMICOLON);
 					}
@@ -1215,11 +1120,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitDef(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitDef(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DefContext def() throws RecognitionException {
@@ -1298,11 +1198,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitMethod(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitMethod(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1387,11 +1282,6 @@ public class CoolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitFormal(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitFormal(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FormalContext formal() throws RecognitionException {
@@ -1438,11 +1328,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitFeature(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitFeature(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1513,11 +1398,6 @@ public class CoolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof CoolParserListener ) ((CoolParserListener)listener).exitClass(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CoolParserVisitor ) return ((CoolParserVisitor<? extends T>)visitor).visitClass(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 

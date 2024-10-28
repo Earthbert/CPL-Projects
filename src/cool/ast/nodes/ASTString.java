@@ -1,9 +1,7 @@
 package cool.ast.nodes;
 
-
 import org.antlr.v4.runtime.Token;
 import cool.ast.ASTVisitor;
-
 
 public class ASTString extends ASTLiteral {
 	private String value;
@@ -13,11 +11,11 @@ public class ASTString extends ASTLiteral {
 		this.value = token.getText();
 	}
 
-	public String getValue() {
-		return value;
-	}
-
 	public <T> T accept(ASTVisitor<T> visitor) {
 		return visitor.visit(this);
+	}
+
+	public String getValue() {
+		return value;
 	}
 }

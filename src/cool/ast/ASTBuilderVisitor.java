@@ -1,11 +1,13 @@
 package cool.ast;
 
-import cool.antlr.CoolParserBaseVisitor;
+import cool.parser.CoolParserBaseVisitor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import cool.antlr.CoolParser.*;
+import cool.parser.CoolParser.*;
 import cool.ast.nodes.*;
 
 public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
@@ -55,5 +57,27 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 			return visit(ctx.method());
 
 		return new ASTField((ASTDef) visit(ctx.def()));
+	}
+
+	@Override
+	public ASTNode visitIf(IfContext ctx) {
+		return new ASTIf(ctx.start, (ASTExpression) visit(ctx.cond), (ASTExpression) visit(ctx.thenBr),
+				(ASTExpression) visit(ctx.elseBr));
+	}
+
+	@Override
+	public ASTNode visitWhile(WhileContext ctx) {
+		return new ASTWhile(ctx.start, (ASTExpression) visit(ctx.cond), (ASTExpression) visit(ctx.body));
+	}
+
+	@Override
+	public ASTNode visitLet(LetContext ctx) {
+		List<DefContext> defs = ctx.def();
+		Collections.reverse(defs);
+		ASTLet acc = new ASTLet(ctx.start, (ASTDef) visit(defs.get(0)), (ASTExpression) visit(ctx.expr()));
+
+		defs.stream().skip(1).forEachOrdered((def) -> new ASTLet(ctx.start, (ASTDef) visit(def), (ASTExpression) acc));
+
+		return acc;
 	}
 }

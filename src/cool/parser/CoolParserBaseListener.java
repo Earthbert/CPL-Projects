@@ -1,5 +1,7 @@
-// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/CoolParser.g4 by ANTLR 4.13.1
-package cool.antlr;
+// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
+
+    package cool.parser;
+
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;

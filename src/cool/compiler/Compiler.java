@@ -3,9 +3,10 @@ package cool.compiler;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-import cool.antlr.*;
+import cool.parser.*;
 import cool.ast.*;
 import cool.ast.nodes.*;
+import cool.lexer.CoolLexer;
 
 import java.io.*;
 

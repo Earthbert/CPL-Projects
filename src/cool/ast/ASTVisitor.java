@@ -24,4 +24,12 @@ public interface ASTVisitor<T> {
 	T visit(ASTMethod astMethod);
 
 	T visit(ASTFormal astFormal);
+
+	T visit(ASTLet astLet);
+
+	T visit(ASTIf astIf);
+
+	T visit(ASTWhile astWhile);
+
+	T visit(ASTCase astCase);
 }

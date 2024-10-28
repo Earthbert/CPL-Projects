@@ -4,10 +4,10 @@
 		"c:\\Users\\earthbert\\University\\CPL\\Antlr4\\antlr-4.13.0-complete.jar"
 	],
 	"antlr4.generation": {
-		"package": "cool.antlr",
-		"outputDir": "antlr",
+		"outputDir": ".",
 		"mode": "external",
 		"listeners": true,
-		"visitors": true
+		"visitors": true,
+		"importDir": "../lexer"
 	}
 }

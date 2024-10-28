@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.antlr.v4.runtime.Token;
 
-import cool.antlr.CoolParser.ClassContext;
+import cool.parser.CoolParser.ClassContext;
 import cool.ast.ASTVisitor;
 import cool.utils.Utils;
 

@@ -4,6 +4,10 @@ options {
     tokenVocab = CoolLexer;
 }
 
+@header {
+    package cool.parser;
+}
+
 program : (class SEMICOLON)+ EOF
 	;
 
@@ -17,9 +21,9 @@ expr :
 	 | BOOL_VAL # boolean
 	 // Control flow
 	 | LET def (COMMA def)* IN expr # let
-	 | IF expr THEN expr ELSE expr FI # if
-	 | WHILE expr LOOP expr POOL # while
-	 | CASE expr OF (ID COLON TYPE RIGHT_ARROW expr SEMICOLON)+ ESAC # case
+	 | IF cond=expr THEN thenBr=expr ELSE elseBr=expr FI # if
+	 | WHILE cond=expr LOOP body=expr POOL # while
+	 | CASE value=expr OF (ID COLON type=TYPE RIGHT_ARROW branch=expr SEMICOLON)+ ESAC # case
 	 | OPEN_BRACE (expr SEMICOLON)+ CLOSE_BRACE # block
 	 | OPEN_PAR expr CLOSE_PAR # par
 	 // Assignments

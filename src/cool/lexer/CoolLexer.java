@@ -1,5 +1,7 @@
-// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/CoolLexer.g4 by ANTLR 4.13.1
-package cool.antlr;
+// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/lexer/CoolLexer.g4 by ANTLR 4.13.1
+
+    package cool.lexer;	
+
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

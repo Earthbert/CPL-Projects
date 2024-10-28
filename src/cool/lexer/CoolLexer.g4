@@ -11,6 +11,11 @@ tokens {
     }
 }
 
+
+@header{
+    package cool.lexer;	
+}
+
 fragment A: [aA];
 fragment B: [bB];
 fragment C: [cC];
