@@ -4,13 +4,17 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTBoolean extends ASTLiteral {
+public class ASTNew extends ASTExpression {
 
-	private Boolean value;
+	private ASTType type;
 
-	public ASTBoolean(Token token) {
+	public ASTNew(Token token, ASTType type) {
 		super(token);
-		value = Boolean.parseBoolean(token.getText());
+		this.type = type;
+	}
+
+	public ASTType getType() {
+		return type;
 	}
 
 	@Override
@@ -18,7 +22,4 @@ public class ASTBoolean extends ASTLiteral {
 		return visitor.visit(this);
 	}
 
-	public Boolean getValue() {
-		return value;
-	}
 }

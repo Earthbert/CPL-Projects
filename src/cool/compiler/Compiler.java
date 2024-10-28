@@ -113,5 +113,7 @@ public class Compiler {
             System.err.println("AST construction failed");
             return;
         }
+
+        root.accept(new ASTPrintVisitor());
     }
 }

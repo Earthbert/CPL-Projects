@@ -1,5 +1,7 @@
 package cool.ast.nodes;
 
+import java.util.Optional;
+
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
@@ -8,11 +10,11 @@ public class ASTDef extends ASTNode {
 
 	private ASTId id;
 	private ASTType type;
-	private ASTExpression expr;
+	private Optional<ASTExpression> expr;
 
 	private Token token;
 
-	public ASTDef(Token token, ASTId id, ASTType type, ASTExpression expr) {
+	public ASTDef(Token token, ASTId id, ASTType type, Optional<ASTExpression> expr) {
 		this.id = id;
 		this.type = type;
 		this.expr = expr;
@@ -32,7 +34,7 @@ public class ASTDef extends ASTNode {
 		return type;
 	}
 
-	public ASTExpression getExpr() {
+	public Optional<ASTExpression> getExpr() {
 		return expr;
 	}
 

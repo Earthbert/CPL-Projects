@@ -9,5 +9,9 @@
 		"listeners": true,
 		"visitors": true,
 		"importDir": "../lexer"
-	}
+	},
+	"java.project.resourceFilters": [
+		".antlr",
+		"\\.git"
+	]
 }

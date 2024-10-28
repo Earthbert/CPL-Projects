@@ -6,14 +6,14 @@ import cool.ast.ASTVisitor;
 
 public class ASTInteger extends ASTLiteral {
 
-	private int value;
+	private Integer value;
 
 	public ASTInteger(Token token) {
 		super(token);
 		this.value = Integer.parseInt(token.getText());
 	}
 
-	public int getValue() {
+	public Integer getValue() {
 		return value;
 	}
 

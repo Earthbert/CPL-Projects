@@ -6,9 +6,10 @@ import java.util.stream.Collectors;
 public class Utils {
 
 	public static <T, K> List<K> castList(List<T> list, Class<K> clazz) {
-		if (!list.stream().allMatch(clazz::isInstance)) {
-			throw new IllegalArgumentException("Elements in list must be instances of " + clazz.getName());
-		}
+		for (var elem : list)
+			if (!clazz.isInstance(elem))
+				throw new ClassCastException("Cannot cast " + elem.getClass().getName() + " to " + clazz.getName());
+
 		return list.stream().map(clazz::cast).collect(Collectors.toList());
 	}
 
@@ -18,4 +19,5 @@ public class Utils {
 	public static final String INT = "Int";
 	public static final String BOOL = "Bool";
 	public static final String SELF = "self";
+
 }

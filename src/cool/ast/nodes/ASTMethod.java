@@ -7,7 +7,7 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTMethod extends ASTNode {
+public class ASTMethod extends ASTFeature {
 
 	private ASTId id;
 	private ASTType type;

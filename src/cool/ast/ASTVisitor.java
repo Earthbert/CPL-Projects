@@ -3,7 +3,7 @@ package cool.ast;
 import cool.ast.nodes.*;
 
 public interface ASTVisitor<T> {
-	T visit(ASTId node);
+	T visit(ASTAssignment astAssignment);
 
 	T visit(ASTInteger node);
 
@@ -32,4 +32,24 @@ public interface ASTVisitor<T> {
 	T visit(ASTWhile astWhile);
 
 	T visit(ASTCase astCase);
+
+	T visit(ASTBlock astBlock);
+
+	T visit(ASTArithmetic astArithmetic);
+
+	T visit(ASTComparison astComparison);
+
+	T visit(ASTId astId);
+
+	T visit(ASTNot astNot);
+
+	T visit(ASTNeg astNeg);
+
+	T visit(ASTIsVoid astIsVoid);
+
+	T visit(ASTNew astNew);
+
+	T visit(ASTCall astCall);
+
+	T visit(ASTRoot astRoot);
 }

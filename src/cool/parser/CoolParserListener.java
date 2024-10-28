@@ -32,6 +32,18 @@ public interface CoolParserListener extends ParseTreeListener {
 	 */
 	void exitPar(CoolParser.ParContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code new}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterNew(CoolParser.NewContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code new}
+	 * labeled alternative in {@link CoolParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitNew(CoolParser.NewContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code comparison}
 	 * labeled alternative in {@link CoolParser#expr}.
 	 * @param ctx the parse tree
@@ -67,18 +79,6 @@ public interface CoolParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIsvoid(CoolParser.IsvoidContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code constructor}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstructor(CoolParser.ConstructorContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code constructor}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstructor(CoolParser.ConstructorContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code while}
 	 * labeled alternative in {@link CoolParser#expr}.

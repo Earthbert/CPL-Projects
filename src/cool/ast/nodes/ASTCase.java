@@ -1,5 +1,6 @@
 package cool.ast.nodes;
 
+import java.util.Collections;
 import java.util.List;
 import org.antlr.v4.runtime.Token;
 
@@ -28,7 +29,7 @@ public class ASTCase extends ASTExpression {
 	}
 
 	public List<ASTCaseBranch> getBranches() {
-		return branches;
+		return Collections.unmodifiableList(branches);
 	}
 
 	public static class ASTCaseBranch {
