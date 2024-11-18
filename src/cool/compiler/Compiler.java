@@ -1,14 +1,21 @@
 package cool.compiler;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import java.io.File;
+import java.io.IOException;
+
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import cool.ast.ASTBuilderVisitor;
 import cool.ast.ASTPrintVisitor;
-import cool.lexer.*;
-import cool.parser.*;
-
-import java.io.*;
+import cool.lexer.CoolLexer;
+import cool.parser.CoolParser;
 
 public class Compiler {
 	// Annotates class nodes with the names of files where they are defined.
@@ -124,5 +131,7 @@ public class Compiler {
 		var root = globalTree.accept(new ASTBuilderVisitor());
 
 		root.accept(new ASTPrintVisitor());
+
+		
 	}
 }

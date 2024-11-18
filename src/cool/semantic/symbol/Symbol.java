@@ -1,6 +1,7 @@
-package cool.structures;
+package cool.semantic.symbol;
 
-public class Symbol {
+abstract public class Symbol {
+
 	protected String name;
 
 	public Symbol(String name) {
