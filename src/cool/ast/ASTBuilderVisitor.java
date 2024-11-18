@@ -2,8 +2,6 @@ package cool.ast;
 
 import cool.parser.CoolParserBaseVisitor;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import cool.parser.CoolParser.*;
 import cool.ast.nodes.*;
