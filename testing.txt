@@ -1,6 +1,0 @@
-(*
-    Listă nevidă eterogenă, cu elemente având tipul static Object și tipuri
-    dinamice amestecate. Sfârșitul liste este semnalat de next = void.
-
-    Adaptare după Alex Aiken.
-*)

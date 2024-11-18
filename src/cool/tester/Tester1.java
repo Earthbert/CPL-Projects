@@ -1,12 +1,12 @@
 package cool.tester;
 
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 
 import cool.compiler.Compiler;
 
 public class Tester1 {
-    // java -cp "bin;antlr-4.8-complete.jar;%CLASSPATH%" coolc.tester.Tester1
+    // java -cp "bin;antlr-4.8-complete.jar;%CLASSPATH%" cool.tester.Tester1
     public static void main(String[] args) throws IOException {
         final String TEST_DIR_NAME = "tests/tema1";
         var testDir = new File(TEST_DIR_NAME);
@@ -21,7 +21,7 @@ public class Tester1 {
         var oldErr = System.err;
         
         var total = 0;
-
+        
         var files = testDir.listFiles(filenameFilter);
         Arrays.sort(files);
         for (var file : files) {
