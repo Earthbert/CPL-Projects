@@ -3,6 +3,13 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "Tester2",
+			"request": "launch",
+			"mainClass": "cool.tester.Tester2",
+			"projectName": "Projects_c48587cc"
+		},
+		{
+			"type": "java",
 			"name": "Test",
 			"request": "launch",
 			"mainClass": "Test",
@@ -19,7 +26,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema1/07-relational.cl",
+			"args": "tests/tema2/01-define-class.cl",
 			"mainClass": "cool.compiler.Compiler"
 		},
 		{

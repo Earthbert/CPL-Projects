@@ -1,5 +1,6 @@
-package cool.ast;
+package cool.ast.visitors;
 
+import cool.ast.ASTVisitor;
 import cool.ast.nodes.*;
 import cool.ast.nodes.ASTCase.ASTCaseBranch;
 

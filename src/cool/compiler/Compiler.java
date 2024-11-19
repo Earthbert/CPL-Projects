@@ -2,6 +2,7 @@ package cool.compiler;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.foreign.SymbolLookup;
 
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
@@ -13,9 +14,14 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import cool.ast.ASTBuilderVisitor;
-import cool.ast.ASTPrintVisitor;
+import cool.ast.nodes.ASTNode;
+import cool.ast.visitors.ASTPrintVisitor;
+import cool.ast.visitors.semantic.ASTClassDefinitionVisitor;
+import cool.ast.visitors.semantic.ASTClassParentVisitor;
+import cool.ast.visitors.semantic.ASTSemanticVisitor;
 import cool.lexer.CoolLexer;
 import cool.parser.CoolParser;
+import cool.semantic.symbol.SymbolTable;
 
 public class Compiler {
 	// Annotates class nodes with the names of files where they are defined.
@@ -128,10 +134,15 @@ public class Compiler {
 			return;
 		}
 
-		var root = globalTree.accept(new ASTBuilderVisitor());
+		ASTNode astRoot = globalTree.accept(new ASTBuilderVisitor());
 
-		root.accept(new ASTPrintVisitor());
+		SymbolTable.defineBasicClasses();
 
-		
+		ASTSemanticVisitor.applyVisitor(astRoot);
+
+		if (SymbolTable.hasSemanticErrors()) {
+			System.err.println("Compilation halted");
+			return;
+		}
 	}
 }

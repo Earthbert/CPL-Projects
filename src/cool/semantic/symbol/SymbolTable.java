@@ -8,9 +8,10 @@ import org.antlr.v4.runtime.*;
 import cool.compiler.Compiler;
 import cool.parser.CoolParser;
 import cool.semantic.scope.Scope;
+import cool.utils.Utils;
 
 public class SymbolTable {
-	public static Scope globals;
+	private static Scope globals;
 
 	private static boolean semanticErrors;
 
@@ -18,11 +19,11 @@ public class SymbolTable {
 		globals = new Scope(null);
 		semanticErrors = false;
 
-		ClassSymbol objectClass = new ClassSymbol("Object", globals);
-		ClassSymbol intClass = new ClassSymbol("Int", objectClass.getScope());
-		ClassSymbol stringClass = new ClassSymbol("String", objectClass.getScope());
-		ClassSymbol boolClass = new ClassSymbol("Bool", objectClass.getScope());
-		ClassSymbol ioClass = new ClassSymbol("IO", objectClass.getScope());
+		ClassSymbol objectClass = new ClassSymbol(Utils.OBJECT, globals);
+		ClassSymbol intClass = new ClassSymbol(Utils.INT, objectClass.getScope());
+		ClassSymbol stringClass = new ClassSymbol(Utils.STRING, objectClass.getScope());
+		ClassSymbol boolClass = new ClassSymbol(Utils.BOOL, objectClass.getScope());
+		ClassSymbol ioClass = new ClassSymbol(Utils.IO, objectClass.getScope());
 
 		// Set parent classes
 		intClass.setParent(objectClass);
@@ -104,5 +105,9 @@ public class SymbolTable {
 
 	public static boolean hasSemanticErrors() {
 		return semanticErrors;
+	}
+
+	public static Scope getGlobals() {
+		return globals;
 	}
 }
