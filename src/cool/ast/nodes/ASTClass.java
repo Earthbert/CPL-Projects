@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.antlr.v4.runtime.Token;
 
 import cool.parser.CoolParser.ClassContext;
+import cool.semantic.symbol.ClassSymbol;
 import cool.ast.ASTVisitor;
 import cool.utils.Utils;
 
@@ -20,6 +21,8 @@ public class ASTClass extends ASTNode {
 	final private List<ASTFeature> features;
 
 	final private ClassContext ctx;
+
+	private ClassSymbol symbol;
 
 	public ASTClass(Token token, ASTType name, Optional<ASTType> parent, List<ASTNode> features, ClassContext ctx) {
 		this.token = token;
@@ -52,4 +55,13 @@ public class ASTClass extends ASTNode {
 	public ClassContext getCtx() {
 		return ctx;
 	}
+
+	public Optional<ClassSymbol> getSymbol() {
+		return Optional.ofNullable(symbol);
+	}
+
+	public void setSymbol(ClassSymbol symbol) {
+		this.symbol = symbol;
+	}
+
 }

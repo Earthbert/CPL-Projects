@@ -22,6 +22,8 @@ public class ASTClassDefinitionVisitor extends ASTSemanticVisitor<Void> {
 		ClassSymbol classSymbol = new ClassSymbol(astClass.getType().getToken().getText(), currentScope);
 		if (!currentScope.add(classSymbol))
 			SymbolTable.error(ctx, astClass.getType().getToken(), "Class " + classSymbol.getName() + " is redefined");
+		else
+			astClass.setSymbol(classSymbol);
 
 		return null;
 	}

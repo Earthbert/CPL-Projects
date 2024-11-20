@@ -3,6 +3,13 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "Tester1",
+			"request": "launch",
+			"mainClass": "cool.tester.Tester1",
+			"projectName": "Projects_c48587cc"
+		},
+		{
+			"type": "java",
 			"name": "Tester2",
 			"request": "launch",
 			"mainClass": "cool.tester.Tester2",

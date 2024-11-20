@@ -18,8 +18,10 @@ public class ASTClassParentVisitor extends ASTSemanticVisitor<Void> {
 	public Void visit(ASTClass astClass) {
 		ctx = astClass.getCtx();
 
-		ClassSymbol classSymbol = (ClassSymbol) currentScope.lookup(astClass.getType().getToken().getText())
-				.orElseThrow();
+		if (!astClass.getSymbol().isPresent())
+			return null;
+
+		ClassSymbol classSymbol = astClass.getSymbol().get();
 
 		String parentName = astClass.getParent().isPresent() ? astClass.getParent().get().getToken().getText()
 				: Utils.OBJECT;

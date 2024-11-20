@@ -15,8 +15,10 @@ public class ASTClassCycleVisitor extends ASTSemanticVisitor<Void> {
 	public Void visit(ASTClass astClass) {
 		ctx = astClass.getCtx();
 
-		ClassSymbol classSymbol = (ClassSymbol) currentScope.lookup(astClass.getType().getToken().getText())
-				.orElseThrow();
+		if (!astClass.getSymbol().isPresent())
+			return null;
+
+		ClassSymbol classSymbol = astClass.getSymbol().get();
 
 		if (classSymbol.hasParent(classSymbol))
 			SymbolTable.error(ctx, astClass.getType().getToken(),
