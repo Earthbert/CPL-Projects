@@ -6,7 +6,6 @@ import java.util.List;
 import cool.ast.nodes.ASTClass;
 import cool.ast.nodes.ASTField;
 import cool.ast.nodes.ASTMethod;
-import cool.semantic.scope.Scope;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.SymbolTable;
@@ -43,17 +42,17 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 
 		if (astField.getDef().getId().getToken().getText().equals(Utils.SELF))
 			SymbolTable.error(ctx, astField.getDef().getId().getToken(),
-					"Class " + currentClass.getName() + " cannot have a field named " + Utils.SELF);
+					"Class " + currentClass.getName() + " has attribute with illegal name " + Utils.SELF);
 
 		IdSymbol idSymbol = new IdSymbol(astField.getDef().getId().getToken().getText());
 
-		if (currentClass.getScope().lookupCurrent(idSymbol.getName()).isPresent()) {
+		if (currentClass.lookupCurrent(idSymbol.getName()).isPresent()) {
 			SymbolTable.error(ctx, astField.getDef().getId().getToken(),
 					"Class " + currentClass.getName() + " redefines attribute " + idSymbol.getName());
 			return null;
 		}
 
-		if (!currentClass.getScope().add(idSymbol)) {
+		if (!currentClass.add(idSymbol)) {
 			SymbolTable.error(ctx, astField.getDef().getId().getToken(),
 					"Class " + currentClass.getName() + " redefines inherited attribute " + idSymbol.getName());
 			return null;

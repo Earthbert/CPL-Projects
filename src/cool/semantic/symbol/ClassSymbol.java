@@ -42,7 +42,8 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	@Override
 	public boolean add(IdSymbol sym) {
-		return symbols.putIfAbsent(sym.getName(), sym) == null;
+		Optional<IdSymbol> symbol = lookup(sym.getName());
+		return symbol.isEmpty() && symbols.putIfAbsent(sym.getName(), sym) == null;
 	}
 
 	public boolean addMethod(MethodSymbol method) {
