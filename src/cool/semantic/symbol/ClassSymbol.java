@@ -47,7 +47,8 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 	}
 
 	public boolean addMethod(MethodSymbol method) {
-		return methods.putIfAbsent(method.getName(), method) == null;
+		Optional<MethodSymbol> symbol = lookupMethod(method.getName());
+		return symbol.isEmpty() && methods.putIfAbsent(method.getName(), method) == null;
 	}
 
 	@Override
@@ -78,5 +79,9 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 			return parent.lookupMethod(name);
 
 		return Optional.empty();
+	}
+
+	public Optional<MethodSymbol> lookupCurrentMethod(String name) {
+		return Optional.ofNullable(methods.get(name));
 	}
 }

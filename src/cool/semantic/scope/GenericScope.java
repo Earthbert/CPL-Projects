@@ -1,7 +1,5 @@
 package cool.semantic.scope;
 
-import java.io.SyncFailedException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 

@@ -12,7 +12,7 @@ public class MethodSymbol extends IdSymbol implements Scope<IdSymbol> {
 
 	private Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
-	public MethodSymbol(String name, ClassSymbol type, Scope outerScope) {
+	public MethodSymbol(String name, ClassSymbol type, Scope<IdSymbol> outerScope) {
 		super(name);
 		setType(type);
 		this.outerScope = outerScope;
@@ -36,5 +36,9 @@ public class MethodSymbol extends IdSymbol implements Scope<IdSymbol> {
 	@Override
 	public Optional<IdSymbol> lookupCurrent(String name) {
 		return Optional.ofNullable(symbols.get(name));
+	}
+
+	public Map<String, IdSymbol> getSymbols() {
+		return symbols;
 	}
 }
