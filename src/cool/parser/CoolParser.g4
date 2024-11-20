@@ -13,7 +13,7 @@ program: (class SEMICOLON)+ EOF;
 expr:
 
 	// Calls
-	(SELF)? (AT TYPE)? ID OPEN_PAR (
+	ID OPEN_PAR (
 		arg += expr (COMMA arg += expr)*
 	)? CLOSE_PAR # thisCall
 	| object = expr (AT TYPE)? DOT ID OPEN_PAR (
@@ -40,7 +40,6 @@ expr:
 	| OPEN_PAR expr CLOSE_PAR						# par
 
 	// Literals Identifiers
-	| SELF		# self
 	| ID		# id
 	| INT		# int
 	| STRING	# string

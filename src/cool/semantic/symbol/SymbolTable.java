@@ -7,23 +7,25 @@ import org.antlr.v4.runtime.*;
 
 import cool.compiler.Compiler;
 import cool.parser.CoolParser;
+import cool.semantic.scope.GlobalScope;
 import cool.semantic.scope.Scope;
 import cool.utils.Utils;
 
 public class SymbolTable {
-	private static Scope globals;
+
+	private static Scope<ClassSymbol> globals;
 
 	private static boolean semanticErrors;
 
 	public static void defineBasicClasses() {
-		globals = new Scope(null);
+		globals = new GlobalScope();
 		semanticErrors = false;
 
-		ClassSymbol objectClass = new ClassSymbol(Utils.OBJECT, globals);
-		ClassSymbol intClass = new ClassSymbol(Utils.INT, objectClass.getScope());
-		ClassSymbol stringClass = new ClassSymbol(Utils.STRING, objectClass.getScope());
-		ClassSymbol boolClass = new ClassSymbol(Utils.BOOL, objectClass.getScope());
-		ClassSymbol ioClass = new ClassSymbol(Utils.IO, objectClass.getScope());
+		ClassSymbol objectClass = new ClassSymbol(Utils.OBJECT, null);
+		ClassSymbol intClass = new ClassSymbol(Utils.INT, objectClass);
+		ClassSymbol stringClass = new ClassSymbol(Utils.STRING, objectClass);
+		ClassSymbol boolClass = new ClassSymbol(Utils.BOOL, objectClass);
+		ClassSymbol ioClass = new ClassSymbol(Utils.IO, objectClass);
 
 		// Set parent classes
 		intClass.setParent(objectClass);
@@ -32,43 +34,43 @@ public class SymbolTable {
 		ioClass.setParent(objectClass);
 
 		// Add Object methods
-		objectClass.getScope().addMethod(new MethodSymbol("abort", objectClass, objectClass.getScope()));
-		objectClass.getScope().addMethod(new MethodSymbol("type_name", stringClass, objectClass.getScope()));
-		objectClass.getScope().addMethod(new MethodSymbol("copy", objectClass, objectClass.getScope()));
+		objectClass.addMethod(new MethodSymbol("abort", objectClass, objectClass));
+		objectClass.addMethod(new MethodSymbol("type_name", stringClass, objectClass));
+		objectClass.addMethod(new MethodSymbol("copy", objectClass, objectClass));
 
 		// Add IO methods
-		MethodSymbol outStringMethod = new MethodSymbol("out_string", ioClass, ioClass.getScope());
+		MethodSymbol outStringMethod = new MethodSymbol("out_string", ioClass, ioClass);
 		IdSymbol outStringParam = new IdSymbol("x");
 		outStringParam.setType(stringClass);
-		outStringMethod.getScope().add(outStringParam);
-		ioClass.getScope().addMethod(outStringMethod);
+		outStringMethod.add(outStringParam);
+		ioClass.addMethod(outStringMethod);
 
-		MethodSymbol outIntMethod = new MethodSymbol("out_int", ioClass, ioClass.getScope());
+		MethodSymbol outIntMethod = new MethodSymbol("out_int", ioClass, ioClass);
 		IdSymbol outIntParam = new IdSymbol("x");
 		outIntParam.setType(intClass);
-		outIntMethod.getScope().add(outIntParam);
-		ioClass.getScope().addMethod(outIntMethod);
+		outIntMethod.add(outIntParam);
+		ioClass.addMethod(outIntMethod);
 
-		ioClass.getScope().addMethod(new MethodSymbol("in_string", stringClass, ioClass.getScope()));
-		ioClass.getScope().addMethod(new MethodSymbol("in_int", intClass, ioClass.getScope()));
+		ioClass.addMethod(new MethodSymbol("in_string", stringClass, ioClass));
+		ioClass.addMethod(new MethodSymbol("in_int", intClass, ioClass));
 
 		// Add String methods
-		stringClass.getScope().addMethod(new MethodSymbol("length", intClass, stringClass.getScope()));
+		stringClass.addMethod(new MethodSymbol("length", intClass, stringClass));
 
-		MethodSymbol concatMethod = new MethodSymbol("concat", stringClass, stringClass.getScope());
+		MethodSymbol concatMethod = new MethodSymbol("concat", stringClass, stringClass);
 		IdSymbol concatParam = new IdSymbol("s");
 		concatParam.setType(stringClass);
-		concatMethod.getScope().add(concatParam);
-		stringClass.getScope().addMethod(concatMethod);
+		concatMethod.add(concatParam);
+		stringClass.addMethod(concatMethod);
 
-		MethodSymbol substrMethod = new MethodSymbol("substr", stringClass, stringClass.getScope());
+		MethodSymbol substrMethod = new MethodSymbol("substr", stringClass, stringClass);
 		IdSymbol substrParam1 = new IdSymbol("i");
 		IdSymbol substrParam2 = new IdSymbol("l");
 		substrParam1.setType(intClass);
 		substrParam2.setType(intClass);
-		substrMethod.getScope().add(substrParam1);
-		substrMethod.getScope().add(substrParam2);
-		stringClass.getScope().addMethod(substrMethod);
+		substrMethod.add(substrParam1);
+		substrMethod.add(substrParam2);
+		stringClass.addMethod(substrMethod);
 
 		List.of(objectClass, intClass, stringClass, boolClass, ioClass).forEach(c -> globals.add(c));
 	}
@@ -107,7 +109,7 @@ public class SymbolTable {
 		return semanticErrors;
 	}
 
-	public static Scope getGlobals() {
+	public static Scope<ClassSymbol> getGlobals() {
 		return globals;
 	}
 }

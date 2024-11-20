@@ -1,4 +1,4 @@
-// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
+// Generated from c:/Users/earthbert/University/CPL/Projects/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
 
     package cool.parser;
 
@@ -95,13 +95,6 @@ public interface CoolParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBoolean(CoolParser.BooleanContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code self}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSelf(CoolParser.SelfContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code block}
 	 * labeled alternative in {@link CoolParser#expr}.

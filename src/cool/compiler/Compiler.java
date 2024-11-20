@@ -2,7 +2,6 @@ package cool.compiler;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.foreign.SymbolLookup;
 
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
@@ -15,9 +14,6 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import cool.ast.ASTBuilderVisitor;
 import cool.ast.nodes.ASTNode;
-import cool.ast.visitors.ASTPrintVisitor;
-import cool.ast.visitors.semantic.ASTClassDefinitionVisitor;
-import cool.ast.visitors.semantic.ASTClassParentVisitor;
 import cool.ast.visitors.semantic.ASTSemanticVisitor;
 import cool.lexer.CoolLexer;
 import cool.parser.CoolParser;

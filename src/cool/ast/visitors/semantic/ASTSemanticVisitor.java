@@ -5,18 +5,11 @@ import cool.ast.ASTVisitor;
 import cool.ast.nodes.ASTNode;
 import cool.ast.nodes.ASTRoot;
 import cool.parser.CoolParser.ClassContext;
-import cool.semantic.scope.Scope;
 import cool.semantic.symbol.SymbolTable;
 
 public abstract class ASTSemanticVisitor<T> implements ASTVisitor<T> {
 
-	protected Scope currentScope;
-
 	protected ClassContext ctx;
-
-	public ASTSemanticVisitor(Scope currentScope) {
-		this.currentScope = currentScope;
-	}
 
 	@Override
 	public T visit(ASTRoot astRoot) {
@@ -25,13 +18,16 @@ public abstract class ASTSemanticVisitor<T> implements ASTVisitor<T> {
 	}
 
 	public static void applyVisitor(ASTNode astRoot) {
-		astRoot.accept(new ASTClassDefinitionVisitor(SymbolTable.getGlobals()));
+		astRoot.accept(new ASTClassDefinitionVisitor());
 
-		astRoot.accept(new ASTClassParentVisitor(SymbolTable.getGlobals()));
+		astRoot.accept(new ASTClassParentVisitor());
 
-		astRoot.accept(new ASTClassCycleVisitor(SymbolTable.getGlobals()));
+		astRoot.accept(new ASTClassCycleVisitor());
 
 		if (SymbolTable.hasSemanticErrors())
 			return;
+
+		astRoot.accept(new ASTDefinitionPassVisitor());
+
 	}
 }

@@ -3,13 +3,6 @@
 	"configurations": [
 		{
 			"type": "java",
-			"name": "Tester1",
-			"request": "launch",
-			"mainClass": "cool.tester.Tester1",
-			"projectName": "Projects_c48587cc"
-		},
-		{
-			"type": "java",
 			"name": "Tester2",
 			"request": "launch",
 			"mainClass": "cool.tester.Tester2",
@@ -17,17 +10,10 @@
 		},
 		{
 			"type": "java",
-			"name": "Test",
-			"request": "launch",
-			"mainClass": "Test",
-			"projectName": "Tema1_d9f256fa"
-		},
-		{
-			"type": "java",
 			"name": "Tester1",
 			"request": "launch",
 			"mainClass": "cool.tester.Tester1",
-			"projectName": "Tema1_d9f256fa"
+			"projectName": "Projects_c48587cc"
 		},
 		{
 			"type": "java",
@@ -40,9 +26,9 @@
 			"type": "antlr-debug",
 			"request": "launch",
 			"name": "Parser Testing",
-			"startRule": "expr",
+			"startRule": "program",
 			"grammar": "src/cool/parser/CoolParser.g4",
-			"input": "testing.txt",
+			"input": "tests/tema2/02-define-attribute.cl",
 			"visualParseTree": true
 		}
 	],

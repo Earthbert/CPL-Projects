@@ -50,12 +50,6 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(ASTSelf astSelf) {
-		printIndent(astSelf.getToken().getText().toLowerCase());
-		return null;
-	}
-
-	@Override
 	public Void visit(ASTClass astClass) {
 		printIndent("class");
 		increaseIndent();

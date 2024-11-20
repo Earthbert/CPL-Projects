@@ -1,4 +1,4 @@
-// Generated from c:/Users/earthbert/University/CPL/Tema1/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
+// Generated from c:/Users/earthbert/University/CPL/Projects/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
 
     package cool.parser;
 
@@ -151,18 +151,6 @@ public interface CoolParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBoolean(CoolParser.BooleanContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code self}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterSelf(CoolParser.SelfContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code self}
-	 * labeled alternative in {@link CoolParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitSelf(CoolParser.SelfContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code block}
 	 * labeled alternative in {@link CoolParser#expr}.

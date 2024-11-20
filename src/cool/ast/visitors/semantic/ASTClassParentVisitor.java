@@ -3,16 +3,11 @@ package cool.ast.visitors.semantic;
 import java.util.List;
 
 import cool.ast.nodes.ASTClass;
-import cool.semantic.scope.Scope;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.SymbolTable;
 import cool.utils.Utils;
 
 public class ASTClassParentVisitor extends ASTSemanticVisitor<Void> {
-
-	public ASTClassParentVisitor(Scope currentScope) {
-		super(currentScope);
-	}
 
 	@Override
 	public Void visit(ASTClass astClass) {
@@ -30,7 +25,7 @@ public class ASTClassParentVisitor extends ASTSemanticVisitor<Void> {
 			SymbolTable.error(ctx, astClass.getParent().get().getToken(),
 					"Class " + classSymbol.getName() + " has illegal parent " + parentName);
 
-		currentScope.lookup(parentName)
+		SymbolTable.getGlobals().lookup(parentName)
 				.ifPresentOrElse(s -> classSymbol.setParent((ClassSymbol) s),
 						() -> SymbolTable.error(ctx, astClass.getParent().get().getToken(),
 								"Class " + classSymbol.getName() + " has undefined parent " + parentName));

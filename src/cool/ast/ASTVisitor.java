@@ -24,10 +24,6 @@ public interface ASTVisitor<T> {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTSelf astSelf) {
-		throw new UnsupportedOperationException("Unimplemented method 'visit'");
-	}
-
 	default T visit(ASTClass astClass) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
