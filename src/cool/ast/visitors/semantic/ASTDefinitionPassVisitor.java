@@ -7,6 +7,7 @@ import java.util.Optional;
 import cool.ast.nodes.ASTClass;
 import cool.ast.nodes.ASTField;
 import cool.ast.nodes.ASTFormal;
+import cool.ast.nodes.ASTLet;
 import cool.ast.nodes.ASTMethod;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IdSymbol;
@@ -193,6 +194,13 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 		IdSymbol idSymbol = new IdSymbol(formalName);
 		idSymbol.setType(classSymbol.get());
 		currentMethod.add(idSymbol);
+		astFormal.setSymbol(idSymbol);
+
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTLet astLet) {
 
 		return null;
 	}

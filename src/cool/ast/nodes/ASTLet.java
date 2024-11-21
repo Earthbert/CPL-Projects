@@ -8,10 +8,12 @@ import cool.ast.ASTVisitor;
 
 public class ASTLet extends ASTExpression {
 
-	private List<ASTDef> def;
+	private ASTDef def;
 	private ASTExpression expr;
 
-	public ASTLet(Token token, List<ASTDef> def, ASTExpression expr) {
+	private boolean letRoot = false;
+
+	public ASTLet(Token token, ASTDef def, ASTExpression expr) {
 		super(token);
 		this.def = def;
 		this.expr = expr;
@@ -22,7 +24,7 @@ public class ASTLet extends ASTExpression {
 		return visitor.visit(this);
 	}
 
-	public List<ASTDef> getDefs() {
+	public ASTDef getDef() {
 		return def;
 	}
 
@@ -30,4 +32,11 @@ public class ASTLet extends ASTExpression {
 		return expr;
 	}
 
+	public boolean isLetRoot() {
+		return letRoot;
+	}
+
+	public void setLetRoot(boolean letRoot) {
+		this.letRoot = letRoot;
+	}
 }

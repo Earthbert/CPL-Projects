@@ -107,16 +107,20 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(ASTLet astLet) {
-		printIndent("let");
-		increaseIndent();
-		astLet.getDefs().forEach(d -> {
-			printIndent("local");
+		if (astLet.isLetRoot()) {
+			printIndent("let");
 			increaseIndent();
-			d.accept(this);
-			decreaseIndent();
-		});
-		astLet.getExpr().accept(this);
+		}
+
+		printIndent("local");
+		increaseIndent();
+		astLet.getDef().accept(this);
 		decreaseIndent();
+		astLet.getExpr().accept(this);
+
+		if (astLet.isLetRoot()) {
+			decreaseIndent();
+		}
 		return null;
 	}
 

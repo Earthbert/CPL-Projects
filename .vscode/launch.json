@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema2/03-define-method.cl",
+			"args": "tests/tema1/13-let.cl",
 			"mainClass": "cool.compiler.Compiler"
 		},
 		{

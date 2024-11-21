@@ -2,6 +2,8 @@ package cool.ast;
 
 import cool.parser.CoolParserBaseVisitor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import cool.parser.CoolParser.*;
 import cool.ast.nodes.*;
@@ -77,9 +79,18 @@ public class ASTBuilderVisitor extends CoolParserBaseVisitor<ASTNode> {
 
 	@Override
 	public ASTNode visitLet(LetContext ctx) {
-		return new ASTLet(ctx.LET().getSymbol(),
-				ctx.def().stream().map(this::visit).map(ASTDef.class::cast).toList(),
+
+		List<DefContext> defs = ctx.def();
+		Collections.reverse(defs);
+		ASTLet acc = new ASTLet(ctx.LET().getSymbol(), (ASTDef) visit(defs.get(0)),
 				(ASTExpression) visit(ctx.expr()));
+
+		for (int i = 1; i < defs.size(); i++)
+			acc = new ASTLet(ctx.LET().getSymbol(), (ASTDef) visit(defs.get(i)), acc);
+
+		acc.setLetRoot(true);
+
+		return acc;
 	}
 
 	@Override
