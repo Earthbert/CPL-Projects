@@ -12,7 +12,7 @@ public class LetSymbol extends IdSymbol implements Scope<IdSymbol> {
 
 	private Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
-	public LetSymbol(String name) {
+	public LetSymbol(String name, Scope<IdSymbol> outerScope) {
 		super(name);
 	}
 

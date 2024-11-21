@@ -5,11 +5,14 @@ import java.util.List;
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
+import cool.semantic.symbol.LetSymbol;
 
 public class ASTLet extends ASTExpression {
 
 	private ASTDef def;
 	private ASTExpression expr;
+
+	private LetSymbol symbol;
 
 	private boolean letRoot = false;
 
@@ -38,5 +41,13 @@ public class ASTLet extends ASTExpression {
 
 	public void setLetRoot(boolean letRoot) {
 		this.letRoot = letRoot;
+	}
+
+	public LetSymbol getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(LetSymbol symbol) {
+		this.symbol = symbol;
 	}
 }

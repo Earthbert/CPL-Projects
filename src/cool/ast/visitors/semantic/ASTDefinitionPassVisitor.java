@@ -4,13 +4,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import org.antlr.v4.parse.ANTLRParser.prequelConstruct_return;
+
+import cool.ast.nodes.ASTCase;
+import cool.ast.nodes.ASTCase.ASTCaseBranch;
 import cool.ast.nodes.ASTClass;
 import cool.ast.nodes.ASTField;
 import cool.ast.nodes.ASTFormal;
+import cool.ast.nodes.ASTId;
+import cool.ast.nodes.ASTInteger;
 import cool.ast.nodes.ASTLet;
 import cool.ast.nodes.ASTMethod;
+import cool.semantic.scope.Scope;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IdSymbol;
+import cool.semantic.symbol.LetSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
 import cool.utils.Utils;
@@ -20,6 +28,8 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 	private ClassSymbol currentClass;
 
 	private MethodSymbol currentMethod;
+
+	private Scope<IdSymbol> currentScope;
 
 	private List<ASTClass> visitedClasses = new LinkedList<>();
 
@@ -108,6 +118,7 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 
 		MethodSymbol methodSymbol = new MethodSymbol(methodName, returnType.get(), currentClass);
 		currentMethod = methodSymbol;
+		currentScope = methodSymbol;
 
 		astMethod.getArguments().forEach(a -> a.accept(this));
 
@@ -148,6 +159,8 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 		}
 
 		currentClass.addMethod(methodSymbol);
+
+		astMethod.getBody().accept(this);
 
 		return null;
 	}
@@ -202,7 +215,77 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 	@Override
 	public Void visit(ASTLet astLet) {
 
+		String variableName = astLet.getDef().getId().getToken().getText();
+		String typeName = astLet.getDef().getType().getToken().getText();
+
+		if (variableName.equals(Utils.SELF)) {
+			SymbolTable.error(ctx, astLet.getDef().getId().getToken(),
+					"Let variable has illegal name " + Utils.SELF);
+		}
+
+		if (!SymbolTable.getGlobals().lookup(typeName).isPresent()) {
+			SymbolTable.error(ctx, astLet.getDef().getType().getToken(),
+					"Let variable " + variableName + " has undefined type " + typeName);
+		}
+
+		LetSymbol letSymbol = new LetSymbol(variableName, currentScope);
+		currentScope = letSymbol;
+		currentScope.add(letSymbol);
+
+		astLet.getExpr().accept(this);
+
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTCase astCase) {
+
+		astCase.getValue().accept(this);
+
+		astCase.getBranches().forEach(b -> b.accept(this));
+
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTCaseBranch astCaseBranch) {
+
+		String variableName = astCaseBranch.getId().getToken().getText();
+		String typeName = astCaseBranch.getType().getToken().getText();
+
+		if (variableName.equals(Utils.SELF)) {
+			SymbolTable.error(ctx, astCaseBranch.getId().getToken(),
+					"Case variable has illegal name " + Utils.SELF);
+		}
+
+		if (typeName.equals(Utils.SELF_TYPE)) {
+			SymbolTable.error(ctx, astCaseBranch.getType().getToken(),
+					"Case variable " + variableName + " has illegal type " + Utils.SELF_TYPE);
+			return null;
+		}
+
+		if (!SymbolTable.getGlobals().lookup(typeName).isPresent()) {
+			SymbolTable.error(ctx, astCaseBranch.getType().getToken(),
+					"Case variable " + variableName + " has undefined type " + typeName);
+		}
+
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTId astId) {
+
+		String idName = astId.getToken().getText();
+
+		if (currentScope.lookup(idName).isEmpty()) {
+			SymbolTable.error(ctx, astId.getToken(), "Undefined identifier " + idName);
+		}
+
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTInteger node) {
+		return null;
+	}
 }
