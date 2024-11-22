@@ -1,5 +1,7 @@
 package cool.ast.nodes;
 
+import java.util.Optional;
+
 import cool.ast.ASTVisitor;
 import cool.semantic.symbol.IdSymbol;
 
@@ -22,8 +24,8 @@ public class ASTField extends ASTFeature {
 		return this.def;
 	}
 
-	public IdSymbol getSymbol() {
-		return this.symbol;
+	public Optional<IdSymbol> getSymbol() {
+		return Optional.ofNullable(this.symbol);
 	}
 
 	public void setSymbol(final IdSymbol id) {

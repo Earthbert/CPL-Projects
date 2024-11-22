@@ -1,5 +1,7 @@
 package cool.ast.nodes;
 
+import java.util.Optional;
+
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
@@ -37,8 +39,8 @@ public class ASTFormal extends ASTNode {
 		return this.token;
 	}
 
-	public IdSymbol getSymbol() {
-		return this.symbol;
+	public Optional<IdSymbol> getSymbol() {
+		return Optional.ofNullable(this.symbol);
 	}
 
 	public void setSymbol(final IdSymbol symbol) {

@@ -37,4 +37,8 @@ public class LetSymbol extends IdSymbol implements Scope<IdSymbol> {
 		return Optional.ofNullable(this.symbols.get(name));
 	}
 
+	public Optional<Scope<IdSymbol>> getOuterScope() {
+		return Optional.ofNullable(this.outerScope);
+	}
+
 }

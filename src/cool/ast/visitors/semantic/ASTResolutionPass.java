@@ -44,7 +44,14 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		this.currentMethod = astMethod.getSymbol().orElseThrow();
 		this.currentScope = this.currentMethod;
 
-		astMethod.getBody().accept(this);
+		final Optional<ClassSymbol> bodyType = astMethod.getBody().accept(this);
+
+		if (bodyType.isPresent() && !this.currentMethod.getType().isSuperClassOf(bodyType.orElseThrow())) {
+			SymbolTable.error(this.ctx, astMethod.getBody().getToken(),
+					"Type " + bodyType.get().getName() + " of the body of method "
+							+ astMethod.getId().getToken().getText()
+							+ " is incompatible with declared return type " + this.currentMethod.getType().getName());
+		}
 
 		return Optional.empty();
 	}
@@ -52,7 +59,18 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	@Override
 	public Optional<ClassSymbol> visit(final ASTField astField) {
 
-		astField.getDef().getExpr().ifPresent(e -> e.accept(this));
+		final Optional<ClassSymbol> exprType = astField.getDef().getExpr().map(e -> e.accept(this))
+				.orElse(Optional.empty());
+
+		final var attrType = astField.getSymbol().map(IdSymbol::getType);
+
+		if (exprType.isPresent() && attrType.isPresent()
+				&& !attrType.orElseThrow().isSuperClassOf(exprType.orElseThrow())) {
+			SymbolTable.error(this.ctx, astField.getDef().getExpr().get().getToken(),
+					"Type " + exprType.get().getName() + " of initialization expression of attribute "
+							+ astField.getDef().getId().getToken().getText() + " is incompatible with declared type "
+							+ attrType.orElseThrow().getName());
+		}
 
 		return Optional.empty();
 	}
@@ -68,21 +86,33 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 					"Let variable has illegal name " + Utils.SELF);
 		}
 
-		if (SymbolTable.getGlobals().lookup(typeName).isEmpty()) {
+		final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
+
+		if (type.isEmpty()) {
 			SymbolTable.error(this.ctx, astLet.getDef().getType().getToken(),
 					"Let variable " + variableName + " has undefined type " + typeName);
 		}
 
 		final LetSymbol letSymbol = new LetSymbol(variableName, this.currentScope);
+		type.ifPresent(letSymbol::setType);
 		this.currentScope = letSymbol;
 
-		astLet.getDef().getExpr().ifPresent(e -> e.accept(this));
+		final Optional<ClassSymbol> defType = astLet.getDef().getExpr().map(e -> e.accept(this))
+				.orElse(Optional.empty());
+
+		if (defType.isPresent() && type.isPresent() && !type.orElseThrow().isSuperClassOf(defType.orElseThrow())) {
+			SymbolTable.error(this.ctx, astLet.getDef().getExpr().get().getToken(),
+					"Type " + defType.get().getName() + " of initialization expression of identifier " + variableName
+							+ " is incompatible with declared type " + type.get().getName());
+		}
 
 		this.currentScope.add(letSymbol);
 
-		astLet.getExpr().accept(this);
+		final Optional<ClassSymbol> exprType = astLet.getExpr().accept(this);
 
-		return Optional.empty();
+		this.currentScope = letSymbol.getOuterScope().orElseThrow();
+
+		return exprType;
 	}
 
 	@Override
@@ -120,12 +150,25 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 			return Optional.empty();
 		}
 
-		if (!SymbolTable.getGlobals().lookup(typeName).isPresent()) {
+		final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
+
+		if (!type.isPresent()) {
 			SymbolTable.error(this.ctx, astCaseBranch.getType().getToken(),
 					"Case variable " + variableName + " has undefined type " + typeName);
+			return Optional.empty();
 		}
 
-		return Optional.empty();
+		final LetSymbol letSymbol = new LetSymbol(variableName, this.currentScope);
+		letSymbol.setType(type.orElseThrow());
+		letSymbol.add(letSymbol);
+
+		this.currentScope = letSymbol;
+
+		final Optional<ClassSymbol> exprType = astCaseBranch.getBody().accept(this);
+
+		this.currentScope = letSymbol.getOuterScope().orElseThrow();
+
+		return exprType;
 	}
 
 	@Override
@@ -133,9 +176,62 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		astCase.getValue().accept(this);
 
-		astCase.getBranches().forEach(b -> b.accept(this));
+		final List<Optional<ClassSymbol>> caseBranchesTypes = astCase.getBranches().stream().map(b -> b.accept(this))
+				.toList();
 
-		return Optional.empty();
+		return caseBranchesTypes.stream().skip(1).reduce(caseBranchesTypes.get(0),
+				(t1, t2) -> t1.isPresent() && t2.isPresent() ? Optional.of(t1.get().join(t2.get())) : Optional.empty());
+	}
+
+	@Override
+	public Optional<ClassSymbol> visit(final ASTWhile astWhile) {
+
+		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
+
+		final Optional<ClassSymbol> conditionType = astWhile.getCondition().accept(this);
+		astWhile.getBody().accept(this);
+
+		conditionType.ifPresent(t -> {
+			if (t != boolType) {
+				SymbolTable.error(this.ctx, astWhile.getCondition().getToken(),
+						"While condition has type " + t.getName() + " instead of " + boolType.getName());
+			}
+		});
+
+		return SymbolTable.getGlobals().lookup(Utils.OBJECT);
+	}
+
+	@Override
+	public Optional<ClassSymbol> visit(final ASTIf astIf) {
+
+		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
+
+		final Optional<ClassSymbol> conditionType = astIf.getCondition().accept(this);
+		final Optional<ClassSymbol> thenType = astIf.getThenBranch().accept(this);
+		final Optional<ClassSymbol> elseType = astIf.getElseBranch().accept(this);
+
+		conditionType.ifPresent(t -> {
+			if (t != boolType) {
+				SymbolTable.error(this.ctx, astIf.getCondition().getToken(),
+						"If condition has type " + t.getName() + " instead of " + boolType.getName());
+			}
+		});
+
+		final ClassSymbol commonType;
+
+		if (thenType.isPresent() && elseType.isPresent()) {
+			commonType = thenType.get().join(elseType.get());
+		} else {
+			commonType = SymbolTable.getGlobals().lookup(Utils.OBJECT).orElseThrow();
+		}
+
+		return Optional.of(commonType);
+	}
+
+	@Override
+	public Optional<ClassSymbol> visit(final ASTBlock astBlock) {
+		return astBlock.getExpressions().stream().map(e -> e.accept(this)).reduce(Optional.empty(),
+				(t1, t2) -> t2);
 	}
 
 	@Override
