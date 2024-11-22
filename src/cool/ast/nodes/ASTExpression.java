@@ -6,11 +6,11 @@ public abstract class ASTExpression extends ASTNode {
 
 	protected Token token;
 
-	public ASTExpression(Token token) {
+	public ASTExpression(final Token token) {
 		this.token = token;
 	}
 
 	public Token getToken() {
-		return token;
+		return this.token;
 	}
 }

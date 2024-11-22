@@ -23,7 +23,7 @@ public class Compiler {
 	// Annotates class nodes with the names of files where they are defined.
 	public static ParseTreeProperty<String> fileNames = new ParseTreeProperty<>();
 
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 		if (args.length == 0) {
 			System.err.println("No file(s) given");
 			return;
@@ -39,8 +39,8 @@ public class Compiler {
 
 		// Parse each input file and build one big parse tree out of
 		// individual parse trees.
-		for (var fileName : args) {
-			var input = CharStreams.fromFileName(fileName);
+		for (final var fileName : args) {
+			final var input = CharStreams.fromFileName(fileName);
 
 			// Lexer
 			if (lexer == null)
@@ -75,26 +75,26 @@ public class Compiler {
 
 			// Customized error listener, for including file names in error
 			// messages.
-			var errorListener = new BaseErrorListener() {
+			final var errorListener = new BaseErrorListener() {
 				public boolean errors = false;
 
 				@Override
-				public void syntaxError(Recognizer<?, ?> recognizer,
-						Object offendingSymbol,
-						int line, int charPositionInLine,
-						String msg,
-						RecognitionException e) {
+				public void syntaxError(final Recognizer<?, ?> recognizer,
+						final Object offendingSymbol,
+						final int line, final int charPositionInLine,
+						final String msg,
+						final RecognitionException e) {
 					String newMsg = "\"" + new File(fileName).getName() + "\", line " +
 							line + ":" + (charPositionInLine + 1) + ", ";
 
-					Token token = (Token) offendingSymbol;
+					final Token token = (Token) offendingSymbol;
 					if (token.getType() == CoolLexer.ERROR)
 						newMsg += "Lexical error: " + token.getText();
 					else
 						newMsg += "Syntax error: " + msg;
 
 					System.err.println(newMsg);
-					errors = true;
+					this.errors = true;
 				}
 			};
 
@@ -102,7 +102,7 @@ public class Compiler {
 			parser.addErrorListener(errorListener);
 
 			// Actual parsing
-			var tree = parser.program();
+			final var tree = parser.program();
 			if (globalTree == null)
 				globalTree = tree;
 			else
@@ -113,7 +113,7 @@ public class Compiler {
 			// Annotate class nodes with file names, to be used later
 			// in semantic error messages.
 			for (int i = 0; i < tree.getChildCount(); i++) {
-				var child = tree.getChild(i);
+				final var child = tree.getChild(i);
 				// The only ParserRuleContext children of the program node
 				// are class nodes.
 				if (child instanceof ParserRuleContext)
@@ -130,7 +130,7 @@ public class Compiler {
 			return;
 		}
 
-		ASTNode astRoot = globalTree.accept(new ASTBuilderVisitor());
+		final ASTNode astRoot = globalTree.accept(new ASTBuilderVisitor());
 
 		SymbolTable.defineBasicClasses();
 

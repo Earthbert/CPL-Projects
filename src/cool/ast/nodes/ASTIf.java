@@ -6,11 +6,12 @@ import cool.ast.ASTVisitor;
 
 public class ASTIf extends ASTExpression {
 
-	private ASTExpression condition;
-	private ASTExpression thenBranch;
-	private ASTExpression elseBranch;
+	private final ASTExpression condition;
+	private final ASTExpression thenBranch;
+	private final ASTExpression elseBranch;
 
-	public ASTIf(Token token, ASTExpression condition, ASTExpression thenBranch, ASTExpression elseBranch) {
+	public ASTIf(final Token token, final ASTExpression condition, final ASTExpression thenBranch,
+			final ASTExpression elseBranch) {
 		super(token);
 		this.condition = condition;
 		this.thenBranch = thenBranch;
@@ -18,20 +19,20 @@ public class ASTIf extends ASTExpression {
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public ASTExpression getCondition() {
-		return condition;
+		return this.condition;
 	}
 
 	public ASTExpression getThenBranch() {
-		return thenBranch;
+		return this.thenBranch;
 	}
 
 	public ASTExpression getElseBranch() {
-		return elseBranch;
+		return this.elseBranch;
 	}
 
 }

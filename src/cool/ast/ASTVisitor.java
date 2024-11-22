@@ -4,103 +4,107 @@ import cool.ast.nodes.*;
 import cool.ast.nodes.ASTCase.ASTCaseBranch;
 
 public interface ASTVisitor<T> {
-	default T visit(ASTAssignment astAssignment) {
+	default T visit(final ASTAssignment astAssignment) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTCaseBranch astCaseBranch) {
+	default T visit(final ASTCaseBranch astCaseBranch) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTInteger node) {
+	default T visit(final ASTInteger node) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTString node) {
+	default T visit(final ASTString node) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTBoolean node) {
+	default T visit(final ASTBoolean node) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTClass astClass) {
+	default T visit(final ASTClass astClass) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTDef astDef) {
+	default T visit(final ASTDef astDef) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTField astField) {
+	default T visit(final ASTField astField) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTType astType) {
+	default T visit(final ASTType astType) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTMethod astMethod) {
+	default T visit(final ASTMethod astMethod) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTFormal astFormal) {
+	default T visit(final ASTFormal astFormal) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTLet astLet) {
+	default T visit(final ASTLet astLet) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTIf astIf) {
+	default T visit(final ASTIf astIf) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTWhile astWhile) {
+	default T visit(final ASTWhile astWhile) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTCase astCase) {
+	default T visit(final ASTCase astCase) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTBlock astBlock) {
+	default T visit(final ASTBlock astBlock) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTArithmetic astArithmetic) {
+	default T visit(final ASTArithmetic astArithmetic) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTComparison astComparison) {
+	default T visit(final ASTComparison astComparison) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTId astId) {
+	default T visit(final ASTId astId) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTNot astNot) {
+	default T visit(final ASTNot astNot) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTNeg astNeg) {
+	default T visit(final ASTNeg astNeg) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTIsVoid astIsVoid) {
+	default T visit(final ASTIsVoid astIsVoid) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTNew astNew) {
+	default T visit(final ASTNew astNew) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTCall astCall) {
+	default T visit(final ASTCall astCall) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(ASTRoot astRoot) {
+	default T visit(final ASTRoot astRoot) {
+		throw new UnsupportedOperationException("Unimplemented method 'visit'");
+	}
+
+	default T visit(final AST2OperandOp ast2OperandOp) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 }

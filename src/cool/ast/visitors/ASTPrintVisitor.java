@@ -8,253 +8,255 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	private Integer indent = 0;
 
-	private void printIndent(String str) {
-		System.out.print(" ".repeat(indent));
+	private void printIndent(final String str) {
+		System.out.print(" ".repeat(this.indent));
 		System.out.println(str);
 	}
 
 	private void increaseIndent() {
-		indent += 2;
+		this.indent += 2;
 	}
 
 	private void decreaseIndent() {
-		indent -= 2;
+		this.indent -= 2;
 	}
 
 	@Override
-	public Void visit(ASTAssignment astAssignment) {
-		printIndent(astAssignment.getToken().getText());
-		increaseIndent();
+	public Void visit(final ASTAssignment astAssignment) {
+		this.printIndent(astAssignment.getToken().getText());
+		this.increaseIndent();
 		astAssignment.getId().accept(this);
 		astAssignment.getExpr().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTInteger node) {
-		printIndent(node.getValue().toString());
+	public Void visit(final ASTInteger node) {
+		this.printIndent(node.getValue().toString());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTString node) {
-		printIndent(node.getValue());
+	public Void visit(final ASTString node) {
+		this.printIndent(node.getValue());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTBoolean node) {
-		printIndent(node.getValue().toString());
+	public Void visit(final ASTBoolean node) {
+		this.printIndent(node.getValue().toString());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTClass astClass) {
-		printIndent("class");
-		increaseIndent();
-		printIndent(astClass.getType().getToken().getText());
-		astClass.getParent().ifPresent(p -> printIndent(p.getToken().getText()));
+	public Void visit(final ASTClass astClass) {
+		this.printIndent("class");
+		this.increaseIndent();
+		this.printIndent(astClass.getType().getToken().getText());
+		astClass.getParent().ifPresent(p -> this.printIndent(p.getToken().getText()));
 		astClass.getFeatures().forEach(f -> f.accept(this));
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTDef astDef) {
-		printIndent(astDef.getId().getToken().getText());
-		printIndent(astDef.getType().getToken().getText());
+	public Void visit(final ASTDef astDef) {
+		this.printIndent(astDef.getId().getToken().getText());
+		this.printIndent(astDef.getType().getToken().getText());
 		astDef.getExpr().ifPresent(e -> e.accept(this));
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTField astField) {
-		printIndent("attribute");
-		increaseIndent();
+	public Void visit(final ASTField astField) {
+		this.printIndent("attribute");
+		this.increaseIndent();
 		astField.getDef().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTType astType) {
-		printIndent(astType.getToken().getText());
+	public Void visit(final ASTType astType) {
+		this.printIndent(astType.getToken().getText());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTMethod astMethod) {
-		printIndent("method");
-		increaseIndent();
+	public Void visit(final ASTMethod astMethod) {
+		this.printIndent("method");
+		this.increaseIndent();
 		astMethod.getId().accept(this);
 		astMethod.getArguments().forEach(f -> f.accept(this));
 		astMethod.getType().accept(this);
 		astMethod.getBody().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTFormal astFormal) {
-		printIndent("formal");
-		increaseIndent();
+	public Void visit(final ASTFormal astFormal) {
+		this.printIndent("formal");
+		this.increaseIndent();
 		astFormal.getId().accept(this);
 		astFormal.getType().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTLet astLet) {
+	public Void visit(final ASTLet astLet) {
 		if (astLet.isLetRoot()) {
-			printIndent("let");
-			increaseIndent();
+			this.printIndent("let");
+			this.increaseIndent();
 		}
 
-		printIndent("local");
-		increaseIndent();
+		this.printIndent("local");
+		this.increaseIndent();
 		astLet.getDef().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		astLet.getExpr().accept(this);
 
 		if (astLet.isLetRoot()) {
-			decreaseIndent();
+			this.decreaseIndent();
 		}
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTIf astIf) {
-		printIndent(astIf.getToken().getText().toLowerCase());
-		increaseIndent();
+	public Void visit(final ASTIf astIf) {
+		this.printIndent(astIf.getToken().getText().toLowerCase());
+		this.increaseIndent();
 		astIf.getCondition().accept(this);
 		astIf.getThenBranch().accept(this);
 		astIf.getElseBranch().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTWhile astWhile) {
-		printIndent(astWhile.getToken().getText().toLowerCase());
-		increaseIndent();
+	public Void visit(final ASTWhile astWhile) {
+		this.printIndent(astWhile.getToken().getText().toLowerCase());
+		this.increaseIndent();
 		astWhile.getCondition().accept(this);
 		astWhile.getBody().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTCase astCase) {
-		printIndent("case");
-		increaseIndent();
+	public Void visit(final ASTCase astCase) {
+		this.printIndent("case");
+		this.increaseIndent();
 		astCase.getValue().accept(this);
 		astCase.getBranches().forEach(b -> b.accept(this));
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTBlock astBlock) {
-		printIndent("block");
-		increaseIndent();
+	public Void visit(final ASTBlock astBlock) {
+		this.printIndent("block");
+		this.increaseIndent();
 		astBlock.getExpressions().forEach(e -> e.accept(this));
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTArithmetic astArithmetic) {
-		printIndent(astArithmetic.getOperator());
-		increaseIndent();
-		astArithmetic.getLeft().accept(this);
-		astArithmetic.getRight().accept(this);
-		decreaseIndent();
+	public Void visit(final ASTArithmetic astArithmetic) {
+		this.visit((AST2OperandOp) astArithmetic);
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTComparison astComparison) {
-		printIndent(astComparison.getOperator());
-		increaseIndent();
-		astComparison.getLeft().accept(this);
-		astComparison.getRight().accept(this);
-		decreaseIndent();
+	public Void visit(final ASTComparison astComparison) {
+		this.visit((AST2OperandOp) astComparison);
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTId astId) {
-		printIndent(astId.getToken().getText());
+	public Void visit(final AST2OperandOp ast2OperandOp) {
+		this.printIndent(ast2OperandOp.getOperator());
+		this.increaseIndent();
+		ast2OperandOp.getLeft().accept(this);
+		ast2OperandOp.getRight().accept(this);
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTNot astNot) {
-		printIndent(astNot.getToken().getText().toLowerCase());
-		increaseIndent();
+	public Void visit(final ASTId astId) {
+		this.printIndent(astId.getToken().getText());
+		return null;
+	}
+
+	@Override
+	public Void visit(final ASTNot astNot) {
+		this.printIndent(astNot.getToken().getText().toLowerCase());
+		this.increaseIndent();
 		astNot.getExpression().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTNeg astNeg) {
-		printIndent(astNeg.getToken().getText().toLowerCase());
-		increaseIndent();
+	public Void visit(final ASTNeg astNeg) {
+		this.printIndent(astNeg.getToken().getText().toLowerCase());
+		this.increaseIndent();
 		astNeg.getExpression().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTIsVoid astIsVoid) {
-		printIndent(astIsVoid.getToken().getText().toLowerCase());
-		increaseIndent();
+	public Void visit(final ASTIsVoid astIsVoid) {
+		this.printIndent(astIsVoid.getToken().getText().toLowerCase());
+		this.increaseIndent();
 		astIsVoid.getExpression().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTNew astNew) {
-		printIndent(astNew.getToken().getText().toLowerCase());
-		increaseIndent();
+	public Void visit(final ASTNew astNew) {
+		this.printIndent(astNew.getToken().getText().toLowerCase());
+		this.increaseIndent();
 		astNew.getType().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTCall astCall) {
-		astCall.getObject().ifPresentOrElse(p -> printIndent("."), () -> printIndent("implicit dispatch"));
-		increaseIndent();
+	public Void visit(final ASTCall astCall) {
+		astCall.getObject().ifPresentOrElse(p -> this.printIndent("."), () -> this.printIndent("implicit dispatch"));
+		this.increaseIndent();
 		astCall.getObject().ifPresent(o -> o.accept(this));
 		astCall.getStaticDispatchType().ifPresent(t -> t.accept(this));
 		astCall.getMethod().accept(this);
 		astCall.getArguments().forEach(a -> a.accept(this));
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTRoot astRoot) {
-		printIndent("program");
-		increaseIndent();
+	public Void visit(final ASTRoot astRoot) {
+		this.printIndent("program");
+		this.increaseIndent();
 		astRoot.getClasses().forEach(c -> c.accept(this));
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTCaseBranch astCaseBranch) {
-		printIndent("case branch");
-		increaseIndent();
+	public Void visit(final ASTCaseBranch astCaseBranch) {
+		this.printIndent("case branch");
+		this.increaseIndent();
 		astCaseBranch.getId().accept(this);
 		astCaseBranch.getType().accept(this);
 		astCaseBranch.getBody().accept(this);
-		decreaseIndent();
+		this.decreaseIndent();
 		return null;
 	}
 

@@ -6,18 +6,18 @@ import cool.ast.ASTVisitor;
 
 public class ASTType extends ASTNode {
 
-	private Token token;
+	private final Token token;
 
-	public ASTType(Token token) {
+	public ASTType(final Token token) {
 		this.token = token;
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public Token getToken() {
-		return token;
+		return this.token;
 	}
 }

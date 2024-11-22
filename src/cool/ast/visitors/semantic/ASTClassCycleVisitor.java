@@ -7,16 +7,16 @@ import cool.semantic.symbol.SymbolTable;
 public class ASTClassCycleVisitor extends ASTSemanticVisitor<Void> {
 
 	@Override
-	public Void visit(ASTClass astClass) {
-		ctx = astClass.getCtx();
+	public Void visit(final ASTClass astClass) {
+		this.ctx = astClass.getCtx();
 
 		if (!astClass.getSymbol().isPresent())
 			return null;
 
-		ClassSymbol classSymbol = astClass.getSymbol().get();
+		final ClassSymbol classSymbol = astClass.getSymbol().get();
 
 		if (classSymbol.hasParent(classSymbol))
-			SymbolTable.error(ctx, astClass.getType().getToken(),
+			SymbolTable.error(this.ctx, astClass.getType().getToken(),
 					"Inheritance cycle for class " + classSymbol.getName());
 
 		return null;

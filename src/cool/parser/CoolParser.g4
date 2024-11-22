@@ -32,9 +32,9 @@ expr:
 
 	// Operators
 	| IS_VOID expr									# isvoid
+	| NEG expr										# neg
 	| left = expr op = (TIMES | DIV) right = expr	# artihmetic
 	| left = expr op = (PLUS | MINUS) right = expr	# artihmetic
-	| NEG expr										# neg
 	| left = expr op = (LT | LE | EQ) right = expr	# comparison
 	| NOT expr										# not
 	| OPEN_PAR expr CLOSE_PAR						# par

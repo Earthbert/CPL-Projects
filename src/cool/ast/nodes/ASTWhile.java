@@ -6,27 +6,26 @@ import cool.ast.ASTVisitor;
 
 public class ASTWhile extends ASTExpression {
 
-	private ASTExpression condition;
-	private ASTExpression body;
+	private final ASTExpression condition;
+	private final ASTExpression body;
 
-	public ASTWhile(Token token, ASTExpression condition, ASTExpression body) {
+	public ASTWhile(final Token token, final ASTExpression condition, final ASTExpression body) {
 		super(token);
 		this.condition = condition;
 		this.body = body;
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public ASTExpression getCondition() {
-		return condition;
+		return this.condition;
 	}
 
 	public ASTExpression getBody() {
-		return body;
+		return this.body;
 	}
 
-	
 }

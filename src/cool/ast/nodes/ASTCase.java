@@ -2,62 +2,64 @@ package cool.ast.nodes;
 
 import java.util.Collections;
 import java.util.List;
+
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
 public class ASTCase extends ASTExpression {
 
-	private ASTExpression value;
-	private List<ASTCaseBranch> branches = new java.util.ArrayList<>();
+	private final ASTExpression value;
+	private final List<ASTCaseBranch> branches = new java.util.ArrayList<>();
 
-	public ASTCase(Token token, ASTExpression value, List<ASTType> types, List<ASTId> ids, List<ASTExpression> bodies) {
+	public ASTCase(final Token token, final ASTExpression value, final List<ASTType> types, final List<ASTId> ids,
+			final List<ASTExpression> bodies) {
 		super(token);
 		this.value = value;
 		for (int i = 0; i < types.size(); i++) {
-			branches.add(new ASTCaseBranch((ASTType) types.get(i), (ASTId) ids.get(i), bodies.get(i)));
+			this.branches.add(new ASTCaseBranch((ASTType) types.get(i), (ASTId) ids.get(i), bodies.get(i)));
 		}
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public ASTExpression getValue() {
-		return value;
+		return this.value;
 	}
 
 	public List<ASTCaseBranch> getBranches() {
-		return Collections.unmodifiableList(branches);
+		return Collections.unmodifiableList(this.branches);
 	}
 
 	public static class ASTCaseBranch extends ASTNode {
-		private ASTType type;
-		private ASTId id;
-		private ASTExpression body;
+		private final ASTType type;
+		private final ASTId id;
+		private final ASTExpression body;
 
-		public ASTCaseBranch(ASTType type, ASTId id, ASTExpression body) {
+		public ASTCaseBranch(final ASTType type, final ASTId id, final ASTExpression body) {
 			this.type = type;
 			this.id = id;
 			this.body = body;
 		}
 
 		@Override
-		public <T> T accept(ASTVisitor<T> visitor) {
+		public <T> T accept(final ASTVisitor<T> visitor) {
 			return visitor.visit(this);
 		}
 
 		public ASTType getType() {
-			return type;
+			return this.type;
 		}
 
 		public ASTId getId() {
-			return id;
+			return this.id;
 		}
 
 		public ASTExpression getBody() {
-			return body;
+			return this.body;
 		}
 
 	}

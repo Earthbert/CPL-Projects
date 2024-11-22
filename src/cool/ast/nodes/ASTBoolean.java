@@ -6,19 +6,19 @@ import cool.ast.ASTVisitor;
 
 public class ASTBoolean extends ASTLiteral {
 
-	private Boolean value;
+	private final Boolean value;
 
-	public ASTBoolean(Token token) {
+	public ASTBoolean(final Token token) {
 		super(token);
-		value = Boolean.parseBoolean(token.getText());
+		this.value = Boolean.parseBoolean(token.getText());
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public Boolean getValue() {
-		return value;
+		return this.value;
 	}
 }

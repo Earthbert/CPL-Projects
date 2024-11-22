@@ -6,12 +6,12 @@ import cool.ast.ASTVisitor;
 
 public class ASTId extends ASTExpression {
 
-	public ASTId(Token token) {
+	public ASTId(final Token token) {
 		super(token);
 	}
-	
+
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 }

@@ -1,21 +1,24 @@
 package cool.ast.nodes;
 
 import org.antlr.v4.runtime.Token;
+
 import cool.ast.ASTVisitor;
 
 public class ASTString extends ASTLiteral {
-	private String value;
 
-	public ASTString(Token token) {
+	private final String value;
+
+	public ASTString(final Token token) {
 		super(token);
 		this.value = token.getText();
 	}
 
-	public <T> T accept(ASTVisitor<T> visitor) {
+	@Override
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 }

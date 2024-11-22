@@ -1,7 +1,5 @@
 package cool.ast.nodes;
 
-import java.util.List;
-
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
@@ -9,45 +7,45 @@ import cool.semantic.symbol.LetSymbol;
 
 public class ASTLet extends ASTExpression {
 
-	private ASTDef def;
-	private ASTExpression expr;
+	private final ASTDef def;
+	private final ASTExpression expr;
 
 	private LetSymbol symbol;
 
 	private boolean letRoot = false;
 
-	public ASTLet(Token token, ASTDef def, ASTExpression expr) {
+	public ASTLet(final Token token, final ASTDef def, final ASTExpression expr) {
 		super(token);
 		this.def = def;
 		this.expr = expr;
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public ASTDef getDef() {
-		return def;
+		return this.def;
 	}
 
 	public ASTExpression getExpr() {
-		return expr;
+		return this.expr;
 	}
 
 	public boolean isLetRoot() {
-		return letRoot;
+		return this.letRoot;
 	}
 
-	public void setLetRoot(boolean letRoot) {
+	public void setLetRoot(final boolean letRoot) {
 		this.letRoot = letRoot;
 	}
 
 	public LetSymbol getSymbol() {
-		return symbol;
+		return this.symbol;
 	}
 
-	public void setSymbol(LetSymbol symbol) {
+	public void setSymbol(final LetSymbol symbol) {
 		this.symbol = symbol;
 	}
 }

@@ -12,12 +12,12 @@ public abstract class ASTSemanticVisitor<T> implements ASTVisitor<T> {
 	protected ClassContext ctx;
 
 	@Override
-	public T visit(ASTRoot astRoot) {
+	public T visit(final ASTRoot astRoot) {
 		astRoot.getClasses().forEach(c -> c.accept(this));
 		return null;
 	}
 
-	public static void applyVisitor(ASTNode astRoot) {
+	public static void applyVisitor(final ASTNode astRoot) {
 		astRoot.accept(new ASTClassDefinitionVisitor());
 
 		astRoot.accept(new ASTClassParentVisitor());
@@ -29,5 +29,6 @@ public abstract class ASTSemanticVisitor<T> implements ASTVisitor<T> {
 
 		astRoot.accept(new ASTDefinitionPassVisitor());
 
+		astRoot.accept(new ASTResolutionPass());
 	}
 }

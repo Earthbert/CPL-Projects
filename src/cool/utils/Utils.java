@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
-	public static <T, K> List<K> castList(List<T> list, Class<K> clazz) {
-		for (var elem : list)
+	public static <T, K> List<K> castList(final List<T> list, final Class<K> clazz) {
+		for (final var elem : list)
 			if (!clazz.isInstance(elem))
 				throw new ClassCastException("Cannot cast " + elem.getClass().getName() + " to " + clazz.getName());
 

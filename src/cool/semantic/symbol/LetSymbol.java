@@ -14,6 +14,7 @@ public class LetSymbol extends IdSymbol implements Scope<IdSymbol> {
 
 	public LetSymbol(String name, Scope<IdSymbol> outerScope) {
 		super(name);
+		this.outerScope = outerScope;
 	}
 
 	@Override

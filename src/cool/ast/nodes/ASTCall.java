@@ -10,13 +10,14 @@ import cool.ast.ASTVisitor;
 
 public class ASTCall extends ASTExpression {
 
-	private ASTId method;
-	private Optional<ASTExpression> object;
-	private Optional<ASTType> staticDispatchType;
-	private List<ASTExpression> arguments;
+	private final ASTId method;
+	private final Optional<ASTExpression> object;
+	private final Optional<ASTType> staticDispatchType;
+	private final List<ASTExpression> arguments;
 
-	public ASTCall(Token token, ASTId id, Optional<ASTExpression> object, Optional<ASTType> staticDispatchType,
-			List<ASTExpression> arguments) {
+	public ASTCall(final Token token, final ASTId id, final Optional<ASTExpression> object,
+			final Optional<ASTType> staticDispatchType,
+			final List<ASTExpression> arguments) {
 		super(token);
 		this.method = id;
 		this.object = object;
@@ -25,24 +26,24 @@ public class ASTCall extends ASTExpression {
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public ASTId getMethod() {
-		return method;
+		return this.method;
 	}
 
 	public Optional<ASTExpression> getObject() {
-		return object;
+		return this.object;
 	}
 
 	public Optional<ASTType> getStaticDispatchType() {
-		return staticDispatchType;
+		return this.staticDispatchType;
 	}
 
 	public List<ASTExpression> getArguments() {
-		return Collections.unmodifiableList(arguments);
+		return Collections.unmodifiableList(this.arguments);
 	}
 
 }

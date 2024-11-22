@@ -6,9 +6,9 @@ import java.util.Optional;
 
 import org.antlr.v4.runtime.Token;
 
+import cool.ast.ASTVisitor;
 import cool.parser.CoolParser.ClassContext;
 import cool.semantic.symbol.ClassSymbol;
-import cool.ast.ASTVisitor;
 import cool.utils.Utils;
 
 public class ASTClass extends ASTNode {
@@ -24,7 +24,8 @@ public class ASTClass extends ASTNode {
 
 	private ClassSymbol symbol;
 
-	public ASTClass(Token token, ASTType name, Optional<ASTType> parent, List<ASTNode> features, ClassContext ctx) {
+	public ASTClass(final Token token, final ASTType name, final Optional<ASTType> parent, final List<ASTNode> features,
+			final ClassContext ctx) {
 		this.token = token;
 		this.type = name;
 		this.parent = parent;
@@ -32,35 +33,36 @@ public class ASTClass extends ASTNode {
 		this.ctx = ctx;
 	}
 
-	public <T> T accept(ASTVisitor<T> visitor) {
+	@Override
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public Token getToken() {
-		return token;
+		return this.token;
 	}
 
 	public ASTType getType() {
-		return type;
+		return this.type;
 	}
 
 	public Optional<ASTType> getParent() {
-		return parent;
+		return this.parent;
 	}
 
 	public List<ASTFeature> getFeatures() {
-		return Collections.unmodifiableList(features);
+		return Collections.unmodifiableList(this.features);
 	}
 
 	public ClassContext getCtx() {
-		return ctx;
+		return this.ctx;
 	}
 
 	public Optional<ClassSymbol> getSymbol() {
-		return Optional.ofNullable(symbol);
+		return Optional.ofNullable(this.symbol);
 	}
 
-	public void setSymbol(ClassSymbol symbol) {
+	public void setSymbol(final ClassSymbol symbol) {
 		this.symbol = symbol;
 	}
 

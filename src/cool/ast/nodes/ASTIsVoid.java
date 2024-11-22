@@ -6,12 +6,12 @@ import cool.ast.ASTVisitor;
 
 public class ASTIsVoid extends AST1OperandOp {
 
-	public ASTIsVoid(Token token, ASTExpression expression) {
+	public ASTIsVoid(final Token token, final ASTExpression expression) {
 		super(token, expression);
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 }

@@ -7,41 +7,41 @@ import cool.semantic.symbol.IdSymbol;
 
 public class ASTFormal extends ASTNode {
 
-	private ASTId id;
-	private ASTType type;
+	private final ASTId id;
+	private final ASTType type;
 
-	private Token token;
+	private final Token token;
 
 	private IdSymbol symbol;
 
-	public ASTFormal(Token token, ASTId id, ASTType type) {
+	public ASTFormal(final Token token, final ASTId id, final ASTType type) {
 		this.id = id;
 		this.type = type;
 		this.token = token;
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public ASTId getId() {
-		return id;
+		return this.id;
 	}
 
 	public ASTType getType() {
-		return type;
+		return this.type;
 	}
 
 	public Token getToken() {
-		return token;
+		return this.token;
 	}
 
 	public IdSymbol getSymbol() {
-		return symbol;
+		return this.symbol;
 	}
 
-	public void setSymbol(IdSymbol symbol) {
+	public void setSymbol(final IdSymbol symbol) {
 		this.symbol = symbol;
 	}
 }

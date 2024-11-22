@@ -921,7 +921,7 @@ public class CoolParser extends Parser {
 				setState(93);
 				match(NEG);
 				setState(94);
-				expr(9);
+				expr(11);
 				}
 				break;
 			case 10:
@@ -1016,7 +1016,7 @@ public class CoolParser extends Parser {
 						((ArtihmeticContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(110);
-						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
+						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
 						setState(111);
 						((ArtihmeticContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1029,7 +1029,7 @@ public class CoolParser extends Parser {
 							consume();
 						}
 						setState(112);
-						((ArtihmeticContext)_localctx).right = expr(12);
+						((ArtihmeticContext)_localctx).right = expr(11);
 						}
 						break;
 					case 2:
@@ -1038,7 +1038,7 @@ public class CoolParser extends Parser {
 						((ArtihmeticContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(113);
-						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
+						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
 						setState(114);
 						((ArtihmeticContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1051,7 +1051,7 @@ public class CoolParser extends Parser {
 							consume();
 						}
 						setState(115);
-						((ArtihmeticContext)_localctx).right = expr(11);
+						((ArtihmeticContext)_localctx).right = expr(10);
 						}
 						break;
 					case 3:
@@ -1543,9 +1543,9 @@ public class CoolParser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 11);
-		case 1:
 			return precpred(_ctx, 10);
+		case 1:
+			return precpred(_ctx, 9);
 		case 2:
 			return precpred(_ctx, 8);
 		case 3:
@@ -1625,7 +1625,7 @@ public class CoolParser extends Parser {
 		"\u0000UV\u0001\u0000\u0000\u0000VW\u0001\u0000\u0000\u0000WX\u0005\u000b"+
 		"\u0000\u0000Xm\u0001\u0000\u0000\u0000YZ\u0005\u000f\u0000\u0000Zm\u0005"+
 		"\"\u0000\u0000[\\\u0005\u000e\u0000\u0000\\m\u0003\u0002\u0001\f]^\u0005"+
-		"(\u0000\u0000^m\u0003\u0002\u0001\t_`\u0005 \u0000\u0000`m\u0003\u0002"+
+		"(\u0000\u0000^m\u0003\u0002\u0001\u000b_`\u0005 \u0000\u0000`m\u0003\u0002"+
 		"\u0001\u0007ab\u0005\u0017\u0000\u0000bc\u0003\u0002\u0001\u0000cd\u0005"+
 		"\u0018\u0000\u0000dm\u0001\u0000\u0000\u0000em\u0005!\u0000\u0000fm\u0005"+
 		"\u001f\u0000\u0000gm\u00052\u0000\u0000hm\u0005\u0012\u0000\u0000ij\u0005"+
@@ -1636,9 +1636,9 @@ public class CoolParser extends Parser {
 		"\u0000\u0000l_\u0001\u0000\u0000\u0000la\u0001\u0000\u0000\u0000le\u0001"+
 		"\u0000\u0000\u0000lf\u0001\u0000\u0000\u0000lg\u0001\u0000\u0000\u0000"+
 		"lh\u0001\u0000\u0000\u0000li\u0001\u0000\u0000\u0000m\u008c\u0001\u0000"+
-		"\u0000\u0000no\n\u000b\u0000\u0000op\u0007\u0000\u0000\u0000p\u008b\u0003"+
-		"\u0002\u0001\fqr\n\n\u0000\u0000rs\u0007\u0001\u0000\u0000s\u008b\u0003"+
-		"\u0002\u0001\u000btu\n\b\u0000\u0000uv\u0007\u0002\u0000\u0000v\u008b"+
+		"\u0000\u0000no\n\n\u0000\u0000op\u0007\u0000\u0000\u0000p\u008b\u0003"+
+		"\u0002\u0001\u000bqr\n\t\u0000\u0000rs\u0007\u0001\u0000\u0000s\u008b"+
+		"\u0003\u0002\u0001\ntu\n\b\u0000\u0000uv\u0007\u0002\u0000\u0000v\u008b"+
 		"\u0003\u0002\u0001\twz\n\u0013\u0000\u0000xy\u0005\u0014\u0000\u0000y"+
 		"{\u0005\"\u0000\u0000zx\u0001\u0000\u0000\u0000z{\u0001\u0000\u0000\u0000"+
 		"{|\u0001\u0000\u0000\u0000|}\u0005\u001a\u0000\u0000}~\u0005!\u0000\u0000"+

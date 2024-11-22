@@ -6,12 +6,12 @@ public abstract class AST1OperandOp extends ASTExpression {
 
 	protected ASTExpression expression;
 
-	public AST1OperandOp(Token token, ASTExpression expression) {
+	public AST1OperandOp(final Token token, final ASTExpression expression) {
 		super(token);
 		this.expression = expression;
 	}
 
 	public ASTExpression getExpression() {
-		return expression;
+		return this.expression;
 	}
 }

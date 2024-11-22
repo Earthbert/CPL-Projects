@@ -6,19 +6,19 @@ import cool.ast.ASTVisitor;
 
 public class ASTNew extends ASTExpression {
 
-	private ASTType type;
+	private final ASTType type;
 
-	public ASTNew(Token token, ASTType type) {
+	public ASTNew(final Token token, final ASTType type) {
 		super(token);
 		this.type = type;
 	}
 
 	public ASTType getType() {
-		return type;
+		return this.type;
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 

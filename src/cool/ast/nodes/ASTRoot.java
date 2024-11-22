@@ -7,19 +7,19 @@ import cool.ast.ASTVisitor;
 import cool.utils.Utils;
 
 public class ASTRoot extends ASTNode {
-	
-	private List<ASTClass> classes;
 
-	public ASTRoot(List<ASTNode> classes) {
+	private final List<ASTClass> classes;
+
+	public ASTRoot(final List<ASTNode> classes) {
 		this.classes = Utils.castList(classes, ASTClass.class);
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public List<ASTClass> getClasses() {
-		return Collections.unmodifiableList(classes);
+		return Collections.unmodifiableList(this.classes);
 	}
 }

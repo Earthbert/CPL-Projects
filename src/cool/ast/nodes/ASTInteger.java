@@ -6,18 +6,19 @@ import cool.ast.ASTVisitor;
 
 public class ASTInteger extends ASTLiteral {
 
-	private Integer value;
+	private final Integer value;
 
-	public ASTInteger(Token token) {
+	public ASTInteger(final Token token) {
 		super(token);
 		this.value = Integer.parseInt(token.getText());
 	}
 
 	public Integer getValue() {
-		return value;
+		return this.value;
 	}
 
-	public <T> T accept(ASTVisitor<T> visitor) {
+	@Override
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 }

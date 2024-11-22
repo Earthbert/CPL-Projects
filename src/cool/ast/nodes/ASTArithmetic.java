@@ -6,12 +6,12 @@ import cool.ast.ASTVisitor;
 
 public class ASTArithmetic extends AST2OperandOp {
 
-	public ASTArithmetic(Token token, ASTExpression left, ASTExpression right) {
+	public ASTArithmetic(final Token token, final ASTExpression left, final ASTExpression right) {
 		super(token, left, right);
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 }

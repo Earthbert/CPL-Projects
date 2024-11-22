@@ -9,19 +9,19 @@ import cool.ast.ASTVisitor;
 
 public class ASTBlock extends ASTExpression {
 
-	private List<ASTExpression> expressions;
+	private final List<ASTExpression> expressions;
 
-	public ASTBlock(Token token, List<ASTExpression> expressions) {
+	public ASTBlock(final Token token, final List<ASTExpression> expressions) {
 		super(token);
 		this.expressions = expressions;
 	}
 
 	@Override
-	public <T> T accept(ASTVisitor<T> visitor) {
+	public <T> T accept(final ASTVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
 	public List<ASTExpression> getExpressions() {
-		return Collections.unmodifiableList(expressions);
+		return Collections.unmodifiableList(this.expressions);
 	}
 }

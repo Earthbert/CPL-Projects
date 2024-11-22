@@ -1,6 +1,11 @@
 package cool.tester;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -8,33 +13,34 @@ import cool.compiler.Compiler;
 
 public class Tester2 {
 	// java -cp "bin;lib/antlr-4.8-complete.jar;%CLASSPATH%" cool.tester.Tester2
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 		final String TEST_DIR_NAME = "tests/tema2";
-		var testDir = new File(TEST_DIR_NAME);
+		final var testDir = new File(TEST_DIR_NAME);
 
-		var filenameFilter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+		final var filenameFilter = new FilenameFilter() {
+			@Override
+			public boolean accept(final File dir, final String name) {
 				return name.endsWith(".cl") && !name.endsWith("main.cl");
 			}
 		};
 
-		var oldOut = System.out;
-		var oldErr = System.err;
+		final var oldOut = System.out;
+		final var oldErr = System.err;
 
 		var total = 0;
 
-		var files = testDir.listFiles(filenameFilter);
+		final var files = testDir.listFiles(filenameFilter);
 		Arrays.sort(files);
-		for (var file : files) {
-			var inPath = file.getPath();
-			var outPath = inPath.replace(".cl", ".out");
-			var newOut = new PrintStream(outPath, "UTF-8");
+		for (final var file : files) {
+			final var inPath = file.getPath();
+			final var outPath = inPath.replace(".cl", ".out");
+			final var newOut = new PrintStream(outPath, "UTF-8");
 			System.setOut(newOut);
 			System.setErr(newOut);
 			Compiler.main(new String[] { inPath, TEST_DIR_NAME + "/main.cl" });
 
 			oldOut.printf("%-30s -> ", file.getName());
-			var result = compare(outPath, inPath.replace(".cl", ".ref"), oldOut);
+			final var result = compare(outPath, inPath.replace(".cl", ".ref"), oldOut);
 			if (result)
 				total += 5;
 
@@ -47,14 +53,14 @@ public class Tester2 {
 		System.setErr(oldErr);
 	}
 
-	public static boolean compare(String outName, String refName, PrintStream oldOut)
+	public static boolean compare(final String outName, final String refName, final PrintStream oldOut)
 			throws IOException {
 		try (var outReader = new BufferedReader(new FileReader(outName));
 				var refReader = new BufferedReader(new FileReader(refName));) {
 			String line = null;
 
-			var outSet = new HashSet<String>();
-			var refSet = new HashSet<String>();
+			final var outSet = new HashSet<String>();
+			final var refSet = new HashSet<String>();
 
 			while ((line = outReader.readLine()) != null)
 				outSet.add(line);
@@ -70,10 +76,10 @@ public class Tester2 {
 			oldOut.println("Failed");
 
 			// Copy set since removeAll would mutate it.
-			var missingSet = new HashSet<String>(refSet);
+			final var missingSet = new HashSet<String>(refSet);
 			missingSet.removeAll(outSet);
 
-			var extraneousSet = new HashSet<String>(outSet);
+			final var extraneousSet = new HashSet<String>(outSet);
 			extraneousSet.removeAll(refSet);
 
 			if (!missingSet.isEmpty()) {
