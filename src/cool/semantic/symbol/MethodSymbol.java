@@ -8,37 +8,37 @@ import cool.semantic.scope.Scope;
 
 public class MethodSymbol extends IdSymbol implements Scope<IdSymbol> {
 
-	private Scope<IdSymbol> outerScope;
+	private final Scope<IdSymbol> outerScope;
 
-	private Map<String, IdSymbol> symbols = new LinkedHashMap<>();
+	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
-	public MethodSymbol(String name, ClassSymbol type, Scope<IdSymbol> outerScope) {
+	public MethodSymbol(final String name, final ClassSymbol type, final Scope<IdSymbol> outerScope) {
 		super(name);
-		setType(type);
+		this.setType(type);
 		this.outerScope = outerScope;
 	}
 
 	@Override
-	public boolean add(IdSymbol sym) {
-		return symbols.putIfAbsent(sym.getName(), sym) == null;
+	public boolean add(final IdSymbol sym) {
+		return this.symbols.putIfAbsent(sym.getName(), sym) == null;
 	}
 
 	@Override
-	public Optional<IdSymbol> lookup(String name) {
-		IdSymbol symbol = symbols.get(name);
+	public Optional<IdSymbol> lookup(final String name) {
+		final IdSymbol symbol = this.symbols.get(name);
 
 		if (symbol != null)
 			return Optional.of(symbol);
 
-		return outerScope.lookup(name);
+		return this.outerScope.lookup(name);
 	}
 
 	@Override
-	public Optional<IdSymbol> lookupCurrent(String name) {
-		return Optional.ofNullable(symbols.get(name));
+	public Optional<IdSymbol> lookupCurrent(final String name) {
+		return Optional.ofNullable(this.symbols.get(name));
 	}
 
 	public Map<String, IdSymbol> getSymbols() {
-		return symbols;
+		return this.symbols;
 	}
 }

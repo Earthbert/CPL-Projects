@@ -1,6 +1,6 @@
 package cool.semantic.scope;
 
-import java.util.*;
+import java.util.Optional;
 
 import cool.semantic.symbol.Symbol;
 

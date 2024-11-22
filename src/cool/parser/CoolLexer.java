@@ -2,14 +2,17 @@
 
     package cool.lexer;	
 
-import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.RuntimeMetaData;
+import org.antlr.v4.runtime.Vocabulary;
+import org.antlr.v4.runtime.VocabularyImpl;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.LexerATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
 public class CoolLexer extends Lexer {
@@ -111,15 +114,15 @@ public class CoolLexer extends Lexer {
 	}
 
 	    
-	    private void raiseError(String msg) {
-	        setText(msg);
-	        setType(ERROR);
+	    private void raiseError(final String msg) {
+	        this.setText(msg);
+	        this.setType(ERROR);
 	    }
 
 
-	public CoolLexer(CharStream input) {
+	public CoolLexer(final CharStream input) {
 		super(input);
-		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+		this._interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
@@ -141,81 +144,81 @@ public class CoolLexer extends Lexer {
 	public ATN getATN() { return _ATN; }
 
 	@Override
-	public void action(RuleContext _localctx, int ruleIndex, int actionIndex) {
+	public void action(final RuleContext _localctx, final int ruleIndex, final int actionIndex) {
 		switch (ruleIndex) {
 		case 75:
-			ERROR_UNTERMINATED_STRING_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_UNTERMINATED_STRING_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 76:
-			ERROR_STRING_NULL_CHAR_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_STRING_NULL_CHAR_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 77:
-			ERROR_STRING_TOO_LONG_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_STRING_TOO_LONG_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 78:
-			ERROR_UMATCHED_BLOCK_COMMENT_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_UMATCHED_BLOCK_COMMENT_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 79:
-			ERROR_EOF_IN_STRING_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_EOF_IN_STRING_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 80:
-			ERROR_EOF_IN_COMMENT_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_EOF_IN_COMMENT_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 81:
-			STRING_action((RuleContext)_localctx, actionIndex);
+			this.STRING_action((RuleContext)_localctx, actionIndex);
 			break;
 		case 85:
-			ERROR_INVALID_CHAR_action((RuleContext)_localctx, actionIndex);
+			this.ERROR_INVALID_CHAR_action((RuleContext)_localctx, actionIndex);
 			break;
 		}
 	}
-	private void ERROR_UNTERMINATED_STRING_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_UNTERMINATED_STRING_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 0:
-			 raiseError("Unterminated string constant"); 
+			 this.raiseError("Unterminated string constant"); 
 			break;
 		}
 	}
-	private void ERROR_STRING_NULL_CHAR_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_STRING_NULL_CHAR_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 1:
-			 raiseError("String contains null character"); 
+			 this.raiseError("String contains null character"); 
 			break;
 		}
 	}
-	private void ERROR_STRING_TOO_LONG_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_STRING_TOO_LONG_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 2:
-			 raiseError("String constant too long"); 
+			 this.raiseError("String constant too long"); 
 			break;
 		}
 	}
-	private void ERROR_UMATCHED_BLOCK_COMMENT_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_UMATCHED_BLOCK_COMMENT_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 3:
-			 raiseError("Unmatched *\u0029"); 
+			 this.raiseError("Unmatched *\u0029"); 
 			break;
 		}
 	}
-	private void ERROR_EOF_IN_STRING_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_EOF_IN_STRING_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 4:
-			 raiseError("EOF in string constant"); 
+			 this.raiseError("EOF in string constant"); 
 			break;
 		}
 	}
-	private void ERROR_EOF_IN_COMMENT_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_EOF_IN_COMMENT_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 5:
-			 raiseError("EOF in comment"); 
+			 this.raiseError("EOF in comment"); 
 			break;
 		}
 	}
-	private void STRING_action(RuleContext _localctx, int actionIndex) {
+	private void STRING_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 6:
-			  setText(getText().substring(1, getText().length() - 1)); 
-						                setText(getText().replace("\\n", "\n")
+			  this.setText(this.getText().substring(1, this.getText().length() - 1)); 
+						                this.setText(this.getText().replace("\\n", "\n")
 						  					             .replace("\\t", "\t")
 											             .replace("\\f", "\f")
 			                                             .replace("\\b", "\b")
@@ -225,25 +228,25 @@ public class CoolLexer extends Lexer {
 			break;
 		}
 	}
-	private void ERROR_INVALID_CHAR_action(RuleContext _localctx, int actionIndex) {
+	private void ERROR_INVALID_CHAR_action(final RuleContext _localctx, final int actionIndex) {
 		switch (actionIndex) {
 		case 7:
-			 raiseError("Invalid character: " + getText()); 
+			 this.raiseError("Invalid character: " + this.getText()); 
 			break;
 		}
 	}
 	@Override
-	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+	public boolean sempred(final RuleContext _localctx, final int ruleIndex, final int predIndex) {
 		switch (ruleIndex) {
 		case 77:
-			return ERROR_STRING_TOO_LONG_sempred((RuleContext)_localctx, predIndex);
+			return this.ERROR_STRING_TOO_LONG_sempred((RuleContext)_localctx, predIndex);
 		}
 		return true;
 	}
-	private boolean ERROR_STRING_TOO_LONG_sempred(RuleContext _localctx, int predIndex) {
+	private boolean ERROR_STRING_TOO_LONG_sempred(final RuleContext _localctx, final int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return  getText().length() > 1024 ;
+			return  this.getText().length() > 1024 ;
 		}
 		return true;
 	}

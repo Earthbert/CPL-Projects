@@ -4,15 +4,15 @@ public class IdSymbol extends Symbol {
 
 	protected ClassSymbol type;
 
-	public IdSymbol(String name) {
+	public IdSymbol(final String name) {
 		super(name);
 	}
 
 	public ClassSymbol getType() {
-		return type;
+		return this.type;
 	}
 
-	public void setType(ClassSymbol type) {
+	public void setType(final ClassSymbol type) {
 		this.type = type;
 	}
 

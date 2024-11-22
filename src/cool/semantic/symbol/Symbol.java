@@ -4,17 +4,17 @@ abstract public class Symbol {
 
 	protected String name;
 
-	public Symbol(String name) {
+	public Symbol(final String name) {
 		this.name = name;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	@Override
 	public String toString() {
-		return getName();
+		return this.getName();
 	}
 
 }

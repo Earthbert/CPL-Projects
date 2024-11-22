@@ -10,27 +10,27 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	private ClassSymbol parent;
 
-	private Map<String, IdSymbol> symbols = new LinkedHashMap<>();
-	private Map<String, MethodSymbol> methods = new LinkedHashMap<>();
+	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
+	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
 
-	public ClassSymbol(String name) {
+	public ClassSymbol(final String name) {
 		super(name);
 	}
 
-	public ClassSymbol(String name, ClassSymbol parent) {
+	public ClassSymbol(final String name, final ClassSymbol parent) {
 		this(name);
 		this.parent = parent;
 	}
 
-	public void setParent(ClassSymbol parent) {
+	public void setParent(final ClassSymbol parent) {
 		this.parent = parent;
 	}
 
 	public ClassSymbol getParent() {
-		return parent;
+		return this.parent;
 	}
 
-	public boolean hasParent(ClassSymbol parent) {
+	public boolean hasParent(final ClassSymbol parent) {
 		if (this.parent == null)
 			return false;
 
@@ -41,47 +41,47 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 	}
 
 	@Override
-	public boolean add(IdSymbol sym) {
-		Optional<IdSymbol> symbol = lookup(sym.getName());
-		return symbol.isEmpty() && symbols.putIfAbsent(sym.getName(), sym) == null;
+	public boolean add(final IdSymbol sym) {
+		final Optional<IdSymbol> symbol = this.lookup(sym.getName());
+		return symbol.isEmpty() && this.symbols.putIfAbsent(sym.getName(), sym) == null;
 	}
 
-	public boolean addMethod(MethodSymbol method) {
-		Optional<MethodSymbol> symbol = lookupMethod(method.getName());
-		return symbol.isEmpty() && methods.putIfAbsent(method.getName(), method) == null;
+	public boolean addMethod(final MethodSymbol method) {
+		final Optional<MethodSymbol> symbol = this.lookupMethod(method.getName());
+		return symbol.isEmpty() && this.methods.putIfAbsent(method.getName(), method) == null;
 	}
 
 	@Override
-	public Optional<IdSymbol> lookup(String name) {
-		IdSymbol symbol = symbols.get(name);
+	public Optional<IdSymbol> lookup(final String name) {
+		final IdSymbol symbol = this.symbols.get(name);
 
 		if (symbol != null)
 			return Optional.of(symbol);
 
-		if (parent != null)
-			return parent.lookup(name);
+		if (this.parent != null)
+			return this.parent.lookup(name);
 
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<IdSymbol> lookupCurrent(String name) {
-		return Optional.ofNullable(symbols.get(name));
+	public Optional<IdSymbol> lookupCurrent(final String name) {
+		return Optional.ofNullable(this.symbols.get(name));
 	}
 
-	public Optional<MethodSymbol> lookupMethod(String name) {
-		MethodSymbol method = methods.get(name);
+	public Optional<MethodSymbol> lookupMethod(final String name) {
+		final MethodSymbol method = this.methods.get(name);
 
 		if (method != null)
 			return Optional.of(method);
 
-		if (parent != null)
-			return parent.lookupMethod(name);
+		if (this.parent != null)
+			return this.parent.lookupMethod(name);
 
 		return Optional.empty();
 	}
 
-	public Optional<MethodSymbol> lookupCurrentMethod(String name) {
-		return Optional.ofNullable(methods.get(name));
+	public Optional<MethodSymbol> lookupCurrentMethod(final String name) {
+		return Optional.ofNullable(this.methods.get(name));
 	}
 }

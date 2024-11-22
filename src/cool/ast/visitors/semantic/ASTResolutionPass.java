@@ -151,9 +151,19 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	@Override
 	public Optional<ClassSymbol> visit(final ASTNot astNot) {
 
-		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
+		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
 
-		return Optional.of(intType);
+		final Optional<ClassSymbol> type = astNot.getExpression().accept(this);
+
+		type.ifPresent(t -> {
+			if (t != boolType) {
+				SymbolTable.error(this.ctx, astNot.getExpression().getToken(),
+						"Operand of " + astNot.getToken().getText() + " has type " + t.getName() + " instead of "
+								+ boolType.getName());
+			}
+		});
+
+		return Optional.of(boolType);
 	}
 
 	@Override
@@ -179,6 +189,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
 		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
+		final ClassSymbol stringType = SymbolTable.getGlobals().lookup(Utils.STRING).orElseThrow();
 
 		final Optional<ClassSymbol> leftType = ast2OperandOp.getLeft().accept(this);
 		final Optional<ClassSymbol> rightType = ast2OperandOp.getRight().accept(this);
@@ -195,10 +206,18 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 				});
 			});
 		} else {
-
+			if (leftType.isPresent() && rightType.isPresent()) {
+				if (leftType.get() != rightType.get()
+						&& (List.of(intType, boolType, stringType).contains(leftType.get()) ||
+								List.of(intType, boolType, stringType).contains(rightType.get()))) {
+					SymbolTable.error(this.ctx, ast2OperandOp.getToken(),
+							"Cannot compare " + leftType.get().getName()
+									+ " with " + rightType.get().getName());
+				}
+			}
 		}
 
-		return Optional.of(List.of(CoolLexer.LE, CoolLexer.LT)
+		return Optional.of(List.of(CoolLexer.LE, CoolLexer.LT, CoolLexer.EQ)
 				.contains(ast2OperandOp.getToken().getType()) ? boolType : intType);
 	}
 
