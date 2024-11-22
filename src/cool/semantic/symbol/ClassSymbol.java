@@ -40,6 +40,13 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		return this.parent.hasParent(parent);
 	}
 
+	public boolean isSuperClassOf(final ClassSymbol child) {
+		if (this.equals(child))
+			return true;
+
+		return child.hasParent(this);
+	}
+
 	@Override
 	public boolean add(final IdSymbol sym) {
 		final Optional<IdSymbol> symbol = this.lookup(sym.getName());

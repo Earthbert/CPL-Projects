@@ -41,7 +41,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		if (!astMethod.getSymbol().isPresent())
 			return null;
 
-		this.currentMethod = astMethod.getSymbol().get();
+		this.currentMethod = astMethod.getSymbol().orElseThrow();
 		this.currentScope = this.currentMethod;
 
 		astMethod.getBody().accept(this);
@@ -185,6 +185,11 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	}
 
 	@Override
+	public Optional<ClassSymbol> visit(final ASTIsVoid astIsVoid) {
+		return SymbolTable.getGlobals().lookup(Utils.BOOL);
+	}
+
+	@Override
 	public Optional<ClassSymbol> visit(final AST2OperandOp ast2OperandOp) {
 
 		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
@@ -219,6 +224,47 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		return Optional.of(List.of(CoolLexer.LE, CoolLexer.LT, CoolLexer.EQ)
 				.contains(ast2OperandOp.getToken().getType()) ? boolType : intType);
+	}
+
+	@Override
+	public Optional<ClassSymbol> visit(final ASTAssignment astAssignment) {
+
+		final String variableString = astAssignment.getId().getToken().getText();
+
+		if (Utils.SELF.equals(variableString)) {
+			SymbolTable.error(this.ctx, astAssignment.getId().getToken(),
+					"Cannot assign to " + Utils.SELF);
+		}
+
+		final Optional<ClassSymbol> variableType = astAssignment.getId().accept(this);
+		final Optional<ClassSymbol> exprType = astAssignment.getExpr().accept(this);
+
+		if (variableType.isPresent() && exprType.isPresent()) {
+			if (!variableType.get().isSuperClassOf(exprType.get())) {
+				SymbolTable.error(this.ctx, astAssignment.getExpr().getToken(),
+						"Type " + exprType.get().getName()
+								+ " of assigned expression is incompatible with declared type "
+								+ variableType.get().getName() + " of identifier " + variableString);
+			}
+			return Optional.of(exprType.get());
+		}
+
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ClassSymbol> visit(final ASTNew astNew) {
+
+		final String typeName = astNew.getType().getToken().getText();
+
+		final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
+
+		if (type.isEmpty()) {
+			SymbolTable.error(this.ctx, astNew.getType().getToken(), "new is used with undefined type " + typeName);
+			return Optional.empty();
+		}
+
+		return Optional.of(type.orElseThrow());
 	}
 
 	@Override
