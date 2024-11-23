@@ -32,11 +32,13 @@ public class SelfTypeSymbol extends ClassSymbol {
 
 	@Override
 	public boolean isSuperClassOf(final ClassSymbol child) {
-		return false;
+		return this.equals(child);
 	}
 
 	@Override
 	public ClassSymbol join(final ClassSymbol other) {
+		if (this.equals(other))
+			return this;
 		return this.classSymbol.join(other);
 	}
 
@@ -68,11 +70,13 @@ public class SelfTypeSymbol extends ClassSymbol {
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof final SelfTypeSymbol other) {
-			return this.classSymbol.isSuperClassOf(other.classSymbol);
-		}
-		if (obj instanceof final ClassSymbol other) {
-			return this.classSymbol.isSuperClassOf(other);
+			return this.classSymbol.join(other.classSymbol) == this.classSymbol;
 		}
 		return false;
+	}
+
+	@Override
+	public String getClassName() {
+		return this.classSymbol.getClassName();
 	}
 }

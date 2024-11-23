@@ -11,6 +11,7 @@ import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.LetSymbol;
 import cool.semantic.symbol.MethodSymbol;
+import cool.semantic.symbol.SelfTypeSymbol;
 import cool.semantic.symbol.SymbolTable;
 import cool.utils.Utils;
 
@@ -79,7 +80,9 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	public Optional<ClassSymbol> visit(final ASTCall astCall) {
 
 		Optional<ClassSymbol> subjectType = astCall.getSubject().map(s -> s.accept(this))
-				.orElse(Optional.of(this.currentClass));
+				.orElse(Optional.of(this.currentClass.getSelfType().orElseThrow()));
+
+		final Optional<ClassSymbol> exprType = subjectType;
 
 		if (subjectType.isEmpty()) {
 			return Optional.empty();
@@ -106,7 +109,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 			if (!type.orElseThrow().isSuperClassOf(subjectType.orElseThrow())) {
 				SymbolTable.error(this.ctx, astCall.getStaticDispatchType().orElseThrow().getToken(),
 						"Type " + staticDispatchType + " of static dispatch is not a superclass of type "
-								+ subjectType.orElseThrow().getName());
+								+ subjectType.orElseThrow().getClassName());
 
 				return Optional.empty();
 			}
@@ -128,7 +131,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		if (argTypes.size() != method.orElseThrow().getSymbols().size()) {
 			SymbolTable.error(this.ctx, astCall.getMethod().getToken(),
-					"Method " + methodName + " of class " + subjectType.orElseThrow().getName()
+					"Method " + methodName + " of class " + subjectType.orElseThrow().getClassName()
 							+ " is applied to wrong number of arguments");
 			return Optional.empty();
 		}
@@ -145,14 +148,22 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 			if (!param.getType().isSuperClassOf(argType.orElseThrow())) {
 				SymbolTable.error(this.ctx, astCall.getArguments().get(i).getToken(),
-						"In call to method " + methodName + " of class " + subjectType.orElseThrow().getName()
+						"In call to method " + methodName + " of class " + subjectType.orElseThrow().getClassName()
 								+ ", actual type " + argType.orElseThrow().getName() + " of formal parameter "
 								+ param.getName()
 								+ " is incompatible with declared type " + param.getType().getName());
 			}
 		}
 
-		return Optional.of(method.orElseThrow().getType());
+		ClassSymbol returnType = method.orElseThrow().getType();
+
+		if (returnType instanceof SelfTypeSymbol && astCall.getStaticDispatchType().isEmpty()) {
+			returnType = subjectType.orElseThrow();
+		} else if (returnType instanceof SelfTypeSymbol && astCall.getStaticDispatchType().isPresent()) {
+			returnType = exprType.orElseThrow();
+		}
+
+		return Optional.of(returnType);
 	}
 
 	@Override
@@ -414,6 +425,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		if (Utils.SELF.equals(variableString)) {
 			SymbolTable.error(this.ctx, astAssignment.getId().getToken(),
 					"Cannot assign to " + Utils.SELF);
+			return Optional.empty();
 		}
 
 		final Optional<ClassSymbol> variableType = astAssignment.getId().accept(this);

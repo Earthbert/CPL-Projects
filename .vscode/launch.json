@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema2/19-self_type.cl",
+			"args": "tests/tema2/20-basic-classes.cl",
 			"mainClass": "cool.compiler.Compiler"
 		},
 		{

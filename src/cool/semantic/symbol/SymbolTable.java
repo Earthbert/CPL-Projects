@@ -37,16 +37,17 @@ public class SymbolTable {
 		// Add Object methods
 		objectClass.addMethod(new MethodSymbol("abort", objectClass, objectClass));
 		objectClass.addMethod(new MethodSymbol("type_name", stringClass, objectClass));
-		objectClass.addMethod(new MethodSymbol("copy", objectClass, objectClass));
+		objectClass.addMethod(new MethodSymbol("copy", objectClass.getSelfType().orElseThrow(), objectClass));
 
 		// Add IO methods
-		final MethodSymbol outStringMethod = new MethodSymbol("out_string", ioClass, ioClass);
+		final MethodSymbol outStringMethod = new MethodSymbol("out_string", ioClass.getSelfType().orElseThrow(),
+				ioClass);
 		final IdSymbol outStringParam = new IdSymbol("x");
 		outStringParam.setType(stringClass);
 		outStringMethod.add(outStringParam);
 		ioClass.addMethod(outStringMethod);
 
-		final MethodSymbol outIntMethod = new MethodSymbol("out_int", ioClass, ioClass);
+		final MethodSymbol outIntMethod = new MethodSymbol("out_int", ioClass.getSelfType().orElseThrow(), ioClass);
 		final IdSymbol outIntParam = new IdSymbol("x");
 		outIntParam.setType(intClass);
 		outIntMethod.add(outIntParam);

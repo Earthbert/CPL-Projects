@@ -38,6 +38,10 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		return this.selfType;
 	}
 
+	public String getClassName() {
+		return this.getName();
+	}
+
 	public void setParent(final ClassSymbol parent) {
 		this.parent = parent;
 	}
