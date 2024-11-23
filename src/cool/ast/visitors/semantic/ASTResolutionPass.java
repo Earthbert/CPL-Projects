@@ -76,6 +76,86 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	}
 
 	@Override
+	public Optional<ClassSymbol> visit(final ASTCall astCall) {
+
+		Optional<ClassSymbol> subjectType = astCall.getSubject().map(s -> s.accept(this))
+				.orElse(Optional.of(this.currentClass));
+
+		if (subjectType.isEmpty()) {
+			return Optional.empty();
+		}
+
+		if (astCall.getStaticDispatchType().isPresent()) {
+
+			final String staticDispatchType = astCall.getStaticDispatchType().orElseThrow().getToken().getText();
+
+			if (Utils.SELF_TYPE.equals(staticDispatchType)) {
+				SymbolTable.error(this.ctx, astCall.getStaticDispatchType().orElseThrow().getToken(),
+						"Type of static dispatch cannot be " + Utils.SELF_TYPE);
+				return Optional.empty();
+			}
+
+			final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(staticDispatchType);
+
+			if (type.isEmpty()) {
+				SymbolTable.error(this.ctx, astCall.getStaticDispatchType().orElseThrow().getToken(),
+						"Type " + staticDispatchType + " of static dispatch is undefined");
+				return Optional.empty();
+			}
+
+			if (!type.orElseThrow().isSuperClassOf(subjectType.orElseThrow())) {
+				SymbolTable.error(this.ctx, astCall.getStaticDispatchType().orElseThrow().getToken(),
+						"Type " + staticDispatchType + " of static dispatch is not a superclass of type "
+								+ subjectType.orElseThrow().getName());
+
+				return Optional.empty();
+			}
+
+			subjectType = type;
+		}
+
+		final String methodName = astCall.getMethod().getToken().getText();
+
+		final Optional<MethodSymbol> method = subjectType.orElseThrow().lookupMethod(methodName);
+
+		if (method.isEmpty()) {
+			SymbolTable.error(this.ctx, astCall.getMethod().getToken(),
+					"Undefined method " + methodName + " in class " + subjectType.orElseThrow().getName());
+			return Optional.empty();
+		}
+
+		final List<Optional<ClassSymbol>> argTypes = astCall.getArguments().stream().map(a -> a.accept(this)).toList();
+
+		if (argTypes.size() != method.orElseThrow().getSymbols().size()) {
+			SymbolTable.error(this.ctx, astCall.getMethod().getToken(),
+					"Method " + methodName + " of class " + subjectType.orElseThrow().getName()
+							+ " is applied to wrong number of arguments");
+			return Optional.empty();
+		}
+
+		final List<IdSymbol> params = method.orElseThrow().getSymbols().values().stream().toList();
+
+		for (int i = 0; i < argTypes.size(); i++) {
+			final Optional<ClassSymbol> argType = argTypes.get(i);
+			final IdSymbol param = params.get(i);
+
+			if (argType.isEmpty()) {
+				continue;
+			}
+
+			if (!param.getType().isSuperClassOf(argType.orElseThrow())) {
+				SymbolTable.error(this.ctx, astCall.getArguments().get(i).getToken(),
+						"In call to method " + methodName + " of class " + subjectType.orElseThrow().getName()
+								+ ", actual type " + argType.orElseThrow().getName() + " of formal parameter "
+								+ param.getName()
+								+ " is incompatible with declared type " + param.getType().getName());
+			}
+		}
+
+		return Optional.of(method.orElseThrow().getType());
+	}
+
+	@Override
 	public Optional<ClassSymbol> visit(final ASTLet astLet) {
 
 		final String variableName = astLet.getDef().getId().getToken().getText();
@@ -86,7 +166,11 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 					"Let variable has illegal name " + Utils.SELF);
 		}
 
-		final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
+		Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
+
+		if (Utils.SELF_TYPE.equals(typeName)) {
+			type = Optional.ofNullable(this.currentClass.getSelfType().orElseThrow());
+		}
 
 		if (type.isEmpty()) {
 			SymbolTable.error(this.ctx, astLet.getDef().getType().getToken(),
@@ -354,6 +438,10 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		final String typeName = astNew.getType().getToken().getText();
 
 		final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
+
+		if (Utils.SELF_TYPE.equals(typeName)) {
+			return Optional.of(this.currentClass.getSelfType().orElseThrow());
+		}
 
 		if (type.isEmpty()) {
 			SymbolTable.error(this.ctx, astNew.getType().getToken(), "new is used with undefined type " + typeName);

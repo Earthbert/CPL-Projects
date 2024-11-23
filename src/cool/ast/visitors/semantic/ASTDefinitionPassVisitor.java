@@ -68,16 +68,20 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 
 		final String typeName = astField.getDef().getType().getToken().getText();
 
-		final Optional<ClassSymbol> classSymbol = SymbolTable.getGlobals().lookup(typeName);
+		Optional<ClassSymbol> fieldType = SymbolTable.getGlobals().lookup(typeName);
 
-		if (!classSymbol.isPresent()) {
+		if (Utils.SELF_TYPE.equals(typeName)) {
+			fieldType = Optional.of(this.currentClass.getSelfType().orElseThrow());
+		}
+
+		if (!fieldType.isPresent()) {
 			SymbolTable.error(this.ctx, astField.getDef().getType().getToken(),
 					"Class " + this.currentClass.getName() + " has attribute " + fieldName + " with undefined type "
 							+ typeName);
 			return null;
 		}
 
-		idSymbol.setType(classSymbol.orElseThrow());
+		idSymbol.setType(fieldType.orElseThrow());
 		astField.setSymbol(idSymbol);
 
 		return null;
@@ -95,8 +99,12 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 			return null;
 		}
 
-		final Optional<ClassSymbol> returnType = SymbolTable.getGlobals()
+		Optional<ClassSymbol> returnType = SymbolTable.getGlobals()
 				.lookup(astMethod.getType().getToken().getText());
+
+		if (Utils.SELF_TYPE.equals(astMethod.getType().getToken().getText())) {
+			returnType = Optional.of(this.currentClass.getSelfType().orElseThrow());
+		}
 
 		if (returnType.isEmpty()) {
 			SymbolTable.error(this.ctx, astMethod.getType().getToken(),

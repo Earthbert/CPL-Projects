@@ -230,9 +230,9 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(final ASTCall astCall) {
-		astCall.getObject().ifPresentOrElse(p -> this.printIndent("."), () -> this.printIndent("implicit dispatch"));
+		astCall.getSubject().ifPresentOrElse(p -> this.printIndent("."), () -> this.printIndent("implicit dispatch"));
 		this.increaseIndent();
-		astCall.getObject().ifPresent(o -> o.accept(this));
+		astCall.getSubject().ifPresent(o -> o.accept(this));
 		astCall.getStaticDispatchType().ifPresent(t -> t.accept(this));
 		astCall.getMethod().accept(this);
 		astCall.getArguments().forEach(a -> a.accept(this));

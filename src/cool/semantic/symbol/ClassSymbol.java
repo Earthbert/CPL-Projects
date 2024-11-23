@@ -5,16 +5,26 @@ import java.util.Map;
 import java.util.Optional;
 
 import cool.semantic.scope.Scope;
+import cool.utils.Utils;
 
 public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
-	private ClassSymbol parent;
+	protected ClassSymbol parent;
 
-	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
-	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
+	private final Optional<SelfTypeSymbol> selfType;
+
+	protected Map<String, IdSymbol> symbols = new LinkedHashMap<>();
+	protected Map<String, MethodSymbol> methods = new LinkedHashMap<>();
 
 	public ClassSymbol(final String name) {
 		super(name);
+		if (this instanceof SelfTypeSymbol)
+			this.selfType = Optional.empty();
+		else
+			this.selfType = Optional.of(new SelfTypeSymbol(this.symbols, this.methods));
+		this.selfType
+				.ifPresent(self -> this.symbols.put(Utils.SELF,
+						new IdSymbol(Utils.SELF, this.selfType.orElseThrow())));
 	}
 
 	public ClassSymbol(final String name, final ClassSymbol parent) {
@@ -22,8 +32,13 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		this.parent = parent;
 	}
 
+	public Optional<SelfTypeSymbol> getSelfType() {
+		return this.selfType;
+	}
+
 	public void setParent(final ClassSymbol parent) {
 		this.parent = parent;
+		this.selfType.ifPresent(self -> self.setParent(parent));
 	}
 
 	public ClassSymbol getParent() {
