@@ -211,7 +211,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		}
 
 		if (Utils.SELF.equals(idName)) {
-			return Optional.of(this.currentClass);
+			return Optional.of(this.currentClass.getSelfType().orElseThrow());
 		}
 
 		return Optional.ofNullable(idSymbol.orElseThrow().getType());

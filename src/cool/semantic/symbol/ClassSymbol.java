@@ -13,15 +13,17 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	private final Optional<SelfTypeSymbol> selfType;
 
-	protected Map<String, IdSymbol> symbols = new LinkedHashMap<>();
-	protected Map<String, MethodSymbol> methods = new LinkedHashMap<>();
+	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
+	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
 
 	public ClassSymbol(final String name) {
 		super(name);
+
 		if (this instanceof SelfTypeSymbol)
 			this.selfType = Optional.empty();
 		else
-			this.selfType = Optional.of(new SelfTypeSymbol(this.symbols, this.methods));
+			this.selfType = Optional.of(new SelfTypeSymbol(this));
+
 		this.selfType
 				.ifPresent(self -> this.symbols.put(Utils.SELF,
 						new IdSymbol(Utils.SELF, this.selfType.orElseThrow())));
@@ -38,7 +40,6 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public void setParent(final ClassSymbol parent) {
 		this.parent = parent;
-		this.selfType.ifPresent(self -> self.setParent(parent));
 	}
 
 	public ClassSymbol getParent() {
@@ -112,5 +113,13 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public Optional<MethodSymbol> lookupCurrentMethod(final String name) {
 		return Optional.ofNullable(this.methods.get(name));
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj instanceof final ClassSymbol other) {
+			return this.getName().equals(other.getName());
+		}
+		return false;
 	}
 }
