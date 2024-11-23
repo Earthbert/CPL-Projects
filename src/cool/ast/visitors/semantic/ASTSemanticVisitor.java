@@ -6,6 +6,7 @@ import cool.ast.nodes.ASTNode;
 import cool.ast.nodes.ASTRoot;
 import cool.parser.CoolParser.ClassContext;
 import cool.semantic.symbol.SymbolTable;
+import cool.utils.Utils;
 
 public abstract class ASTSemanticVisitor<T> implements ASTVisitor<T> {
 
@@ -30,5 +31,13 @@ public abstract class ASTSemanticVisitor<T> implements ASTVisitor<T> {
 		astRoot.accept(new ASTDefinitionPassVisitor());
 
 		astRoot.accept(new ASTResolutionPass());
+
+		final String noMainError = "No method main in class Main";
+
+		SymbolTable.getGlobals().lookup(Utils.MAIN)
+				.ifPresentOrElse(c -> c.lookupMethod(Utils.MAIN_METHOD).ifPresentOrElse(m -> {
+					if (m.getSymbols().size() != 0)
+						SymbolTable.error(noMainError);
+				}, () -> SymbolTable.error(noMainError)), () -> SymbolTable.error(noMainError));
 	}
 }
