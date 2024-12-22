@@ -12,7 +12,7 @@ private void raiseError(String msg) {
 }
 
 @header {
-	package cool.lexer;	
+package cool.lexer;	
 }
 
 fragment A: [aA];
