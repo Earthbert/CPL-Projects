@@ -1,6 +1,6 @@
 // Generated from c:/Users/earthbert/University/CPL/Projects/src/cool/parser/CoolParser.g4 by ANTLR 4.13.1
 
-    package cool.parser;
+package cool.parser;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

@@ -4,15 +4,15 @@ tokens {
 	ERROR
 }
 
-@members {    
-    private void raiseError(String msg) {
-        setText(msg);
-        setType(ERROR);
-    }
+@members {
+private void raiseError(String msg) {
+	setText(msg);
+	setType(ERROR);
+}
 }
 
 @header {
-    package cool.lexer;	
+	package cool.lexer;	
 }
 
 fragment A: [aA];
@@ -134,13 +134,13 @@ ERROR_EOF_IN_COMMENT:
 
 STRING:
 	'"' STRING_CHAR* '"' {  setText(getText().substring(1, getText().length() - 1)); 
-			                setText(getText().replace("\\n", "\n")
-			  					             .replace("\\t", "\t")
-								             .replace("\\f", "\f")
-                                             .replace("\\b", "\b")
+							setText(getText().replace("\\n", "\n")
+											 .replace("\\t", "\t")
+											 .replace("\\f", "\f")
+											 .replace("\\b", "\b")
 											 .replaceAll("\\\\([a-zA-Z])", "$1")
-                                             .replace("\\\n", "\n")
-                                             .replace("\\\r", "")); };
+											 .replace("\\\n", "\n")
+											 .replace("\\\r", "")); };
 
 BLOCK_COMMENT: '(*' (BLOCK_COMMENT | .)*? '*)' -> skip;
 

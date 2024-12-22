@@ -5,7 +5,7 @@ options {
 }
 
 @header {
-    package cool.parser;
+package cool.parser;
 }
 
 program: (class SEMICOLON)+ EOF;
@@ -13,9 +13,7 @@ program: (class SEMICOLON)+ EOF;
 expr:
 
 	// Calls
-	ID OPEN_PAR (
-		arg += expr (COMMA arg += expr)*
-	)? CLOSE_PAR # thisCall
+	ID OPEN_PAR (arg += expr (COMMA arg += expr)*)? CLOSE_PAR # thisCall
 	| object = expr (AT TYPE)? DOT ID OPEN_PAR (
 		arg += expr (COMMA arg += expr)*
 	)? CLOSE_PAR # methodCall

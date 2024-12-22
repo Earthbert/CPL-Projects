@@ -1,6 +1,6 @@
 // Generated from c:/Users/earthbert/University/CPL/Projects/src/cool/lexer/CoolLexer.g4 by ANTLR 4.13.1
 
-    package cool.lexer;	
+	package cool.lexer;	
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -110,11 +110,11 @@ public class CoolLexer extends Lexer {
 		return VOCABULARY;
 	}
 
-	    
-	    private void raiseError(String msg) {
-	        setText(msg);
-	        setType(ERROR);
-	    }
+
+	private void raiseError(String msg) {
+		setText(msg);
+		setType(ERROR);
+	}
 
 
 	public CoolLexer(CharStream input) {
@@ -215,13 +215,13 @@ public class CoolLexer extends Lexer {
 		switch (actionIndex) {
 		case 6:
 			  setText(getText().substring(1, getText().length() - 1)); 
-						                setText(getText().replace("\\n", "\n")
-						  					             .replace("\\t", "\t")
-											             .replace("\\f", "\f")
-			                                             .replace("\\b", "\b")
+										setText(getText().replace("\\n", "\n")
+														 .replace("\\t", "\t")
+														 .replace("\\f", "\f")
+														 .replace("\\b", "\b")
 														 .replaceAll("\\\\([a-zA-Z])", "$1")
-			                                             .replace("\\\n", "\n")
-			                                             .replace("\\\r", "")); 
+														 .replace("\\\n", "\n")
+														 .replace("\\\r", "")); 
 			break;
 		}
 	}
