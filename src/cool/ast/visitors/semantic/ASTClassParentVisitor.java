@@ -21,9 +21,11 @@ public class ASTClassParentVisitor extends ASTSemanticVisitor<Void> {
 		final String parentName = astClass.getParent().isPresent() ? astClass.getParent().get().getToken().getText()
 				: Utils.OBJECT;
 
-		if (List.of(Utils.SELF_TYPE, Utils.INT, Utils.STRING, Utils.BOOL).contains(parentName))
+		if (List.of(Utils.SELF_TYPE, Utils.INT, Utils.STRING, Utils.BOOL).contains(parentName)) {
 			SymbolTable.error(this.ctx, astClass.getParent().get().getToken(),
 					"Class " + classSymbol.getName() + " has illegal parent " + parentName);
+			return null;
+		}
 
 		SymbolTable.getGlobals().lookup(parentName)
 				.ifPresentOrElse(s -> classSymbol.setParent((ClassSymbol) s),

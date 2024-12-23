@@ -12,6 +12,7 @@
 	},
 	"java.project.resourceFilters": [
 		".antlr",
-		"\\.git"
+		"\\.git",
+		"src/cool/parser/CoolLexer.java",
 	]
 }

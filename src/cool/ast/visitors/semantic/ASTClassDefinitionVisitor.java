@@ -27,8 +27,10 @@ public class ASTClassDefinitionVisitor extends ASTSemanticVisitor<Void> {
 
 		final String className = astClass.getType().getToken().getText();
 
-		if (Utils.SELF_TYPE.equals(className))
+		if (Utils.SELF_TYPE.equals(className)) {
 			SymbolTable.error(this.ctx, astClass.getType().getToken(), "Class has illegal name " + Utils.SELF_TYPE);
+			return null;
+		}
 
 		final ClassSymbol classSymbol = new ClassSymbol(className);
 

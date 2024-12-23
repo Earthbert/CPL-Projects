@@ -30,6 +30,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		this.currentClass = astClass.getSymbol().orElseThrow();
 		this.currentScope = this.currentClass;
+		SymbolTable.getSelfType().setClassSymbol(this.currentClass);
 
 		astClass.getFeatures().forEach(f -> f.accept(this));
 
@@ -80,9 +81,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	public Optional<ClassSymbol> visit(final ASTCall astCall) {
 
 		Optional<ClassSymbol> subjectType = astCall.getSubject().map(s -> s.accept(this))
-				.orElse(Optional.of(this.currentClass.getSelfType().orElseThrow()));
-
-		final Optional<ClassSymbol> exprType = subjectType;
+				.orElse(Optional.of(SymbolTable.getSelfType()));
 
 		if (subjectType.isEmpty()) {
 			return Optional.empty();
@@ -109,7 +108,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 			if (!type.orElseThrow().isSuperClassOf(subjectType.orElseThrow())) {
 				SymbolTable.error(this.ctx, astCall.getStaticDispatchType().orElseThrow().getToken(),
 						"Type " + staticDispatchType + " of static dispatch is not a superclass of type "
-								+ subjectType.orElseThrow().getClassName());
+								+ subjectType.orElseThrow().getName());
 
 				return Optional.empty();
 			}
@@ -123,7 +122,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		if (method.isEmpty()) {
 			SymbolTable.error(this.ctx, astCall.getMethod().getToken(),
-					"Undefined method " + methodName + " in class " + subjectType.orElseThrow().getName());
+					"Undefined method " + methodName + " in class " + subjectType.orElseThrow().getClassName());
 			return Optional.empty();
 		}
 
@@ -159,8 +158,6 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		if (returnType instanceof SelfTypeSymbol && astCall.getStaticDispatchType().isEmpty()) {
 			returnType = subjectType.orElseThrow();
-		} else if (returnType instanceof SelfTypeSymbol && astCall.getStaticDispatchType().isPresent()) {
-			returnType = exprType.orElseThrow();
 		}
 
 		return Optional.of(returnType);
@@ -180,7 +177,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
 
 		if (Utils.SELF_TYPE.equals(typeName)) {
-			type = Optional.ofNullable(this.currentClass.getSelfType().orElseThrow());
+			type = Optional.ofNullable(SymbolTable.getSelfType());
 		}
 
 		if (type.isEmpty()) {
@@ -222,7 +219,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		}
 
 		if (Utils.SELF.equals(idName)) {
-			return Optional.of(this.currentClass.getSelfType().orElseThrow());
+			return Optional.of(SymbolTable.getSelfType());
 		}
 
 		return Optional.ofNullable(idSymbol.orElseThrow().getType());
@@ -452,7 +449,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		final Optional<ClassSymbol> type = SymbolTable.getGlobals().lookup(typeName);
 
 		if (Utils.SELF_TYPE.equals(typeName)) {
-			return Optional.of(this.currentClass.getSelfType().orElseThrow());
+			return Optional.of(SymbolTable.getSelfType());
 		}
 
 		if (type.isEmpty()) {

@@ -71,7 +71,7 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 		Optional<ClassSymbol> fieldType = SymbolTable.getGlobals().lookup(typeName);
 
 		if (Utils.SELF_TYPE.equals(typeName)) {
-			fieldType = Optional.of(this.currentClass.getSelfType().orElseThrow());
+			fieldType = Optional.of(SymbolTable.getSelfType());
 		}
 
 		if (!fieldType.isPresent()) {
@@ -103,7 +103,7 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 				.lookup(astMethod.getType().getToken().getText());
 
 		if (Utils.SELF_TYPE.equals(astMethod.getType().getToken().getText())) {
-			returnType = Optional.of(this.currentClass.getSelfType().orElseThrow());
+			returnType = Optional.of(SymbolTable.getSelfType());
 		}
 
 		if (returnType.isEmpty()) {

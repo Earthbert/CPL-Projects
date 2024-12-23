@@ -6,40 +6,11 @@ import cool.utils.Utils;
 
 public class SelfTypeSymbol extends ClassSymbol {
 
-	private final ClassSymbol classSymbol;
+	private ClassSymbol classSymbol;
 
-	public SelfTypeSymbol(final ClassSymbol classSymbol) {
-		super(Utils.SELF_TYPE);
-		this.classSymbol = classSymbol;
-	}
-
-	@Override
-	public ClassSymbol getParent() {
-		return this.classSymbol.getParent();
-	}
-
-	@Override
-	public Optional<SelfTypeSymbol> getSelfType() {
-		return Optional.empty();
-	}
-
-	@Override
-	public boolean hasParent(final ClassSymbol parent) {
-		if (this.classSymbol == parent)
-			return true;
-		return this.classSymbol.hasParent(parent);
-	}
-
-	@Override
-	public boolean isSuperClassOf(final ClassSymbol child) {
-		return this.equals(child);
-	}
-
-	@Override
-	public ClassSymbol join(final ClassSymbol other) {
-		if (this.equals(other))
-			return this;
-		return this.classSymbol.join(other);
+	public SelfTypeSymbol() {
+		super();
+		this.name = Utils.SELF_TYPE;
 	}
 
 	@Override
@@ -63,20 +34,27 @@ public class SelfTypeSymbol extends ClassSymbol {
 	}
 
 	@Override
-	public void setParent(final ClassSymbol parent) {
-		this.classSymbol.setParent(parent);
+	public boolean isSuperClassOf(final ClassSymbol child) {
+		return child instanceof SelfTypeSymbol;
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (obj instanceof final SelfTypeSymbol other) {
-			return this.classSymbol.join(other.classSymbol) == this.classSymbol;
-		}
-		return false;
+	public ClassSymbol join(final ClassSymbol other) {
+		if (other instanceof SelfTypeSymbol)
+			return this;
+		return this.getClassSymbol().join(other);
+	}
+
+	public void setClassSymbol(final ClassSymbol classSymbol) {
+		this.classSymbol = classSymbol;
+	}
+
+	public ClassSymbol getClassSymbol() {
+		return this.classSymbol;
 	}
 
 	@Override
 	public String getClassName() {
-		return this.classSymbol.getClassName();
+		return this.getClassSymbol().getClassName();
 	}
 }

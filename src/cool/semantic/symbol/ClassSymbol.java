@@ -11,35 +11,21 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	protected ClassSymbol parent;
 
-	private final Optional<SelfTypeSymbol> selfType;
-
 	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
 
+	public ClassSymbol() {
+		super("");
+	}
+
 	public ClassSymbol(final String name) {
 		super(name);
-
-		if (this instanceof SelfTypeSymbol)
-			this.selfType = Optional.empty();
-		else
-			this.selfType = Optional.of(new SelfTypeSymbol(this));
-
-		this.selfType
-				.ifPresent(self -> this.symbols.put(Utils.SELF,
-						new IdSymbol(Utils.SELF, this.selfType.orElseThrow())));
+		this.symbols.put(Utils.SELF, new IdSymbol(Utils.SELF, SymbolTable.getSelfType()));
 	}
 
 	public ClassSymbol(final String name, final ClassSymbol parent) {
 		this(name);
 		this.parent = parent;
-	}
-
-	public Optional<SelfTypeSymbol> getSelfType() {
-		return this.selfType;
-	}
-
-	public String getClassName() {
-		return this.getName();
 	}
 
 	public void setParent(final ClassSymbol parent) {
@@ -63,6 +49,9 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 	public boolean isSuperClassOf(final ClassSymbol child) {
 		if (this.equals(child))
 			return true;
+
+		if (child instanceof final SelfTypeSymbol selfType)
+			return this.isSuperClassOf(selfType.getClassSymbol());
 
 		return child.hasParent(this);
 	}
@@ -125,5 +114,9 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 			return this.getName().equals(other.getName());
 		}
 		return false;
+	}
+
+	public String getClassName() {
+		return this.getName();
 	}
 }

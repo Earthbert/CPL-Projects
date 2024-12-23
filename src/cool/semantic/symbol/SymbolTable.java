@@ -16,11 +16,15 @@ public class SymbolTable {
 
 	private static Scope<ClassSymbol> globals;
 
+	private static SelfTypeSymbol selfType;
+
 	private static boolean semanticErrors;
 
 	public static void defineBasicClasses() {
 		globals = new GlobalScope();
 		semanticErrors = false;
+		
+		selfType = new SelfTypeSymbol();
 
 		final ClassSymbol objectClass = new ClassSymbol(Utils.OBJECT, null);
 		final ClassSymbol intClass = new ClassSymbol(Utils.INT, objectClass);
@@ -37,17 +41,17 @@ public class SymbolTable {
 		// Add Object methods
 		objectClass.addMethod(new MethodSymbol("abort", objectClass, objectClass));
 		objectClass.addMethod(new MethodSymbol("type_name", stringClass, objectClass));
-		objectClass.addMethod(new MethodSymbol("copy", objectClass.getSelfType().orElseThrow(), objectClass));
+		objectClass.addMethod(new MethodSymbol("copy", selfType, objectClass));
 
 		// Add IO methods
-		final MethodSymbol outStringMethod = new MethodSymbol("out_string", ioClass.getSelfType().orElseThrow(),
+		final MethodSymbol outStringMethod = new MethodSymbol("out_string", selfType,
 				ioClass);
 		final IdSymbol outStringParam = new IdSymbol("x");
 		outStringParam.setType(stringClass);
 		outStringMethod.add(outStringParam);
 		ioClass.addMethod(outStringMethod);
 
-		final MethodSymbol outIntMethod = new MethodSymbol("out_int", ioClass.getSelfType().orElseThrow(), ioClass);
+		final MethodSymbol outIntMethod = new MethodSymbol("out_int", selfType, ioClass);
 		final IdSymbol outIntParam = new IdSymbol("x");
 		outIntParam.setType(intClass);
 		outIntMethod.add(outIntParam);
@@ -75,6 +79,10 @@ public class SymbolTable {
 		stringClass.addMethod(substrMethod);
 
 		List.of(objectClass, intClass, stringClass, boolClass, ioClass).forEach(c -> globals.add(c));
+	}
+
+	public static SelfTypeSymbol getSelfType() {
+		return selfType;
 	}
 
 	/**
