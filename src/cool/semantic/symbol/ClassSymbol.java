@@ -11,7 +11,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	protected ClassSymbol parent;
 
-	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
+	private final Map<String, IdSymbol> fields = new LinkedHashMap<>();
 	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
 
 	public ClassSymbol() {
@@ -20,7 +20,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public ClassSymbol(final String name) {
 		super(name);
-		this.symbols.put(Utils.SELF, new IdSymbol(Utils.SELF, SymbolTable.getSelfType()));
+		this.fields.put(Utils.SELF, new IdSymbol(Utils.SELF, SymbolTable.getSelfType(), IDSymbolType.FORMAT));
 	}
 
 	public ClassSymbol(final String name, final ClassSymbol parent) {
@@ -56,17 +56,17 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		return child.hasParent(this);
 	}
 
-	public ClassSymbol join(final ClassSymbol other) {
+	public ClassSymbol mostCommonAncestor(final ClassSymbol other) {
 		if (this.isSuperClassOf(other))
 			return this;
 
-		return this.parent.join(other);
+		return this.parent.mostCommonAncestor(other);
 	}
 
 	@Override
 	public boolean add(final IdSymbol sym) {
 		final Optional<IdSymbol> symbol = this.lookup(sym.getName());
-		return symbol.isEmpty() && this.symbols.putIfAbsent(sym.getName(), sym) == null;
+		return symbol.isEmpty() && this.fields.putIfAbsent(sym.getName(), sym) == null;
 	}
 
 	public boolean addMethod(final MethodSymbol method) {
@@ -76,7 +76,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	@Override
 	public Optional<IdSymbol> lookup(final String name) {
-		final IdSymbol symbol = this.symbols.get(name);
+		final IdSymbol symbol = this.fields.get(name);
 
 		if (symbol != null)
 			return Optional.of(symbol);
@@ -89,7 +89,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	@Override
 	public Optional<IdSymbol> lookupCurrent(final String name) {
-		return Optional.ofNullable(this.symbols.get(name));
+		return Optional.ofNullable(this.fields.get(name));
 	}
 
 	public Optional<MethodSymbol> lookupMethod(final String name) {

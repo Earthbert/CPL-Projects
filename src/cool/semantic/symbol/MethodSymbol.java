@@ -6,15 +6,17 @@ import java.util.Optional;
 
 import cool.semantic.scope.Scope;
 
-public class MethodSymbol extends IdSymbol implements Scope<IdSymbol> {
+public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
+
+	private final ClassSymbol returnType;
 
 	private final Scope<IdSymbol> outerScope;
 
 	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
-	public MethodSymbol(final String name, final ClassSymbol type, final Scope<IdSymbol> outerScope) {
+	public MethodSymbol(final String name, final ClassSymbol returnType, final Scope<IdSymbol> outerScope) {
 		super(name);
-		this.setType(type);
+		this.returnType = returnType;
 		this.outerScope = outerScope;
 	}
 
@@ -40,5 +42,9 @@ public class MethodSymbol extends IdSymbol implements Scope<IdSymbol> {
 
 	public Map<String, IdSymbol> getSymbols() {
 		return this.symbols;
+	}
+
+	public ClassSymbol getReturnType() {
+		return this.returnType;
 	}
 }

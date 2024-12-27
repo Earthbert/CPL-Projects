@@ -9,6 +9,7 @@ import cool.ast.nodes.ASTField;
 import cool.ast.nodes.ASTFormal;
 import cool.ast.nodes.ASTMethod;
 import cool.semantic.symbol.ClassSymbol;
+import cool.semantic.symbol.IDSymbolType;
 import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
@@ -58,7 +59,7 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 			return null;
 		}
 
-		final IdSymbol idSymbol = new IdSymbol(fieldName);
+		final IdSymbol idSymbol = new IdSymbol(fieldName, IDSymbolType.FIELD);
 
 		if (!this.currentClass.add(idSymbol)) {
 			SymbolTable.error(this.ctx, astField.getDef().getId().getToken(),
@@ -81,7 +82,7 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 			return null;
 		}
 
-		idSymbol.setType(fieldType.orElseThrow());
+		idSymbol.setValueType(fieldType.orElseThrow());
 		astField.setSymbol(idSymbol);
 
 		return null;
@@ -138,20 +139,20 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 				final IdSymbol previousFormal = previousFormals.get(i);
 				final IdSymbol currentFormal = currentFormals.get(i);
 
-				if (!previousFormal.getType().equals(currentFormal.getType())) {
+				if (!previousFormal.getValueType().equals(currentFormal.getValueType())) {
 					SymbolTable.error(this.ctx, astMethod.getArguments().get(i).getType().getToken(),
 							"Class " + this.currentClass.getName() + " overrides method " + methodName
 									+ " but changes type of formal parameter " + currentFormal.getName()
-									+ " from " + previousFormal.getType().getName() + " to "
-									+ currentFormal.getType().getName());
+									+ " from " + previousFormal.getValueType().getName() + " to "
+									+ currentFormal.getValueType().getName());
 				}
 			}
 
-			if (!previous.orElseThrow().getType().equals(methodSymbol.getType())) {
+			if (!previous.orElseThrow().getReturnType().equals(methodSymbol.getReturnType())) {
 				SymbolTable.error(this.ctx, astMethod.getType().getToken(),
 						"Class " + this.currentClass.getName() + " overrides method " + methodName
-								+ " but changes return type from " + previous.orElseThrow().getType().getName()
-								+ " to " + methodSymbol.getType().getName());
+								+ " but changes return type from " + previous.orElseThrow().getReturnType().getName()
+								+ " to " + methodSymbol.getReturnType().getName());
 				return null;
 			}
 		}
@@ -200,8 +201,8 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 			return null;
 		}
 
-		final IdSymbol idSymbol = new IdSymbol(formalName);
-		idSymbol.setType(classSymbol.orElseThrow());
+		final IdSymbol idSymbol = new IdSymbol(formalName, IDSymbolType.FORMAT);
+		idSymbol.setValueType(classSymbol.orElseThrow());
 		this.currentMethod.add(idSymbol);
 		astFormal.setSymbol(idSymbol);
 

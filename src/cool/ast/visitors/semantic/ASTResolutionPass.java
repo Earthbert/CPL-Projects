@@ -48,11 +48,11 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		final Optional<ClassSymbol> bodyType = astMethod.getBody().accept(this);
 
-		if (bodyType.isPresent() && !this.currentMethod.getType().isSuperClassOf(bodyType.orElseThrow())) {
+		if (bodyType.isPresent() && !this.currentMethod.getReturnType().isSuperClassOf(bodyType.orElseThrow())) {
 			SymbolTable.error(this.ctx, astMethod.getBody().getToken(),
 					"Type " + bodyType.get().getName() + " of the body of method "
 							+ astMethod.getId().getToken().getText()
-							+ " is incompatible with declared return type " + this.currentMethod.getType().getName());
+							+ " is incompatible with declared return type " + this.currentMethod.getReturnType().getName());
 		}
 
 		return Optional.empty();
@@ -64,7 +64,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		final Optional<ClassSymbol> exprType = astField.getDef().getExpr().map(e -> e.accept(this))
 				.orElse(Optional.empty());
 
-		final var attrType = astField.getSymbol().map(IdSymbol::getType);
+		final var attrType = astField.getSymbol().map(IdSymbol::getValueType);
 
 		if (exprType.isPresent() && attrType.isPresent()
 				&& !attrType.orElseThrow().isSuperClassOf(exprType.orElseThrow())) {
@@ -145,16 +145,16 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 				continue;
 			}
 
-			if (!param.getType().isSuperClassOf(argType.orElseThrow())) {
+			if (!param.getValueType().isSuperClassOf(argType.orElseThrow())) {
 				SymbolTable.error(this.ctx, astCall.getArguments().get(i).getToken(),
 						"In call to method " + methodName + " of class " + subjectType.orElseThrow().getClassName()
 								+ ", actual type " + argType.orElseThrow().getName() + " of formal parameter "
 								+ param.getName()
-								+ " is incompatible with declared type " + param.getType().getName());
+								+ " is incompatible with declared type " + param.getValueType().getName());
 			}
 		}
 
-		ClassSymbol returnType = method.orElseThrow().getType();
+		ClassSymbol returnType = method.orElseThrow().getReturnType();
 
 		if (returnType instanceof SelfTypeSymbol && astCall.getStaticDispatchType().isEmpty()) {
 			returnType = subjectType.orElseThrow();
@@ -186,7 +186,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		}
 
 		final LetSymbol letSymbol = new LetSymbol(variableName, this.currentScope);
-		type.ifPresent(letSymbol::setType);
+		type.ifPresent(letSymbol::setValueType);
 		this.currentScope = letSymbol;
 
 		final Optional<ClassSymbol> defType = astLet.getDef().getExpr().map(e -> e.accept(this))
@@ -213,16 +213,14 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 		final Optional<IdSymbol> idSymbol = this.currentScope.lookup(idName);
 
-		if (idSymbol.isEmpty() && !Utils.SELF.equals(idName)) {
+		if (idSymbol.isEmpty()) {
 			SymbolTable.error(this.ctx, astId.getToken(), "Undefined identifier " + idName);
 			return Optional.empty();
 		}
 
-		if (Utils.SELF.equals(idName)) {
-			return Optional.of(SymbolTable.getSelfType());
-		}
+		astId.setSymbol(idSymbol.orElseThrow());
 
-		return Optional.ofNullable(idSymbol.orElseThrow().getType());
+		return Optional.ofNullable(idSymbol.orElseThrow().getValueType());
 	}
 
 	@Override
@@ -251,7 +249,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		}
 
 		final LetSymbol letSymbol = new LetSymbol(variableName, this.currentScope);
-		letSymbol.setType(type.orElseThrow());
+		letSymbol.setValueType(type.orElseThrow());
 		letSymbol.add(letSymbol);
 
 		this.currentScope = letSymbol;
@@ -272,7 +270,8 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 				.toList();
 
 		return caseBranchesTypes.stream().skip(1).reduce(caseBranchesTypes.get(0),
-				(t1, t2) -> t1.isPresent() && t2.isPresent() ? Optional.of(t1.get().join(t2.get())) : Optional.empty());
+				(t1, t2) -> t1.isPresent() && t2.isPresent() ? Optional.of(t1.get().mostCommonAncestor(t2.get()))
+						: Optional.empty());
 	}
 
 	@Override
@@ -312,7 +311,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		final ClassSymbol commonType;
 
 		if (thenType.isPresent() && elseType.isPresent()) {
-			commonType = thenType.get().join(elseType.get());
+			commonType = thenType.get().mostCommonAncestor(elseType.get());
 		} else {
 			commonType = SymbolTable.getGlobals().lookup(Utils.OBJECT).orElseThrow();
 		}

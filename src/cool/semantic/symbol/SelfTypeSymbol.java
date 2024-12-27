@@ -39,10 +39,10 @@ public class SelfTypeSymbol extends ClassSymbol {
 	}
 
 	@Override
-	public ClassSymbol join(final ClassSymbol other) {
+	public ClassSymbol mostCommonAncestor(final ClassSymbol other) {
 		if (other instanceof SelfTypeSymbol)
 			return this;
-		return this.getClassSymbol().join(other);
+		return this.getClassSymbol().mostCommonAncestor(other);
 	}
 
 	public void setClassSymbol(final ClassSymbol classSymbol) {

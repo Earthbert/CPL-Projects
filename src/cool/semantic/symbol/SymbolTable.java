@@ -23,7 +23,7 @@ public class SymbolTable {
 	public static void defineBasicClasses() {
 		globals = new GlobalScope();
 		semanticErrors = false;
-		
+
 		selfType = new SelfTypeSymbol();
 
 		final ClassSymbol objectClass = new ClassSymbol(Utils.OBJECT, null);
@@ -46,14 +46,12 @@ public class SymbolTable {
 		// Add IO methods
 		final MethodSymbol outStringMethod = new MethodSymbol("out_string", selfType,
 				ioClass);
-		final IdSymbol outStringParam = new IdSymbol("x");
-		outStringParam.setType(stringClass);
+		final IdSymbol outStringParam = new IdSymbol("x", stringClass, IDSymbolType.FORMAT);
 		outStringMethod.add(outStringParam);
 		ioClass.addMethod(outStringMethod);
 
 		final MethodSymbol outIntMethod = new MethodSymbol("out_int", selfType, ioClass);
-		final IdSymbol outIntParam = new IdSymbol("x");
-		outIntParam.setType(intClass);
+		final IdSymbol outIntParam = new IdSymbol("x", intClass, IDSymbolType.FORMAT);
 		outIntMethod.add(outIntParam);
 		ioClass.addMethod(outIntMethod);
 
@@ -64,16 +62,13 @@ public class SymbolTable {
 		stringClass.addMethod(new MethodSymbol("length", intClass, stringClass));
 
 		final MethodSymbol concatMethod = new MethodSymbol("concat", stringClass, stringClass);
-		final IdSymbol concatParam = new IdSymbol("s");
-		concatParam.setType(stringClass);
+		final IdSymbol concatParam = new IdSymbol("s", stringClass, IDSymbolType.FORMAT);
 		concatMethod.add(concatParam);
 		stringClass.addMethod(concatMethod);
 
 		final MethodSymbol substrMethod = new MethodSymbol("substr", stringClass, stringClass);
-		final IdSymbol substrParam1 = new IdSymbol("i");
-		final IdSymbol substrParam2 = new IdSymbol("l");
-		substrParam1.setType(intClass);
-		substrParam2.setType(intClass);
+		final IdSymbol substrParam1 = new IdSymbol("i", intClass, IDSymbolType.FORMAT);
+		final IdSymbol substrParam2 = new IdSymbol("l", intClass, IDSymbolType.FORMAT);
 		substrMethod.add(substrParam1);
 		substrMethod.add(substrParam2);
 		stringClass.addMethod(substrMethod);
