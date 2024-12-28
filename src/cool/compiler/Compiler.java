@@ -11,11 +11,13 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import org.stringtemplate.v4.ST;
 
 import cool.ast.ASTBuilderVisitor;
 import cool.ast.nodes.ASTNode;
 import cool.ast.visitors.semantic.ASTSemanticVisitor;
 import cool.lexer.CoolLexer;
+import cool.mipsgen.MIPSGen;
 import cool.parser.CoolParser;
 import cool.semantic.symbol.SymbolTable;
 
@@ -140,5 +142,9 @@ public class Compiler {
 			System.err.println("Compilation halted");
 			return;
 		}
+
+		final ST data = new MIPSGen().generateProgram(astRoot);
+
+		System.out.println(data.render());
 	}
 }

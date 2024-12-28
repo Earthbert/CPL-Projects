@@ -1,0 +1,40 @@
+prologue() ::= <<
+.data
+    .align  2
+    .globl  class_nameTab
+    .globl  Int_protObj
+    .globl  String_protObj
+    .globl  Main_protObj
+    .globl  _int_tag
+    .globl  _string_tag
+    .globl  _bool_tag
+>>
+
+classTag(name, tag) ::= <<
+_<name>_tag:
+    .word   <tag>
+>>
+
+metadata(label, className, tag, size) ::= <<
+<label>:
+    .word   <tag>
+    .word   <size>
+    .word   <className>_dispTab
+>>
+
+int(metadata, value) ::= <<
+<metadata>
+    .word   <value>
+>>
+
+string(metadata, value, length) ::= <<
+<metadata>
+    .word   <length>
+    .asciiz "<value>"
+    .align  2
+>>
+
+classNamesTable(classNameLabel) ::= <<
+class_nameTab:
+    .word   <classNameLabel; separator="\n    .word   ">
+>>

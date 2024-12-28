@@ -1,5 +1,6 @@
 package cool.semantic.scope;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -23,5 +24,9 @@ public class GlobalScope implements Scope<ClassSymbol> {
 	@Override
 	public Optional<ClassSymbol> lookupCurrent(final String name) {
 		return Optional.ofNullable(this.classes.get(name));
+	}
+
+	public Map<String, ClassSymbol> getClasses() {
+		return Collections.unmodifiableMap(this.classes);
 	}
 }

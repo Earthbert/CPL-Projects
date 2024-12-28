@@ -14,5 +14,15 @@
 		".antlr",
 		"\\.git",
 		"src/cool/parser/CoolLexer.java",
-	]
+	],
+	"java.cleanup.actions": [
+		"renameFileToType",
+		"addOverride",
+		"organizeImports",
+		"addFinalModifier",
+		"qualifyMembers",
+		"invertEquals",
+		"instanceofPatternMatch",
+		"lambdaExpression"
+	],
 }

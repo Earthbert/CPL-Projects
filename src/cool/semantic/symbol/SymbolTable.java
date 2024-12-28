@@ -9,12 +9,11 @@ import org.antlr.v4.runtime.Token;
 import cool.compiler.Compiler;
 import cool.parser.CoolParser;
 import cool.semantic.scope.GlobalScope;
-import cool.semantic.scope.Scope;
 import cool.utils.Utils;
 
 public class SymbolTable {
 
-	private static Scope<ClassSymbol> globals;
+	private static GlobalScope globals;
 
 	private static SelfTypeSymbol selfType;
 
@@ -114,7 +113,7 @@ public class SymbolTable {
 		return semanticErrors;
 	}
 
-	public static Scope<ClassSymbol> getGlobals() {
+	public static GlobalScope getGlobals() {
 		return globals;
 	}
 }
