@@ -15,6 +15,16 @@ _<name>_tag:
     .word   <tag>
 >>
 
+classNamesTable(classNameLabel) ::= <<
+class_nameTab:
+    .word   <classNameLabel; separator="\n    .word   ">
+>>
+
+classObjTable(classObjTable) ::= <<
+class_objTab:
+<classObjTable>
+>>
+
 metadata(label, className, tag, size) ::= <<
 <label>:
     .word   <tag>
@@ -22,19 +32,16 @@ metadata(label, className, tag, size) ::= <<
     .word   <className>_dispTab
 >>
 
-int(metadata, value) ::= <<
-<metadata>
-    .word   <value>
+prototype(metadata, data) ::= <<
+<metadata><if(data)>
+<data><else><endif>
 >>
 
-string(metadata, value, length) ::= <<
-<metadata>
-    .word   <length>
+ascii(value) ::= <<
     .asciiz "<value>"
     .align  2
 >>
 
-classNamesTable(classNameLabel) ::= <<
-class_nameTab:
-    .word   <classNameLabel; separator="\n    .word   ">
+word(value) ::= <<
+    .word   <value>
 >>

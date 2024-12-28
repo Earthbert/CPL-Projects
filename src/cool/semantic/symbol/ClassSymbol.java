@@ -108,6 +108,11 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		return Optional.ofNullable(this.methods.get(name));
 	}
 
+	public Integer getFieldsCount() {
+		return this.fields.size() - 1 +
+			(this.parent == null ? 0 : this.parent.getFieldsCount());
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof final ClassSymbol other) {

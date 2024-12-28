@@ -38,6 +38,7 @@ public class MIPSGen {
 		dataSection.add("e", this.dataTemplates.getInstanceOf("prologue"));
 
 		final ST classNamesTable = this.dataTemplates.getInstanceOf("classNamesTable");
+		final ST classObjTable = this.programTemplates.getInstanceOf("sequence");
 
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
 			this.classTags.put(classSymbol.getName(), this.classTags.size());
@@ -48,20 +49,56 @@ public class MIPSGen {
 								.add("tag", this.classTags.get(classSymbol.getName())));
 			}
 			classNamesTable.add("classNameLabel", this.getStringLabel(classSymbol.getName()));
+			classObjTable
+					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
+							createProtObjLabel(classSymbol.getName())))
+					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
+							createInitLabel(classSymbol.getName())));
 		}
+
+		dataSection.add("e", classNamesTable);
+		dataSection.add("e", this.dataTemplates.getInstanceOf("classObjTable").add("classObjTable", classObjTable));
 
 		this.generateStringConsts(dataSection);
 		this.generateIntConsts(dataSection);
 		this.generateBoolConsts(dataSection);
 		this.generateProtoObjects(dataSection);
 
-		dataSection.add("e", classNamesTable);
-
 		return dataSection;
 	}
 
 	private void generateProtoObjects(final ST dataSection) {
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
+
+			final ST metadata = this.dataTemplates.getInstanceOf("metadata")
+					.add("label", createProtObjLabel(classSymbol.getName()))
+					.add("className", classSymbol.getName())
+					.add("tag", this.classTags.get(classSymbol.getName()));
+
+			final ST data = this.programTemplates.getInstanceOf("sequence");
+
+			final Integer fieldsCount;
+			if (Utils.STRING.equals(classSymbol.getName())) {
+				fieldsCount = 2;
+				data.add("e", this.dataTemplates.getInstanceOf("word")
+						.add("value", this.getIntLabel(0)))
+						.add("e", this.dataTemplates.getInstanceOf("ascii")
+								.add("value", ""));
+			} else {
+				fieldsCount = List.of(Utils.INT, Utils.BOOL).contains(classSymbol.getName()) ? 1
+						: classSymbol.getFieldsCount();
+
+				for (int i = 0; i < fieldsCount; i++) {
+					data.add("e", this.dataTemplates.getInstanceOf("word")
+							.add("value", 0));
+				}
+			}
+
+			metadata.add("size", 3 + fieldsCount);
+
+			dataSection.add("e",
+					this.dataTemplates.getInstanceOf("prototype").add("metadata", metadata).add("data",
+							fieldsCount == 0 ? null : data));
 		}
 	}
 
@@ -76,10 +113,15 @@ public class MIPSGen {
 					.add("tag", this.classTags.get(Utils.STRING))
 					.add("size", 5 + value.length() / 4);
 
-			final ST stringConst = this.dataTemplates.getInstanceOf("string")
+			final ST data = this.programTemplates.getInstanceOf("sequence")
+					.add("e", this.dataTemplates.getInstanceOf("word")
+							.add("value", this.getIntLabel(value.length())))
+					.add("e", this.dataTemplates.getInstanceOf("ascii")
+							.add("value", value));
+
+			final ST stringConst = this.dataTemplates.getInstanceOf("prototype")
 					.add("metadata", metadata)
-					.add("length", this.getIntLabel(value.length()))
-					.add("value", value);
+					.add("data", data);
 
 			dataSection.add("e", stringConst);
 		}
@@ -96,9 +138,10 @@ public class MIPSGen {
 					.add("tag", this.classTags.get(Utils.INT))
 					.add("size", 4);
 
-			final ST intConst = this.dataTemplates.getInstanceOf("int")
+			final ST intConst = this.dataTemplates.getInstanceOf("prototype")
 					.add("metadata", metadata)
-					.add("value", value);
+					.add("data", this.dataTemplates.getInstanceOf("word")
+							.add("value", this.getIntLabel(value)));
 
 			dataSection.add("e", intConst);
 		}
@@ -112,9 +155,10 @@ public class MIPSGen {
 					.add("tag", this.classTags.get(Utils.BOOL))
 					.add("size", 4);
 
-			final ST boolConst = this.dataTemplates.getInstanceOf("int")
+			final ST boolConst = this.dataTemplates.getInstanceOf("prototype")
 					.add("metadata", metadata)
-					.add("value", i);
+					.add("data", this.dataTemplates.getInstanceOf("word")
+							.add("value", this.getIntLabel(i)));
 
 			dataSection.add("e", boolConst);
 		}
@@ -137,6 +181,10 @@ public class MIPSGen {
 	}
 
 	private static String createProtObjLabel(final String className) {
-		return className.toLowerCase() + "_protObj";
+		return className + "_protObj";
+	}
+
+	private static String createInitLabel(final String className) {
+		return className + "_init";
 	}
 }
