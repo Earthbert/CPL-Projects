@@ -10,14 +10,14 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 
 	private final ClassSymbol returnType;
 
-	private final Scope<IdSymbol> outerScope;
+	private final ClassSymbol classSymbol;
 
 	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
-	public MethodSymbol(final String name, final ClassSymbol returnType, final Scope<IdSymbol> outerScope) {
+	public MethodSymbol(final String name, final ClassSymbol returnType, final ClassSymbol outerScope) {
 		super(name);
 		this.returnType = returnType;
-		this.outerScope = outerScope;
+		this.classSymbol = outerScope;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 		if (symbol != null)
 			return Optional.of(symbol);
 
-		return this.outerScope.lookup(name);
+		return this.classSymbol.lookup(name);
 	}
 
 	@Override
@@ -47,4 +47,16 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 	public ClassSymbol getReturnType() {
 		return this.returnType;
 	}
+
+    @Override
+    public boolean equals(final Object obj) {
+		if (obj instanceof final MethodSymbol other) {
+			return this.getName().equals(other.getName());
+		}
+		return false;
+    }
+
+    public ClassSymbol getClassSymbol() {
+        return this.classSymbol;
+    }
 }

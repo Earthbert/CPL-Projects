@@ -8,10 +8,13 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroupFile;
 
 import cool.ast.nodes.ASTNode;
+import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
 import cool.utils.Utils;
 
 public class MIPSGen {
+
+	Map<String, List<MethodSymbol>> disptachTables = new LinkedHashMap<>();
 
 	Map<String, Integer> classTags = new LinkedHashMap<>();
 
@@ -26,6 +29,7 @@ public class MIPSGen {
 
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
 			this.getStringLabel(classSymbol.getName());
+			this.disptachTables.put(classSymbol.getName(), classSymbol.getDispatchTable());
 		}
 
 		program.add("data", this.generateDataSection());
@@ -37,7 +41,7 @@ public class MIPSGen {
 
 		dataSection.add("e", this.dataTemplates.getInstanceOf("prologue"));
 
-		final ST classNamesTable = this.dataTemplates.getInstanceOf("classNamesTable");
+		final ST classNamesTable = this.programTemplates.getInstanceOf("sequence");
 		final ST classObjTable = this.programTemplates.getInstanceOf("sequence");
 
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
@@ -48,7 +52,9 @@ public class MIPSGen {
 								.add("name", classSymbol.getName().toLowerCase())
 								.add("tag", this.classTags.get(classSymbol.getName())));
 			}
-			classNamesTable.add("classNameLabel", this.getStringLabel(classSymbol.getName()));
+			classNamesTable
+					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
+							this.getStringLabel(classSymbol.getName())));
 			classObjTable
 					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
 							createProtObjLabel(classSymbol.getName())))
@@ -56,13 +62,15 @@ public class MIPSGen {
 							createInitLabel(classSymbol.getName())));
 		}
 
-		dataSection.add("e", classNamesTable);
+		dataSection.add("e",
+				this.dataTemplates.getInstanceOf("classNamesTable").add("classNamesTable", classNamesTable));
 		dataSection.add("e", this.dataTemplates.getInstanceOf("classObjTable").add("classObjTable", classObjTable));
 
 		this.generateStringConsts(dataSection);
 		this.generateIntConsts(dataSection);
 		this.generateBoolConsts(dataSection);
 		this.generateProtoObjects(dataSection);
+		this.generateDispatchTables(dataSection);
 
 		return dataSection;
 	}
@@ -164,6 +172,24 @@ public class MIPSGen {
 		}
 	}
 
+	public void generateDispatchTables(final ST dataSection) {
+		for (final var entry : this.disptachTables.entrySet()) {
+			final String name = entry.getKey();
+			final List<MethodSymbol> dispatchTable = entry.getValue();
+
+			final ST dispatchTableContent = this.programTemplates.getInstanceOf("sequence");
+
+			for (final MethodSymbol method : dispatchTable) {
+				dispatchTableContent.add("e", this.dataTemplates.getInstanceOf("word")
+						.add("value", method.getClassSymbol().getName() + "." + method.getName()));
+			}
+
+			dataSection.add("e", this.dataTemplates.getInstanceOf("classDispTable")
+					.add("label", createDispatchTableLabel(name))
+					.add("classDispTable", dispatchTableContent));
+		}
+	}
+
 	public String getStringLabel(final String str) {
 		return "string_const" + this.constStrings.computeIfAbsent(str, k -> this.constStrings.size());
 	}
@@ -186,5 +212,9 @@ public class MIPSGen {
 
 	private static String createInitLabel(final String className) {
 		return className + "_init";
+	}
+
+	private static String createDispatchTableLabel(final String className) {
+		return className + "_dispTable";
 	}
 }

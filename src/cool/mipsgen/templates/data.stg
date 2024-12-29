@@ -15,14 +15,19 @@ _<name>_tag:
     .word   <tag>
 >>
 
-classNamesTable(classNameLabel) ::= <<
+classNamesTable(classNamesTable) ::= <<
 class_nameTab:
-    .word   <classNameLabel; separator="\n    .word   ">
+<classNamesTable>
 >>
 
 classObjTable(classObjTable) ::= <<
 class_objTab:
 <classObjTable>
+>>
+
+classDispTable(label, classDispTable) ::= <<
+<label>:
+<classDispTable>
 >>
 
 metadata(label, className, tag, size) ::= <<

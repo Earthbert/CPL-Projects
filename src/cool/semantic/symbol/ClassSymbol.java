@@ -1,6 +1,8 @@
 package cool.semantic.symbol;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -110,7 +112,22 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public Integer getFieldsCount() {
 		return this.fields.size() - 1 +
-			(this.parent == null ? 0 : this.parent.getFieldsCount());
+				(this.parent == null ? 0 : this.parent.getFieldsCount());
+	}
+
+	public List<MethodSymbol> getDispatchTable() {
+		final List<MethodSymbol> dispatchTable = this.parent == null ? new ArrayList<>()
+				: this.parent.getDispatchTable();
+		
+		for (final var method : this.methods.values()) {
+			if (dispatchTable.contains(method)) {
+				dispatchTable.set(dispatchTable.indexOf(method), method);
+			} else {
+				dispatchTable.add(method);
+			}
+		}
+
+		return dispatchTable;
 	}
 
 	@Override
