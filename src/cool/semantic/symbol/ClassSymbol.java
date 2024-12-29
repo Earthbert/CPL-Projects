@@ -72,7 +72,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 	}
 
 	public boolean addMethod(final MethodSymbol method) {
-		final Optional<MethodSymbol> symbol = this.lookupMethod(method.getName());
+		final Optional<MethodSymbol> symbol = this.lookupCurrentMethod(method.getName());
 		return symbol.isEmpty() && this.methods.putIfAbsent(method.getName(), method) == null;
 	}
 
