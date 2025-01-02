@@ -16,7 +16,8 @@ initObject(objectLabel, fieldsInit, parentInitLabel, stackSize) ::= <<
     addiu   $fp $sp 4
     move    $s0 $a0
 <if(parentInitLabel)>
-    jal     <parentInitLabel><else><endif>
+    jal     <parentInitLabel>
+<else><endif>
 <fieldsInit>
     move    $a0 $s0
     lw      $fp 12($sp)
@@ -44,4 +45,8 @@ methodDefinition(methodLabel, stackSize, methodBody) ::= <<
 
 loadAddress(address) ::= <<
     la      $a0 <address>
+>>
+
+storeField(offset) ::= <<
+    sw      $a0 <offset>($s0)
 >>

@@ -3,11 +3,14 @@ package cool.ast.visitors.mipsgen;
 import org.stringtemplate.v4.ST;
 
 import cool.ast.ASTVisitor;
+import cool.ast.nodes.ASTBoolean;
+import cool.ast.nodes.ASTCall;
 import cool.ast.nodes.ASTClass;
 import cool.ast.nodes.ASTField;
 import cool.ast.nodes.ASTInteger;
 import cool.ast.nodes.ASTMethod;
 import cool.ast.nodes.ASTRoot;
+import cool.ast.nodes.ASTString;
 import cool.mipsgen.MIPSGen;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.MethodSymbol;
@@ -15,6 +18,11 @@ import cool.semantic.symbol.MethodSymbol;
 public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private final MIPSGen mipsGen;
+
+	private ClassSymbol currentClass;
+	private MethodSymbol currentMethod;
+
+	private Integer dispatchCounter = 0;
 
 	public MIPSGenVisitor(final MIPSGen mipsGen) {
 		this.mipsGen = mipsGen;
@@ -32,12 +40,12 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTClass astClass) {
 
-		final ClassSymbol classSymbol = astClass.getSymbol().orElseThrow();
+		this.currentClass = astClass.getSymbol().orElseThrow();
 
 		final ST objectInit = this.mipsGen.getTextTemplate("initObject");
-		objectInit.add("objectLabel", MIPSGen.createInitLabel(classSymbol.getName()));
-		objectInit.add("parentInitLabel", classSymbol.getParent() == null ? null
-				: MIPSGen.createInitLabel(classSymbol.getParent().getName()));
+		objectInit.add("objectLabel", MIPSGen.createInitLabel(this.currentClass.getName()));
+		objectInit.add("parentInitLabel", this.currentClass.getParent() == null ? null
+				: MIPSGen.createInitLabel(this.currentClass.getParent().getName()));
 		objectInit.add("stackSize", 12);
 		objectInit.add("fieldsInit", astClass.getFeatures().stream().filter(ASTField.class::isInstance)
 				.map(feature -> feature.accept(this)).reduce(this.mipsGen.getProgramTemplate("sequence"),
@@ -55,10 +63,10 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTMethod astMethod) {
 
-		final MethodSymbol methodSymbol = astMethod.getSymbol().orElseThrow();
+		this.currentMethod = astMethod.getSymbol().orElseThrow();
 
 		final ST method = this.mipsGen.getTextTemplate("methodDefinition")
-				.add("methodLabel", MIPSGen.createMethodLabel(methodSymbol))
+				.add("methodLabel", MIPSGen.createMethodLabel(this.currentMethod))
 				.add("stackSize", 12)
 				.add("methodBody", astMethod.getBody().accept(this));
 
@@ -67,12 +75,39 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	@Override
 	public ST visit(final ASTField astField) {
+		if (astField.getDef().getExpr().isPresent())
+			return this.mipsGen.getProgramTemplate("sequence")
+					.add("e", astField.getDef().getExpr().get().accept(this))
+					.add("e", this.mipsGen.getTextTemplate("storeField").add("offset",
+							astField.getSymbol().orElseThrow().getOffset() + 12));
+
 		return this.mipsGen.getProgramTemplate("sequence");
+	}
+
+	@Override
+	public ST visit(final ASTCall astCall) {
+		return null;
 	}
 
 	@Override
 	public ST visit(final ASTInteger node) {
 		return this.mipsGen.getTextTemplate("loadAddress")
 				.add("address", this.mipsGen.getIntLabel(node.getValue()));
+	}
+
+	@Override
+	public ST visit(final ASTString node) {
+		return this.mipsGen.getTextTemplate("loadAddress")
+				.add("address", this.mipsGen.getStringLabel(node.getValue()));
+	}
+
+	@Override
+	public ST visit(final ASTBoolean node) {
+		return this.mipsGen.getTextTemplate("loadAddress")
+				.add("address", this.mipsGen.getBoolLabel(node.getValue()));
+	}
+
+	private String computeDispatchLabel() {
+		return MIPSGen.createMethodLabel(this.currentMethod) + "_dispatch" + this.dispatchCounter++;
 	}
 }

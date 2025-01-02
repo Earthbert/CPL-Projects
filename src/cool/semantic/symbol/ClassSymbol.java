@@ -112,9 +112,10 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		return Optional.ofNullable(this.methods.get(name));
 	}
 
-	public Integer getFieldsCount() {
-		return this.fields.size() - 1 +
-				(this.parent == null ? 0 : this.parent.getFieldsCount());
+	public List<IdSymbol> getFields() {
+		final List<IdSymbol> result = this.parent == null ? new ArrayList<>() : this.parent.getFields();
+		result.addAll(this.fields.values().stream().filter(f -> !Utils.SELF.equals(f.getName())).toList());
+		return result;
 	}
 
 	public List<MethodSymbol> getDispatchTable() {
@@ -138,8 +139,8 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		for (final var field : this.fields.values()) {
 			if (Utils.SELF.equals(field.getName()))
 				continue;
-			offset += 4;
 			field.setOffset(offset);
+			offset += 4;
 		}
 
 		return offset;

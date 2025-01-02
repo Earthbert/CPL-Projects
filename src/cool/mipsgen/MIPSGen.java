@@ -9,6 +9,7 @@ import org.stringtemplate.v4.STGroupFile;
 
 import cool.ast.nodes.ASTNode;
 import cool.ast.visitors.mipsgen.MIPSGenVisitor;
+import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
 import cool.utils.Utils;
@@ -119,13 +120,21 @@ public class MIPSGen {
 						.add("value", this.getIntLabel(0)))
 						.add("e", this.dataTemplates.getInstanceOf("ascii")
 								.add("value", ""));
+			} else if (List.of(Utils.INT, Utils.BOOL).contains(classSymbol.getName())) {
+				fieldsCount = 1;
+				data.add("e", this.dataTemplates.getInstanceOf("word")
+						.add("value", 0));
 			} else {
-				fieldsCount = List.of(Utils.INT, Utils.BOOL).contains(classSymbol.getName()) ? 1
-						: classSymbol.getFieldsCount();
-
-				for (int i = 0; i < fieldsCount; i++) {
+				final List<IdSymbol> fields = classSymbol.getFields();
+				fieldsCount = fields.size();
+				for (final IdSymbol field : fields) {
 					data.add("e", this.dataTemplates.getInstanceOf("word")
-							.add("value", 0));
+							.add("value", switch (field.getValueType().getName()) {
+								case Utils.INT -> this.getIntLabel(0);
+								case Utils.STRING -> this.getStringLabel("");
+								case Utils.BOOL -> this.getBoolLabel(false);
+								default -> 0;
+							}));
 				}
 			}
 
@@ -135,6 +144,7 @@ public class MIPSGen {
 					this.dataTemplates.getInstanceOf("prototype").add("metadata", metadata).add("data",
 							fieldsCount == 0 ? null : data));
 		}
+
 	}
 
 	private void generateStringConsts(final ST dataSection) {
