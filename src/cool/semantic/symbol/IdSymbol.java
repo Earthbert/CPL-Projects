@@ -34,4 +34,11 @@ public class IdSymbol extends Symbol {
 		this.valueType = valueType;
 	}
 
+	public IDSymbolType getType() {
+		return this.type;
+	}
+
+	public void setType(final IDSymbolType type) {
+		this.type = type;
+	}
 }

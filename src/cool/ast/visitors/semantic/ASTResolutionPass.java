@@ -154,6 +154,8 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 			}
 		}
 
+		astCall.setMethodSymbol(method.orElseThrow());
+
 		ClassSymbol returnType = method.orElseThrow().getReturnType();
 
 		if (returnType instanceof SelfTypeSymbol && astCall.getStaticDispatchType().isEmpty()) {

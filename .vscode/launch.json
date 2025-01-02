@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/04-method-def.cl",
+			"args": "tests/tema3/07-dispatch-on-void-abort.cl",
 			"mainClass": "cool.compiler.Compiler"
 		},
 		{

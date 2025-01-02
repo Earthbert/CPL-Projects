@@ -1,5 +1,7 @@
 package cool.ast.visitors.mipsgen;
 
+import java.io.File;
+
 import org.stringtemplate.v4.ST;
 
 import cool.ast.ASTVisitor;
@@ -7,17 +9,23 @@ import cool.ast.nodes.ASTBoolean;
 import cool.ast.nodes.ASTCall;
 import cool.ast.nodes.ASTClass;
 import cool.ast.nodes.ASTField;
+import cool.ast.nodes.ASTId;
 import cool.ast.nodes.ASTInteger;
 import cool.ast.nodes.ASTMethod;
 import cool.ast.nodes.ASTRoot;
 import cool.ast.nodes.ASTString;
+import cool.compiler.Compiler;
 import cool.mipsgen.MIPSGen;
 import cool.semantic.symbol.ClassSymbol;
+import cool.semantic.symbol.IDSymbolType;
 import cool.semantic.symbol.MethodSymbol;
+import cool.utils.Utils;
 
 public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private final MIPSGen mipsGen;
+
+	private ASTClass currentClassNode;
 
 	private ClassSymbol currentClass;
 	private MethodSymbol currentMethod;
@@ -40,6 +48,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTClass astClass) {
 
+		this.currentClassNode = astClass;
 		this.currentClass = astClass.getSymbol().orElseThrow();
 
 		final ST objectInit = this.mipsGen.getTextTemplate("initObject");
@@ -64,6 +73,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	public ST visit(final ASTMethod astMethod) {
 
 		this.currentMethod = astMethod.getSymbol().orElseThrow();
+		this.dispatchCounter = 0;
 
 		final ST method = this.mipsGen.getTextTemplate("methodDefinition")
 				.add("methodLabel", MIPSGen.createMethodLabel(this.currentMethod))
@@ -75,6 +85,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	@Override
 	public ST visit(final ASTField astField) {
+
 		if (astField.getDef().getExpr().isPresent())
 			return this.mipsGen.getProgramTemplate("sequence")
 					.add("e", astField.getDef().getExpr().get().accept(this))
@@ -86,6 +97,37 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	@Override
 	public ST visit(final ASTCall astCall) {
+
+		final ST params = this.mipsGen.getProgramTemplate("sequence");
+		params.add("e", this.mipsGen.getTextTemplate("reserveStack").add("size", astCall.getArguments().size() * 4));
+
+		for (int i = 0; i < astCall.getArguments().size(); i++) {
+			final var arg = astCall.getArguments().get(i);
+			params.add("e", arg.accept(this));
+			params.add("e", this.mipsGen.getTextTemplate("storeStack").add("offset", 4 + i * 4));
+		}
+
+		return this.mipsGen.getTextTemplate("methodCall")
+				.add("params", astCall.getArguments().isEmpty() ? null : params)
+				.add("methodLabel", MIPSGen.createMethodLabel(astCall.getSymbol().orElseThrow()))
+				.add("dispatchLabel", this.computeDispatchLabel())
+				.add("fileNameLabel",
+						this.mipsGen.getStringLabel(
+								new File(Compiler.fileNames.get(this.currentClassNode.getCtx())).getName()))
+				.add("line", astCall.getToken().getLine())
+				.add("methodOffset", this.mipsGen.getMethodOffset(astCall.getSymbol().orElseThrow()))
+				.add("subject", astCall.getSubject().map(subject -> subject.accept(this))
+						.orElse(this.mipsGen.getTextTemplate("evaluateSelf")));
+	}
+
+	@Override
+	public ST visit(final ASTId astId) {
+		if (Utils.SELF.equals(astId.getSymbol().getName()))
+			return this.mipsGen.getTextTemplate("evaluateSelf");
+
+		if (IDSymbolType.FIELD.equals(astId.getSymbol().getType()))
+			return this.mipsGen.getTextTemplate("loadField").add("offset", astId.getSymbol().getOffset() + 12);
+
 		return null;
 	}
 

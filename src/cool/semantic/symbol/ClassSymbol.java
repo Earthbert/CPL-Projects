@@ -13,7 +13,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	protected ClassSymbol parent;
 
-	private Integer tempLocalCount = 0;
+	private Integer initTempLocations = 0;
 
 	private final Map<String, IdSymbol> fields = new LinkedHashMap<>();
 	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
@@ -146,12 +146,12 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		return offset;
 	}
 
-	public Integer getTempLocalCount() {
-		return this.tempLocalCount;
+	public Integer getInitTempLocations() {
+		return this.initTempLocations;
 	}
 
-	public void setTempLocalCount(final Integer tempLocalCount) {
-		this.tempLocalCount = tempLocalCount;
+	public void setInitTempLocations(final Integer tempLocalCount) {
+		this.initTempLocations = tempLocalCount;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import org.stringtemplate.v4.STGroupFile;
 
 import cool.ast.nodes.ASTNode;
 import cool.ast.visitors.mipsgen.MIPSGenVisitor;
+import cool.ast.visitors.mipsgen.NTVisitor;
 import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
@@ -58,7 +59,7 @@ public class MIPSGen {
 
 			classSymbol.computeFieldsOffsets();
 		}
-
+		astRoot.accept(new NTVisitor());
 		textSection.add("e", astRoot.accept(new MIPSGenVisitor(this)));
 
 		return textSection;
@@ -209,7 +210,7 @@ public class MIPSGen {
 		}
 	}
 
-	public void generateDispatchTables(final ST dataSection) {
+	private void generateDispatchTables(final ST dataSection) {
 		for (final var entry : this.disptachTables.entrySet()) {
 			final String name = entry.getKey();
 			final List<MethodSymbol> dispatchTable = entry.getValue();
@@ -225,6 +226,10 @@ public class MIPSGen {
 					.add("label", createDispatchTableLabel(name))
 					.add("classDispTable", dispatchTableContent));
 		}
+	}
+
+	public Integer getMethodOffset(final MethodSymbol method) {
+		return this.disptachTables.get(method.getClassSymbol().getName()).indexOf(method) * 4;
 	}
 
 	public ST getProgramTemplate(final String name) {

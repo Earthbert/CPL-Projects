@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
+import cool.semantic.symbol.MethodSymbol;
 
 public class ASTCall extends ASTExpression {
 
@@ -14,6 +15,8 @@ public class ASTCall extends ASTExpression {
 	private final Optional<ASTExpression> subject;
 	private final Optional<ASTType> staticDispatchType;
 	private final List<ASTExpression> arguments;
+
+	private MethodSymbol methodSymbol;
 
 	public ASTCall(final Token token, final ASTId id, final Optional<ASTExpression> subject,
 			final Optional<ASTType> staticDispatchType,
@@ -23,6 +26,14 @@ public class ASTCall extends ASTExpression {
 		this.subject = subject;
 		this.staticDispatchType = staticDispatchType;
 		this.arguments = arguments;
+	}
+
+	public Optional<MethodSymbol> getSymbol() {
+		return Optional.ofNullable(this.methodSymbol);
+	}
+
+	public void setMethodSymbol(final MethodSymbol methodSymbol) {
+		this.methodSymbol = methodSymbol;
 	}
 
 	@Override

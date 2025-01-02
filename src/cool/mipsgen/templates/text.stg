@@ -43,10 +43,39 @@ methodDefinition(methodLabel, stackSize, methodBody) ::= <<
     jr      $ra
 >>
 
+methodCall(subject, methodLabel, methodOffset, dispatchLabel, fileNameLabel, line, params) ::= <<
+<params>
+<subject>
+    bnez    $a0 <dispatchLabel>
+    la      $a0 <fileNameLabel>
+    li      $t1 <line>
+    jal     _dispatch_abort
+<dispatchLabel>:
+    lw      $t1 8($a0)
+    lw      $t1 <methodOffset>($t1)
+    jalr    $t1
+>>
+
+reserveStack(size) ::= <<
+    addiu   $sp $sp -<size>
+>>
+
+storeStack(offset) ::= <<
+    sw      $a0 <offset>($sp)
+>>
+
+evaluateSelf() ::= <<
+    move    $a0 $s0
+>>
+
 loadAddress(address) ::= <<
     la      $a0 <address>
 >>
 
 storeField(offset) ::= <<
     sw      $a0 <offset>($s0)
+>>
+
+loadField(offset) ::= <<
+    lw      $a0 <offset>($s0)
 >>
