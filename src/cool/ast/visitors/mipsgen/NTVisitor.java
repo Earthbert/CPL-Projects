@@ -1,6 +1,7 @@
 package cool.ast.visitors.mipsgen;
 
 import cool.ast.ASTVisitor;
+import cool.ast.nodes.ASTBlock;
 import cool.ast.nodes.ASTBoolean;
 import cool.ast.nodes.ASTCall;
 import cool.ast.nodes.ASTClass;
@@ -47,6 +48,11 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	@Override
 	public Integer visit(final ASTCall astCall) {
 		return astCall.getArguments().stream().map(arg -> arg.accept(this)).max(Integer::compare).orElse(0);
+	}
+
+	@Override
+	public Integer visit(final ASTBlock astBlock) {
+		return astBlock.getExpressions().stream().map(expr -> expr.accept(this)).max(Integer::compare).orElse(0);
 	}
 
 	@Override

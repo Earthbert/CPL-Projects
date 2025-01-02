@@ -10,6 +10,7 @@
 		"visitors": true,
 		"importDir": "../lexer"
 	},
+	"java.project.outputPath": "build",
 	"java.project.resourceFilters": [
 		".antlr",
 		"\\.git",

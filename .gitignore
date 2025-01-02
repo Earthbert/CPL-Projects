@@ -1,5 +1,8 @@
 tests/tema1/*.out
 tests/tema2/*.out
+tests/tema3/*.out
+tests/tema3/*.s
 .antlr/
 src/cool/parser/CoolLexer.*
 output.s
+build/

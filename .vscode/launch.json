@@ -19,8 +19,11 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/07-dispatch-on-void-abort.cl",
-			"mainClass": "cool.compiler.Compiler"
+			"args": "tests/tema3/11-dispatch-String.cl",
+			"mainClass": "cool.compiler.Compiler",
+			"env": {
+				"OUTPUT_FILE": "output.s"
+			}
 		},
 		{
 			"type": "antlr-debug",

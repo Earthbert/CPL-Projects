@@ -5,15 +5,7 @@ import java.io.File;
 import org.stringtemplate.v4.ST;
 
 import cool.ast.ASTVisitor;
-import cool.ast.nodes.ASTBoolean;
-import cool.ast.nodes.ASTCall;
-import cool.ast.nodes.ASTClass;
-import cool.ast.nodes.ASTField;
-import cool.ast.nodes.ASTId;
-import cool.ast.nodes.ASTInteger;
-import cool.ast.nodes.ASTMethod;
-import cool.ast.nodes.ASTRoot;
-import cool.ast.nodes.ASTString;
+import cool.ast.nodes.*;
 import cool.compiler.Compiler;
 import cool.mipsgen.MIPSGen;
 import cool.semantic.symbol.ClassSymbol;
@@ -118,6 +110,13 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				.add("methodOffset", this.mipsGen.getMethodOffset(astCall.getSymbol().orElseThrow()))
 				.add("subject", astCall.getSubject().map(subject -> subject.accept(this))
 						.orElse(this.mipsGen.getTextTemplate("evaluateSelf")));
+	}
+
+	@Override
+	public ST visit(final ASTBlock astBlock) {
+		return astBlock.getExpressions().stream().map(expr -> expr.accept(this))
+				.reduce(this.mipsGen.getProgramTemplate("sequence"),
+						(accumulated, current) -> accumulated.add("e", current));
 	}
 
 	@Override
