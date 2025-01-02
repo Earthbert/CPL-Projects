@@ -1,9 +1,11 @@
 prologue() ::= <<
-.data
+    .data
     .align  2
     .globl  class_nameTab
     .globl  Int_protObj
     .globl  String_protObj
+    .globl  bool_const0
+    .globl  bool_const1
     .globl  Main_protObj
     .globl  _int_tag
     .globl  _string_tag

@@ -8,36 +8,63 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroupFile;
 
 import cool.ast.nodes.ASTNode;
+import cool.ast.visitors.mipsgen.MIPSGenVisitor;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
 import cool.utils.Utils;
 
 public class MIPSGen {
 
-	Map<String, List<MethodSymbol>> disptachTables = new LinkedHashMap<>();
+	private final Map<String, List<MethodSymbol>> disptachTables = new LinkedHashMap<>();
 
-	Map<String, Integer> classTags = new LinkedHashMap<>();
+	private final Map<String, Integer> classTags = new LinkedHashMap<>();
 
-	Map<String, Integer> constStrings = new LinkedHashMap<>();
-	Map<Integer, Integer> constInts = new LinkedHashMap<>();
+	private final Map<String, Integer> constStrings = new LinkedHashMap<>();
+	private final Map<Integer, Integer> constInts = new LinkedHashMap<>();
 
-	STGroupFile programTemplates = new STGroupFile(Utils.stTemplatesPath + "/program.stg");
-	STGroupFile dataTemplates = new STGroupFile(Utils.stTemplatesPath + "/data.stg");
+	private final STGroupFile programTemplates = new STGroupFile(Utils.stTemplatesPath + "/program.stg");
+	private final STGroupFile dataTemplates = new STGroupFile(Utils.stTemplatesPath + "/data.stg");
+	private final STGroupFile textTemplates = new STGroupFile(Utils.stTemplatesPath + "/text.stg");
 
-	public ST generateProgram(final ASTNode root) {
+	public ST generateProgram(final ASTNode astRoot) {
 		final var program = this.programTemplates.getInstanceOf("program");
 
+		this.getStringLabel("");
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
 			this.getStringLabel(classSymbol.getName());
 			this.disptachTables.put(classSymbol.getName(), classSymbol.getDispatchTable());
 		}
 
+		program.add("text", this.generateTextSection(astRoot));
 		program.add("data", this.generateDataSection());
+
 		return program;
 	}
 
+	public ST generateTextSection(final ASTNode astRoot) {
+		final ST textSection = this.programTemplates.getInstanceOf("sequence");
+
+		textSection.add("e", this.textTemplates.getInstanceOf("prologue"));
+
+		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
+			if (List.of(Utils.OBJECT, Utils.IO, Utils.INT, Utils.STRING, Utils.BOOL).contains(classSymbol.getName())) {
+				textSection.add("e", this.textTemplates.getInstanceOf("initObject")
+						.add("objectLabel", createInitLabel(classSymbol.getName()))
+						.add("parentInitLabel", classSymbol.getParent() == null ? null
+								: createInitLabel(classSymbol.getParent().getName()))
+						.add("stackSize", 12));
+			}
+
+			classSymbol.computeFieldsOffsets();
+		}
+
+		textSection.add("e", astRoot.accept(new MIPSGenVisitor(this)));
+
+		return textSection;
+	}
+
 	public ST generateDataSection() {
-		final var dataSection = this.programTemplates.getInstanceOf("sequence");
+		final ST dataSection = this.programTemplates.getInstanceOf("sequence");
 
 		dataSection.add("e", this.dataTemplates.getInstanceOf("prologue"));
 
@@ -149,7 +176,7 @@ public class MIPSGen {
 			final ST intConst = this.dataTemplates.getInstanceOf("prototype")
 					.add("metadata", metadata)
 					.add("data", this.dataTemplates.getInstanceOf("word")
-							.add("value", this.getIntLabel(value)));
+							.add("value", value));
 
 			dataSection.add("e", intConst);
 		}
@@ -166,7 +193,7 @@ public class MIPSGen {
 			final ST boolConst = this.dataTemplates.getInstanceOf("prototype")
 					.add("metadata", metadata)
 					.add("data", this.dataTemplates.getInstanceOf("word")
-							.add("value", this.getIntLabel(i)));
+							.add("value", i));
 
 			dataSection.add("e", boolConst);
 		}
@@ -190,6 +217,14 @@ public class MIPSGen {
 		}
 	}
 
+	public ST getProgramTemplate(final String name) {
+		return this.programTemplates.getInstanceOf(name);
+	}
+
+	public ST getTextTemplate(final String name) {
+		return this.textTemplates.getInstanceOf(name);
+	}
+
 	public String getStringLabel(final String str) {
 		return "string_const" + this.constStrings.computeIfAbsent(str, k -> this.constStrings.size());
 	}
@@ -202,19 +237,23 @@ public class MIPSGen {
 		return "bool_const" + (b ? "1" : "0");
 	}
 
-	private static String createConstLabel(final String type, final int index) {
+	public static String createConstLabel(final String type, final int index) {
 		return type.toLowerCase() + "_const" + index;
 	}
 
-	private static String createProtObjLabel(final String className) {
+	public static String createProtObjLabel(final String className) {
 		return className + "_protObj";
 	}
 
-	private static String createInitLabel(final String className) {
+	public static String createInitLabel(final String className) {
 		return className + "_init";
 	}
 
-	private static String createDispatchTableLabel(final String className) {
+	public static String createDispatchTableLabel(final String className) {
 		return className + "_dispTable";
+	}
+
+	public static String createMethodLabel(final MethodSymbol method) {
+		return method.getClassSymbol().getName() + "." + method.getName();
 	}
 }

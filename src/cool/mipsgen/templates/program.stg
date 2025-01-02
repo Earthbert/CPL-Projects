@@ -3,6 +3,7 @@ sequenceSpaced(e) ::= "<e; separator=\"\n\n\">"
 
 program(data, text) ::= <<
 <data>
-
+heap_start:
+    .word   0
 <text>
 >>

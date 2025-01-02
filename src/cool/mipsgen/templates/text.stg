@@ -1,0 +1,47 @@
+prologue() ::= <<
+    .text
+    .globl  Int_init
+    .globl  String_init
+    .globl  Bool_init
+    .globl  Main_init
+    .globl  Main.main
+>>
+
+initObject(objectLabel, fieldsInit, parentInitLabel, stackSize) ::= <<
+<objectLabel>:
+    addiu   $sp $sp -<stackSize>
+    sw      $fp 12($sp)
+    sw      $s0 8($sp)
+    sw      $ra 4($sp)
+    addiu   $fp $sp 4
+    move    $s0 $a0
+<if(parentInitLabel)>
+    jal     <parentInitLabel><else><endif>
+<fieldsInit>
+    move    $a0 $s0
+    lw      $fp 12($sp)
+    lw      $s0 8($sp)
+    lw      $ra 4($sp)
+    addiu   $sp $sp <stackSize>
+    jr      $ra
+>>
+
+methodDefinition(methodLabel, stackSize, methodBody) ::= <<
+<methodLabel>:
+    addiu   $sp $sp -<stackSize>
+    sw      $fp 12($sp)
+    sw      $s0 8($sp)
+    sw      $ra 4($sp)
+    addiu   $fp $sp 4
+    move    $s0 $a0
+<methodBody>
+    lw      $fp 12($sp)
+    lw      $s0 8($sp)
+    lw      $ra 4($sp)
+    addiu   $sp $sp <stackSize>
+    jr      $ra
+>>
+
+loadAddress(address) ::= <<
+    la      $a0 <address>
+>>

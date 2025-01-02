@@ -1,6 +1,7 @@
 package cool.compiler;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -145,6 +146,8 @@ public class Compiler {
 
 		final ST data = new MIPSGen().generateProgram(astRoot);
 
-		System.out.println(data.render());
+		try (FileWriter writer = new FileWriter("output.s")) {
+			writer.write(data.render());
+		}
 	}
 }

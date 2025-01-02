@@ -13,6 +13,8 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	protected ClassSymbol parent;
 
+	private Integer tempLocalCount = 0;
+
 	private final Map<String, IdSymbol> fields = new LinkedHashMap<>();
 	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
 
@@ -118,7 +120,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 	public List<MethodSymbol> getDispatchTable() {
 		final List<MethodSymbol> dispatchTable = this.parent == null ? new ArrayList<>()
 				: this.parent.getDispatchTable();
-		
+
 		for (final var method : this.methods.values()) {
 			if (dispatchTable.contains(method)) {
 				dispatchTable.set(dispatchTable.indexOf(method), method);
@@ -128,6 +130,27 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 		}
 
 		return dispatchTable;
+	}
+
+	public Integer computeFieldsOffsets() {
+		Integer offset = this.parent == null ? 0 : this.parent.computeFieldsOffsets();
+
+		for (final var field : this.fields.values()) {
+			if (Utils.SELF.equals(field.getName()))
+				continue;
+			offset += 4;
+			field.setOffset(offset);
+		}
+
+		return offset;
+	}
+
+	public Integer getTempLocalCount() {
+		return this.tempLocalCount;
+	}
+
+	public void setTempLocalCount(final Integer tempLocalCount) {
+		this.tempLocalCount = tempLocalCount;
 	}
 
 	@Override

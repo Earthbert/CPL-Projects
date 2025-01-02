@@ -14,6 +14,8 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 
 	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
+	private Integer tempLocalCount = 0;
+
 	public MethodSymbol(final String name, final ClassSymbol returnType, final ClassSymbol outerScope) {
 		super(name);
 		this.returnType = returnType;
@@ -48,15 +50,23 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 		return this.returnType;
 	}
 
-    @Override
-    public boolean equals(final Object obj) {
+	@Override
+	public boolean equals(final Object obj) {
 		if (obj instanceof final MethodSymbol other) {
 			return this.getName().equals(other.getName());
 		}
 		return false;
-    }
+	}
 
-    public ClassSymbol getClassSymbol() {
-        return this.classSymbol;
-    }
+	public Integer getTempLocalCount() {
+		return this.tempLocalCount;
+	}
+
+	public void setTempLocalCount(final Integer tempLocalCount) {
+		this.tempLocalCount = tempLocalCount;
+	}
+
+	public ClassSymbol getClassSymbol() {
+		return this.classSymbol;
+	}
 }

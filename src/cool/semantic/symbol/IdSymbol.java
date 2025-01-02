@@ -6,6 +6,8 @@ public class IdSymbol extends Symbol {
 
 	protected IDSymbolType type;
 
+	private Integer offset;
+
 	public IdSymbol(final String name, final IDSymbolType type) {
 		super(name);
 		this.type = type;
@@ -14,6 +16,14 @@ public class IdSymbol extends Symbol {
 	public IdSymbol(final String name, final ClassSymbol valueType, final IDSymbolType type) {
 		this(name, type);
 		this.valueType = valueType;
+	}
+
+	public Integer getOffset() {
+		return this.offset;
+	}
+
+	public void setOffset(final Integer offset) {
+		this.offset = offset;
 	}
 
 	public ClassSymbol getValueType() {
