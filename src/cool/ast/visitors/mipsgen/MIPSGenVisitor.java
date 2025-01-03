@@ -10,6 +10,7 @@ import cool.compiler.Compiler;
 import cool.mipsgen.MIPSGen;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IDSymbolType;
+import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.utils.Utils;
 
@@ -70,7 +71,8 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		final ST method = this.mipsGen.getTextTemplate("methodDefinition")
 				.add("methodLabel", MIPSGen.createMethodLabel(this.currentMethod))
 				.add("stackSize", 12)
-				.add("methodBody", astMethod.getBody().accept(this));
+				.add("methodBody", astMethod.getBody().accept(this))
+				.add("paramsSize", astMethod.getArguments().size() > 0 ? astMethod.getArguments().size() * 4 : null);
 
 		return method;
 	}
@@ -124,10 +126,28 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		if (Utils.SELF.equals(astId.getSymbol().getName()))
 			return this.mipsGen.getTextTemplate("evaluateSelf");
 
-		if (IDSymbolType.FIELD.equals(astId.getSymbol().getType()))
-			return this.mipsGen.getTextTemplate("loadField").add("offset", astId.getSymbol().getOffset() + 12);
+		return switch (astId.getSymbol().getType()) {
+			case FIELD -> this.mipsGen.getTextTemplate("loadField").add("offset", astId.getSymbol().getOffset() + 12);
+			case FORMAL -> this.mipsGen.getTextTemplate("loadFormal").add("offset", astId.getSymbol().getOffset() + 12);
+			case LOCAL -> this.mipsGen.getTextTemplate("loadLocal").add("offset", astId.getSymbol().getOffset());
+		};
+	}
 
-		return null;
+	@Override
+	public ST visit(final ASTAssignment astAssignment) {
+		final IdSymbol symbol = astAssignment.getId().getSymbol();
+
+		final ST storeID = switch (symbol.getType()) {
+			case IDSymbolType.FIELD ->
+				this.mipsGen.getTextTemplate("storeField").add("offset", symbol.getOffset() + 12);
+			case IDSymbolType.FORMAL ->
+				this.mipsGen.getTextTemplate("storeFormal").add("offset", symbol.getOffset() + 12);
+			case IDSymbolType.LOCAL -> this.mipsGen.getTextTemplate("storeLocal").add("offset", symbol.getOffset());
+		};
+
+		return this.mipsGen.getProgramTemplate("sequence")
+				.add("e", astAssignment.getExpr().accept(this))
+				.add("e", storeID);
 	}
 
 	@Override

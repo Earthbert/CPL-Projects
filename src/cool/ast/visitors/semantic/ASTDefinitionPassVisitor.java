@@ -201,7 +201,7 @@ public class ASTDefinitionPassVisitor extends ASTSemanticVisitor<Void> {
 			return null;
 		}
 
-		final IdSymbol idSymbol = new IdSymbol(formalName, IDSymbolType.FORMAT);
+		final IdSymbol idSymbol = new IdSymbol(formalName, IDSymbolType.FORMAL);
 		idSymbol.setValueType(classSymbol.orElseThrow());
 		this.currentMethod.add(idSymbol);
 		astFormal.setSymbol(idSymbol);

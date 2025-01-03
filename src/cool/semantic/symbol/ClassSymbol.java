@@ -24,7 +24,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public ClassSymbol(final String name) {
 		super(name);
-		this.fields.put(Utils.SELF, new IdSymbol(Utils.SELF, SymbolTable.getSelfType(), IDSymbolType.FORMAT));
+		this.fields.put(Utils.SELF, new IdSymbol(Utils.SELF, SymbolTable.getSelfType(), IDSymbolType.FORMAL));
 	}
 
 	public ClassSymbol(final String name, final ClassSymbol parent) {

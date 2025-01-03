@@ -10,6 +10,9 @@
 		"visitors": true,
 		"importDir": "../lexer"
 	},
+	"search.exclude": {
+		"**/build": true,
+	},
 	"java.project.outputPath": "build",
 	"java.project.resourceFilters": [
 		".antlr",

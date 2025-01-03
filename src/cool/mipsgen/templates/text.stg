@@ -27,7 +27,7 @@ initObject(objectLabel, fieldsInit, parentInitLabel, stackSize) ::= <<
     jr      $ra
 >>
 
-methodDefinition(methodLabel, stackSize, methodBody) ::= <<
+methodDefinition(methodLabel, stackSize, methodBody, paramsSize) ::= <<
 <methodLabel>:
     addiu   $sp $sp -<stackSize>
     sw      $fp 12($sp)
@@ -40,6 +40,9 @@ methodDefinition(methodLabel, stackSize, methodBody) ::= <<
     lw      $s0 8($sp)
     lw      $ra 4($sp)
     addiu   $sp $sp <stackSize>
+    <if(paramsSize)>
+    addiu   $sp $sp <paramsSize>
+<else><endif>
     jr      $ra
 >>
 
@@ -78,4 +81,12 @@ storeField(offset) ::= <<
 
 loadField(offset) ::= <<
     lw      $a0 <offset>($s0)
+>>
+
+storeFormal(offset) ::= <<
+    sw      $a0 <offset>($fp)
+>>
+
+loadFormal(offset) ::= <<
+    lw      $a0 <offset>($fp)
 >>
