@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/14-formals-ref-assign.cl",
+			"args": "tests/tema3/22-isvoid.cl",
 			"mainClass": "cool.compiler.Compiler",
 			"env": {
 				"OUTPUT_FILE": "output.s"

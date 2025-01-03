@@ -64,6 +64,22 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	}
 
 	@Override
+	public Integer visit(final ASTNew astNew) {
+		return 0;
+	}
+
+	@Override
+	public Integer visit(final ASTIf astIf) {
+		return Math.max(astIf.getCondition().accept(this),
+				Math.max(astIf.getThenBranch().accept(this), astIf.getElseBranch().accept(this)));
+	}
+
+	@Override
+	public Integer visit(final ASTIsVoid astIsVoid) {
+		return 0;
+	}
+
+	@Override
 	public Integer visit(final ASTField astField) {
 		return astField.getDef().getExpr().map(expr -> expr.accept(this)).orElse(0);
 	}

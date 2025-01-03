@@ -52,9 +52,8 @@ methodDefinition(methodLabel, stackSize, methodBody, paramsSize) ::= <<
     jr      $ra
 >>
 
-methodCall(subject, methodLabel, methodOffset, dispatchLabel, fileNameLabel, line, params) ::= <<
-<if(params)>
-<params>
+methodCall(subject, staticType, methodOffset, dispatchLabel, fileNameLabel, line, params) ::= <<
+<if(params)><params>
 <else><endif>
 <subject>
     bnez    $a0 <dispatchLabel>
@@ -62,15 +61,56 @@ methodCall(subject, methodLabel, methodOffset, dispatchLabel, fileNameLabel, lin
     li      $t1 <line>
     jal     _dispatch_abort
 <dispatchLabel>:
+<if(staticType)>
+    la      $t1 <staticType>_dispTable
+<else>
     lw      $t1 8($a0)
+<endif>
     lw      $t1 <methodOffset>($t1)
     jalr    $t1
+>>
+
+new(className) ::= <<
+    la      $a0 <className>_protObj
+    jal     Object.copy
+    jal     <className>_init 
+>>
+
+newSelf() ::= <<
+    la      $s1 class_objTab
+    lw      $t2 0($s0)
+    sll     $t2 $t2 3
+    addu    $s1 $s1 $t2
+    lw      $a0 0($s1)
+    jal     Object.copy
+    lw      $s1 4($s1)
+    jalr    $s1
 >>
 
 let(initExpr, offset, expr) ::= <<
 <initExpr>
     sw      $a0 -<offset>($fp)
 <expr>
+>>
+
+if(condition, thenBranch, elseBranch, elseLabel, endLabel) ::= <<
+<condition>
+    lw      $t1 12($a0)
+    beqz    $t1 <elseLabel>
+<thenBranch>
+    b       <endLabel>
+<elseLabel>:
+<elseBranch>
+<endLabel>:
+>>
+
+isvoid(expr, trueLabel, falseLabel, endLabel) ::= <<
+<expr>
+    move    $t1 $a0
+    la      $a0 <trueLabel>
+    beqz    $t1 <endLabel>
+    la      $a0 <falseLabel>
+<endLabel>:
 >>
 
 reserveStack(size) ::= <<

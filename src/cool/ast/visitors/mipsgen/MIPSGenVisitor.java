@@ -14,7 +14,6 @@ import cool.mipsgen.TemplatesStrings.T;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IDSymbolType;
 import cool.semantic.symbol.IdSymbol;
-import cool.semantic.symbol.MethodSymbol;
 import cool.utils.Utils;
 
 public class MIPSGenVisitor implements ASTVisitor<ST> {
@@ -24,9 +23,9 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	private String fileName;
 
 	private ClassSymbol currentClass;
-	private MethodSymbol currentMethod;
+	private String labelPrefix;
 
-	private Integer dispatchCounter = 0;
+	private Integer labelCounter = 0;
 
 	public MIPSGenVisitor(final MIPSGen mipsGen) {
 		this.mipsGen = mipsGen;
@@ -46,6 +45,8 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 		this.fileName = new File(Compiler.fileNames.get(astClass.getCtx())).getName();
 		this.currentClass = astClass.getSymbol().orElseThrow();
+
+		this.labelPrefix = MIPSGen.createInitLabel(this.currentClass.getName());
 
 		final ST objectInit = this.mipsGen.getTextTemplate(T.INIT_OBJECT)
 				.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(this.currentClass.getName()))
@@ -68,12 +69,13 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTMethod astMethod) {
 
-		this.currentMethod = astMethod.getSymbol().orElseThrow();
-		this.dispatchCounter = 0;
+		final var methodSymbol = astMethod.getSymbol().orElseThrow();
+		this.labelPrefix = MIPSGen.createMethodLabel(methodSymbol);
+		this.labelCounter = 0;
 
 		final ST method = this.mipsGen.getTextTemplate(T.METHOD_DEFINITION)
-				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(this.currentMethod))
-				.add(T.STACK_SIZE, new CustomSTValue(this.currentMethod.getLocals().toString()))
+				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(methodSymbol))
+				.add(T.STACK_SIZE, new CustomSTValue(methodSymbol.getLocals().toString()))
 				.add(T.METHOD_BODY, astMethod.getBody().accept(this))
 				.add(T.PARAMS_SIZE, new CustomSTValue(String.valueOf(astMethod.getArguments().size() * 4)));
 
@@ -106,13 +108,19 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 		return this.mipsGen.getTextTemplate(T.METHOD_CALL)
 				.add(T.PARAMS, astCall.getArguments().isEmpty() ? null : params)
-				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(astCall.getSymbol().orElseThrow()))
 				.add(T.DISPATCH_LABEL, this.createDispatchLabel())
 				.add(T.FILE_NAME_LABEL, this.mipsGen.getStringLabel(this.fileName))
 				.add(T.LINE, astCall.getToken().getLine())
 				.add(T.METHOD_OFFSET, this.mipsGen.getMethodOffset(astCall.getSymbol().orElseThrow()))
+				.add(T.STATIC_TYPE, astCall.getStaticDispatchType().map(type -> type.getToken().getText()).orElse(null))
 				.add(T.SUBJECT, astCall.getSubject().map(subject -> subject.accept(this))
 						.orElse(this.mipsGen.getTextTemplate(T.EVALUATE_SELF)));
+	}
+
+	@Override
+	public ST visit(final ASTNew astNew) {
+		return Utils.SELF_TYPE.equals(astNew.getType().getToken().getText()) ? this.mipsGen.getTextTemplate(T.NEW_SELF)
+				: this.mipsGen.getTextTemplate(T.NEW).add(T.CLASS_NAME, astNew.getType().getToken().getText());
 	}
 
 	@Override
@@ -156,6 +164,16 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	}
 
 	@Override
+	public ST visit(final ASTIf astIf) {
+		return this.mipsGen.getTextTemplate(T.IF)
+				.add(T.CONDITION, astIf.getCondition().accept(this))
+				.add(T.THEN_BRANCH, astIf.getThenBranch().accept(this))
+				.add(T.ELSE_BRANCH, astIf.getElseBranch().accept(this))
+				.add(T.ELSE_LABEL, this.createElseLabel())
+				.add(T.END_LABEL, this.createEndLabel());
+	}
+
+	@Override
 	public ST visit(final ASTAssignment astAssignment) {
 		final IdSymbol symbol = astAssignment.getId().getSymbol();
 
@@ -170,6 +188,15 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		return this.mipsGen.getProgramTemplate(P.SEQUENCE)
 				.add(P.E, astAssignment.getExpr().accept(this))
 				.add(P.E, storeID);
+	}
+
+	@Override
+	public ST visit(final ASTIsVoid astIsVoid) {
+		return this.mipsGen.getTextTemplate(T.ISVOID)
+				.add(T.EXPR, astIsVoid.getExpression().accept(this))
+				.add(T.TRUE_LABEL, this.mipsGen.getBoolLabel(true))
+				.add(T.FALSE_LABEL, this.mipsGen.getBoolLabel(false))
+				.add(T.END_LABEL, this.createIsVoidLabel());
 	}
 
 	@Override
@@ -191,6 +218,18 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	}
 
 	private String createDispatchLabel() {
-		return MIPSGen.createMethodLabel(this.currentMethod) + "_dispatch" + this.dispatchCounter++;
+		return this.labelPrefix + "_dispatch_" + this.labelCounter++;
+	}
+
+	private String createElseLabel() {
+		return this.labelPrefix + "_else_" + this.labelCounter++;
+	}
+
+	private String createEndLabel() {
+		return this.labelPrefix + "_endif_" + this.labelCounter++;
+	}
+
+	private String createIsVoidLabel() {
+		return this.labelPrefix + "_endIsVoid_" + this.labelCounter++;
 	}
 }

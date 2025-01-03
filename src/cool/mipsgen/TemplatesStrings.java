@@ -31,15 +31,31 @@ public class TemplatesStrings {
 
 		public static final String METHOD_CALL = "methodCall";
 		public static final String SUBJECT = "subject";
+		public static final String STATIC_TYPE = "staticType";
 		public static final String METHOD_OFFSET = "methodOffset";
 		public static final String DISPATCH_LABEL = "dispatchLabel";
 		public static final String FILE_NAME_LABEL = "fileNameLabel";
 		public static final String LINE = "line";
 		public static final String PARAMS = "params";
 
+		public static final String NEW = "new";
+		public static final String CLASS_NAME = "className";
+		public static final String NEW_SELF = "newSelf";
+
 		public static final String LET = "let";
 		public static final String INIT_EXPR = "initExpr";
 		public static final String EXPR = "expr";
+
+		public static final String IF = "if";
+		public static final String CONDITION = "condition";
+		public static final String THEN_BRANCH = "thenBranch";
+		public static final String ELSE_BRANCH = "elseBranch";
+		public static final String ELSE_LABEL = "elseLabel";
+		public static final String END_LABEL = "endLabel";
+
+		public static final String ISVOID = "isvoid";
+		public static final String TRUE_LABEL = "trueLabel";
+		public static final String FALSE_LABEL = "falseLabel";
 
 		public static final String EVALUATE_SELF = "evaluateSelf";
 

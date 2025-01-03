@@ -378,6 +378,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 	@Override
 	public Optional<ClassSymbol> visit(final ASTIsVoid astIsVoid) {
+		astIsVoid.getExpression().accept(this);
 		return SymbolTable.getGlobals().lookup(Utils.BOOL);
 	}
 
