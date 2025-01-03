@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTComparison extends AST2OperandOp {
+public class ASTComparison extends ASTBinaryOp {
 
 	public ASTComparison(final Token token, final ASTExpression left, final ASTExpression right) {
 		super(token, left, right);

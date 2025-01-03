@@ -332,12 +332,12 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 	@Override
 	public Optional<ClassSymbol> visit(final ASTArithmetic astArithmetic) {
-		return this.visit((AST2OperandOp) astArithmetic);
+		return this.visit((ASTBinaryOp) astArithmetic);
 	}
 
 	@Override
 	public Optional<ClassSymbol> visit(final ASTComparison astComparison) {
-		return this.visit((AST2OperandOp) astComparison);
+		return this.visit((ASTBinaryOp) astComparison);
 	}
 
 	@Override
@@ -383,7 +383,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	}
 
 	@Override
-	public Optional<ClassSymbol> visit(final AST2OperandOp ast2OperandOp) {
+	public Optional<ClassSymbol> visit(final ASTBinaryOp ast2OperandOp) {
 
 		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
 		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();

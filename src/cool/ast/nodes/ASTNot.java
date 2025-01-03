@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTNot extends AST1OperandOp {
+public class ASTNot extends ASTUnaryOp {
 
 	public ASTNot(final Token token, final ASTExpression expression) {
 		super(token, expression);

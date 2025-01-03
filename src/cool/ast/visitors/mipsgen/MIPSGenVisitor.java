@@ -25,6 +25,8 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	private ClassSymbol currentClass;
 	private String labelPrefix;
 
+	private Integer offset = 0;
+
 	private Integer labelCounter = 0;
 
 	public MIPSGenVisitor(final MIPSGen mipsGen) {
@@ -174,6 +176,27 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	}
 
 	@Override
+	public ST visit(final ASTArithmetic astArithmetic) {
+
+		final var st = this.mipsGen.getTextTemplate(T.BINARY_ARITHM_OP);
+
+		final ST left = astArithmetic.getLeft().accept(this);
+		this.offset -= 4;
+		final ST right = astArithmetic.getRight().accept(this);
+		this.offset += 4;
+
+		return st.add(T.OFFSET, this.offset - 4)
+				.add(T.LEFT, left)
+				.add(T.RIGHT, right)
+				.add(T.OP, new CustomSTValue(astArithmetic.getToken().getText()));
+	}
+
+	@Override
+	public ST visit(final ASTComparison astComparison) {
+		return null;
+	}
+
+	@Override
 	public ST visit(final ASTAssignment astAssignment) {
 		final IdSymbol symbol = astAssignment.getId().getSymbol();
 
@@ -197,6 +220,15 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				.add(T.TRUE_LABEL, this.mipsGen.getBoolLabel(true))
 				.add(T.FALSE_LABEL, this.mipsGen.getBoolLabel(false))
 				.add(T.END_LABEL, this.createIsVoidLabel());
+	}
+
+	@Override
+	public ST visit(final ASTNot astNot) {
+		return this.mipsGen.getTextTemplate(T.NOT)
+				.add(T.EXPR, astNot.getExpression().accept(this))
+				.add(T.TRUE_LABEL, this.mipsGen.getBoolLabel(true))
+				.add(T.FALSE_LABEL, this.mipsGen.getBoolLabel(false))
+				.add(T.END_LABEL, this.createNotLabel());
 	}
 
 	@Override
@@ -231,5 +263,9 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private String createIsVoidLabel() {
 		return this.labelPrefix + "_endIsVoid_" + this.labelCounter++;
+	}
+
+	private String createNotLabel() {
+		return this.labelPrefix + "_endNot_" + this.labelCounter++;
 	}
 }

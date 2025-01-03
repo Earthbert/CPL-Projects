@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/22-isvoid.cl",
+			"args": "tests/tema3/24-arithm-plus.cl",
 			"mainClass": "cool.compiler.Compiler",
 			"env": {
 				"OUTPUT_FILE": "output.s"

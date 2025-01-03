@@ -46,7 +46,7 @@ public class TemplatesStrings {
 		public static final String INIT_EXPR = "initExpr";
 		public static final String EXPR = "expr";
 
-		public static final String IF = "if";
+		public static final String IF = "iff";
 		public static final String CONDITION = "condition";
 		public static final String THEN_BRANCH = "thenBranch";
 		public static final String ELSE_BRANCH = "elseBranch";
@@ -56,6 +56,13 @@ public class TemplatesStrings {
 		public static final String ISVOID = "isvoid";
 		public static final String TRUE_LABEL = "trueLabel";
 		public static final String FALSE_LABEL = "falseLabel";
+
+		public static final String BINARY_ARITHM_OP = "binaryArithmOp";
+		public static final String LEFT = "left";
+		public static final String RIGHT = "right";
+		public static final String OP = "op";
+
+		public static final String NOT = "not";
 
 		public static final String EVALUATE_SELF = "evaluateSelf";
 

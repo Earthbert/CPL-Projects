@@ -104,7 +104,7 @@ public interface ASTVisitor<T> {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 
-	default T visit(final AST2OperandOp ast2OperandOp) {
+	default T visit(final ASTBinaryOp ast2OperandOp) {
 		throw new UnsupportedOperationException("Unimplemented method 'visit'");
 	}
 }

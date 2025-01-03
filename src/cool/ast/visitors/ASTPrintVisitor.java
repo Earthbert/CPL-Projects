@@ -166,18 +166,18 @@ public class ASTPrintVisitor implements ASTVisitor<Void> {
 
 	@Override
 	public Void visit(final ASTArithmetic astArithmetic) {
-		this.visit((AST2OperandOp) astArithmetic);
+		this.visit((ASTBinaryOp) astArithmetic);
 		return null;
 	}
 
 	@Override
 	public Void visit(final ASTComparison astComparison) {
-		this.visit((AST2OperandOp) astComparison);
+		this.visit((ASTBinaryOp) astComparison);
 		return null;
 	}
 
 	@Override
-	public Void visit(final AST2OperandOp ast2OperandOp) {
+	public Void visit(final ASTBinaryOp ast2OperandOp) {
 		this.printIndent(ast2OperandOp.getOperator());
 		this.increaseIndent();
 		ast2OperandOp.getLeft().accept(this);

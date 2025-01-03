@@ -2,6 +2,7 @@ package cool.ast.visitors.mipsgen;
 
 import cool.ast.ASTVisitor;
 import cool.ast.nodes.*;
+import cool.parser.CoolParser;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.Symbol;
@@ -77,6 +78,26 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	@Override
 	public Integer visit(final ASTIsVoid astIsVoid) {
 		return 0;
+	}
+
+	@Override
+	public Integer visit(final ASTNot astNot) {
+		return 0;
+	}
+
+	@Override
+	public Integer visit(final ASTArithmetic astArithmetic) {
+		final Integer left = astArithmetic.getLeft().accept(this);
+		final Integer right = astArithmetic.getRight().accept(this);
+
+		if ((astArithmetic.getToken().getType() == CoolParser.PLUS
+				|| astArithmetic.getToken().getType() == CoolParser.TIMES) && left < right) {
+			final ASTExpression temp = astArithmetic.getLeft();
+			astArithmetic.setLeft(astArithmetic.getRight());
+			astArithmetic.setRight(temp);
+		}
+
+		return Math.max(astArithmetic.getLeft().accept(this), astArithmetic.getRight().accept(this) + 1);
 	}
 
 	@Override

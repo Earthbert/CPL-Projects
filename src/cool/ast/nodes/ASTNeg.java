@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public class ASTNeg extends AST1OperandOp {
+public class ASTNeg extends ASTUnaryOp {
 
 	public ASTNeg(final Token token, final ASTExpression expression) {
 		super(token, expression);

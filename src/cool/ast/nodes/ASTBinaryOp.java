@@ -4,13 +4,13 @@ import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
 
-public abstract class AST2OperandOp extends ASTExpression {
+public abstract class ASTBinaryOp extends ASTExpression {
 
 	protected ASTExpression left;
 	protected ASTExpression right;
 	protected String operator;
 
-	public AST2OperandOp(final Token token, final ASTExpression left, final ASTExpression right) {
+	public ASTBinaryOp(final Token token, final ASTExpression left, final ASTExpression right) {
 		super(token);
 		this.left = left;
 		this.operator = token.getText();
@@ -28,6 +28,14 @@ public abstract class AST2OperandOp extends ASTExpression {
 
 	public ASTExpression getRight() {
 		return this.right;
+	}
+
+	public void setLeft(final ASTExpression left) {
+		this.left = left;
+	}
+
+	public void setRight(final ASTExpression right) {
+		this.right = right;
 	}
 
 	public String getOperator() {
