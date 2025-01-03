@@ -11,6 +11,7 @@ import cool.mipsgen.CustomSTValue;
 import cool.mipsgen.MIPSGen;
 import cool.mipsgen.TemplatesStrings.P;
 import cool.mipsgen.TemplatesStrings.T;
+import cool.parser.CoolParser;
 import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IDSymbolType;
 import cool.semantic.symbol.IdSymbol;
@@ -80,13 +81,12 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		this.labelCounter = 0;
 		this.offset = methodSymbol.getLocals();
 
-		final ST method = this.mipsGen.getTextTemplate(T.METHOD_DEFINITION)
+		return this.mipsGen.getTextTemplate(T.METHOD_DEFINITION)
 				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(methodSymbol))
-				.add(T.STACK_SIZE, new CustomSTValue(String.valueOf(methodSymbol.getLocals() + methodSymbol.getTempLocations())))
+				.add(T.STACK_SIZE,
+						new CustomSTValue(String.valueOf(methodSymbol.getLocals() + methodSymbol.getTempLocations())))
 				.add(T.METHOD_BODY, astMethod.getBody().accept(this))
 				.add(T.PARAMS_SIZE, new CustomSTValue(String.valueOf(astMethod.getArguments().size() * 4)));
-
-		return method;
 	}
 
 	@Override
@@ -204,24 +204,27 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	@Override
 	public ST visit(final ASTComparison astComparison) {
-		
-		if (astComparison.getEqualsType().isPresent()) {
-			final ST st = this.mipsGen.getTextTemplate(T.EQUALS);
 
-			final ST left = astComparison.getLeft().accept(this);
-			this.offset += 4;
-			final ST right = astComparison.getRight().accept(this);
-			this.offset -= 4;
+		final ST st = this.mipsGen
+				.getTextTemplate(astComparison.getToken().getType() == CoolParser.EQ ? T.EQUALS : T.COMPARE);
 
-			return st.add(T.OFFSET, this.offset + 4)
-					.add(T.LEFT, left)
-					.add(T.RIGHT, right)
-					.add(T.TRUE_LABEL, this.mipsGen.getBoolLabel(true))
-					.add(T.FALSE_LABEL, this.mipsGen.getBoolLabel(false))
-					.add(T.END_LABEL, this.createEqLabel());
+		final ST left = astComparison.getLeft().accept(this);
+		this.offset += 4;
+		final ST right = astComparison.getRight().accept(this);
+		this.offset -= 4;
+
+		if (astComparison.getToken().getType() != CoolParser.EQ) {
+			st.add(T.OP, new CustomSTValue(astComparison.getToken().getText()));
+			st.add(T.END_LABEL, this.createCompareLabel());
+		} else {
+			st.add(T.END_LABEL, this.createEqLabel());
 		}
 
-		return null;
+		return st.add(T.OFFSET, this.offset + 4)
+				.add(T.LEFT, left)
+				.add(T.RIGHT, right)
+				.add(T.TRUE_LABEL, this.mipsGen.getBoolLabel(true))
+				.add(T.FALSE_LABEL, this.mipsGen.getBoolLabel(false));
 	}
 
 	@Override
@@ -299,5 +302,9 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private String createEqLabel() {
 		return this.labelPrefix + "_endEq_" + this.labelCounter++;
+	}
+
+	private String createCompareLabel() {
+		return this.labelPrefix + "_endCompare_" + this.labelCounter++;
 	}
 }

@@ -21,9 +21,9 @@ public class CustomSTValue {
             case "-" -> "sub";
             case "*" -> "mul";
             case "/" -> "div";
-            case "==" -> "seq";
-            case "<" -> "slt";
-            case "<=" -> "sle";
+            case "==" -> "beq";
+            case "<" -> "blt";
+            case "<=" -> "ble";
             default -> "";
         };
 	}

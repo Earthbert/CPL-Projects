@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/26-equality.cl",
+			"args": "tests/tema3/27-compare.cl",
 			"mainClass": "cool.compiler.Compiler",
 			"env": {
 				"OUTPUT_FILE": "output.s"

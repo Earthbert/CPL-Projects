@@ -413,7 +413,6 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 									+ " with " + rightType.get().getName());
 				}
 			}
-			astNode.setEqualsType(leftType.orElseThrow());
 		}
 
 		return Optional.of(List.of(CoolLexer.LE, CoolLexer.LT, CoolLexer.EQ)

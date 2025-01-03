@@ -138,6 +138,19 @@ equals(left, right, trueLabel, falseLabel, endLabel, offset) ::= <<
 <endLabel>:
 >>
 
+compare(left, right, op, trueLabel, falseLabel, endLabel, offset) ::= <<
+<left>
+    sw      $a0 -<offset>($fp)
+<right>
+    lw      $t1 -<offset>($fp)
+    lw      $t1 12($t1)
+    lw      $t2 12($a0)
+    la      $a0 <trueLabel>
+    <op.instruction>     $t1 $t2 <endLabel>
+    la      $a0 <falseLabel>
+<endLabel>:
+>>
+
 neg(expr) ::= <<
 <expr>
     jal     Object.copy
