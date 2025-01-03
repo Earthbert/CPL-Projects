@@ -10,6 +10,9 @@ import org.stringtemplate.v4.STGroupFile;
 import cool.ast.nodes.ASTNode;
 import cool.ast.visitors.mipsgen.MIPSGenVisitor;
 import cool.ast.visitors.mipsgen.NTVisitor;
+import cool.mipsgen.TemplatesStrings.D;
+import cool.mipsgen.TemplatesStrings.P;
+import cool.mipsgen.TemplatesStrings.T;
 import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
@@ -29,7 +32,7 @@ public class MIPSGen {
 	private final STGroupFile textTemplates = new STGroupFile(Utils.stTemplatesPath + "/text.stg");
 
 	public ST generateProgram(final ASTNode astRoot) {
-		final var program = this.programTemplates.getInstanceOf("program");
+		final var program = this.programTemplates.getInstanceOf(P.PROGRAM);
 
 		this.getStringLabel("");
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
@@ -37,63 +40,63 @@ public class MIPSGen {
 			this.disptachTables.put(classSymbol.getName(), classSymbol.getDispatchTable());
 		}
 
-		program.add("text", this.generateTextSection(astRoot));
-		program.add("data", this.generateDataSection());
+		program.add(P.TEXT, this.generateTextSection(astRoot));
+		program.add(P.DATA, this.generateDataSection());
 
 		return program;
 	}
 
 	public ST generateTextSection(final ASTNode astRoot) {
-		final ST textSection = this.programTemplates.getInstanceOf("sequence");
+		final ST textSection = this.programTemplates.getInstanceOf(P.SEQUENCE);
 
-		textSection.add("e", this.textTemplates.getInstanceOf("prologue"));
+		textSection.add(P.E, this.textTemplates.getInstanceOf(T.PROLOGUE));
 
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
 			if (List.of(Utils.OBJECT, Utils.IO, Utils.INT, Utils.STRING, Utils.BOOL).contains(classSymbol.getName())) {
-				textSection.add("e", this.textTemplates.getInstanceOf("initObject")
-						.add("objectLabel", createInitLabel(classSymbol.getName()))
-						.add("parentInitLabel", classSymbol.getParent() == null ? null
+				textSection.add(P.E, this.textTemplates.getInstanceOf(T.INIT_OBJECT)
+						.add(T.OBJECT_LABEL, createInitLabel(classSymbol.getName()))
+						.add(T.PARENT_INIT_LABEL, classSymbol.getParent() == null ? null
 								: createInitLabel(classSymbol.getParent().getName()))
-						.add("stackSize", 12));
+						.add(T.STACK_SIZE, 12));
 			}
 
 			classSymbol.computeFieldsOffsets();
 		}
 		astRoot.accept(new NTVisitor());
-		textSection.add("e", astRoot.accept(new MIPSGenVisitor(this)));
+		textSection.add(P.E, astRoot.accept(new MIPSGenVisitor(this)));
 
 		return textSection;
 	}
 
 	public ST generateDataSection() {
-		final ST dataSection = this.programTemplates.getInstanceOf("sequence");
+		final ST dataSection = this.programTemplates.getInstanceOf(P.SEQUENCE);
 
-		dataSection.add("e", this.dataTemplates.getInstanceOf("prologue"));
+		dataSection.add(P.E, this.dataTemplates.getInstanceOf(D.PROLOGUE));
 
-		final ST classNamesTable = this.programTemplates.getInstanceOf("sequence");
-		final ST classObjTable = this.programTemplates.getInstanceOf("sequence");
+		final ST classNamesTable = this.programTemplates.getInstanceOf(P.SEQUENCE);
+		final ST classObjTable = this.programTemplates.getInstanceOf(P.SEQUENCE);
 
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
 			this.classTags.put(classSymbol.getName(), this.classTags.size());
 			if (List.of(Utils.INT, Utils.STRING, Utils.BOOL).contains(classSymbol.getName())) {
-				dataSection.add("e",
-						this.dataTemplates.getInstanceOf("classTag")
-								.add("name", classSymbol.getName().toLowerCase())
-								.add("tag", this.classTags.get(classSymbol.getName())));
+				dataSection.add(P.E,
+						this.dataTemplates.getInstanceOf(D.CLASS_TAG)
+								.add(D.NAME, classSymbol.getName().toLowerCase())
+								.add(D.TAG, this.classTags.get(classSymbol.getName())));
 			}
 			classNamesTable
-					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
+					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD).add(D.VALUE,
 							this.getStringLabel(classSymbol.getName())));
 			classObjTable
-					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
+					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD).add(D.VALUE,
 							createProtObjLabel(classSymbol.getName())))
-					.add("e", this.dataTemplates.getInstanceOf("word").add("value",
+					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD).add(D.VALUE,
 							createInitLabel(classSymbol.getName())));
 		}
 
-		dataSection.add("e",
-				this.dataTemplates.getInstanceOf("classNamesTable").add("classNamesTable", classNamesTable));
-		dataSection.add("e", this.dataTemplates.getInstanceOf("classObjTable").add("classObjTable", classObjTable));
+		dataSection.add(P.E,
+				this.dataTemplates.getInstanceOf(D.CLASS_NAMES_TABLE).add(D.CLASS_NAMES_TABLE, classNamesTable));
+		dataSection.add(P.E, this.dataTemplates.getInstanceOf(D.CLASS_OBJ_TABLE).add(D.CLASS_OBJ_TABLE, classObjTable));
 
 		this.generateStringConsts(dataSection);
 		this.generateIntConsts(dataSection);
@@ -107,30 +110,30 @@ public class MIPSGen {
 	private void generateProtoObjects(final ST dataSection) {
 		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
 
-			final ST metadata = this.dataTemplates.getInstanceOf("metadata")
-					.add("label", createProtObjLabel(classSymbol.getName()))
-					.add("className", classSymbol.getName())
-					.add("tag", this.classTags.get(classSymbol.getName()));
+			final ST metadata = this.dataTemplates.getInstanceOf(D.METADATA)
+					.add(D.LABEL, createProtObjLabel(classSymbol.getName()))
+					.add(D.CLASS_NAME, classSymbol.getName())
+					.add(D.TAG, this.classTags.get(classSymbol.getName()));
 
-			final ST data = this.programTemplates.getInstanceOf("sequence");
+			final ST data = this.programTemplates.getInstanceOf(P.SEQUENCE);
 
 			final Integer fieldsCount;
 			if (Utils.STRING.equals(classSymbol.getName())) {
 				fieldsCount = 2;
-				data.add("e", this.dataTemplates.getInstanceOf("word")
-						.add("value", this.getIntLabel(0)))
-						.add("e", this.dataTemplates.getInstanceOf("ascii")
-								.add("value", ""));
+				data.add(P.E, this.dataTemplates.getInstanceOf(D.WORD)
+						.add(D.VALUE, this.getIntLabel(0)))
+						.add(P.E, this.dataTemplates.getInstanceOf(D.ASCII)
+								.add(D.VALUE, ""));
 			} else if (List.of(Utils.INT, Utils.BOOL).contains(classSymbol.getName())) {
 				fieldsCount = 1;
-				data.add("e", this.dataTemplates.getInstanceOf("word")
-						.add("value", 0));
+				data.add(P.E, this.dataTemplates.getInstanceOf(D.WORD)
+						.add(D.VALUE, 0));
 			} else {
 				final List<IdSymbol> fields = classSymbol.getFields();
 				fieldsCount = fields.size();
 				for (final IdSymbol field : fields) {
-					data.add("e", this.dataTemplates.getInstanceOf("word")
-							.add("value", switch (field.getValueType().getName()) {
+					data.add(P.E, this.dataTemplates.getInstanceOf(D.WORD)
+							.add(D.VALUE, switch (field.getValueType().getName()) {
 								case Utils.INT -> this.getIntLabel(0);
 								case Utils.STRING -> this.getStringLabel("");
 								case Utils.BOOL -> this.getBoolLabel(false);
@@ -139,10 +142,10 @@ public class MIPSGen {
 				}
 			}
 
-			metadata.add("size", 3 + fieldsCount);
+			metadata.add(D.SIZE, 3 + fieldsCount);
 
-			dataSection.add("e",
-					this.dataTemplates.getInstanceOf("prototype").add("metadata", metadata).add("data",
+			dataSection.add(P.E,
+					this.dataTemplates.getInstanceOf(D.PROTOTYPE).add(D.METADATA, metadata).add(D.DATA,
 							fieldsCount == 0 ? null : data));
 		}
 
@@ -153,23 +156,23 @@ public class MIPSGen {
 			final String value = entry.getKey();
 			final Integer index = entry.getValue();
 
-			final ST metadata = this.dataTemplates.getInstanceOf("metadata")
-					.add("label", createConstLabel(Utils.STRING, index))
-					.add("className", Utils.STRING)
-					.add("tag", this.classTags.get(Utils.STRING))
-					.add("size", 5 + value.length() / 4);
+			final ST metadata = this.dataTemplates.getInstanceOf(D.METADATA)
+					.add(D.LABEL, createConstLabel(Utils.STRING, index))
+					.add(D.CLASS_NAME, Utils.STRING)
+					.add(D.TAG, this.classTags.get(Utils.STRING))
+					.add(D.SIZE, 5 + value.length() / 4);
 
-			final ST data = this.programTemplates.getInstanceOf("sequence")
-					.add("e", this.dataTemplates.getInstanceOf("word")
-							.add("value", this.getIntLabel(value.length())))
-					.add("e", this.dataTemplates.getInstanceOf("ascii")
-							.add("value", value));
+			final ST data = this.programTemplates.getInstanceOf(P.SEQUENCE)
+					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD)
+							.add(D.VALUE, this.getIntLabel(value.length())))
+					.add(P.E, this.dataTemplates.getInstanceOf(D.ASCII)
+							.add(D.VALUE, value));
 
-			final ST stringConst = this.dataTemplates.getInstanceOf("prototype")
-					.add("metadata", metadata)
-					.add("data", data);
+			final ST stringConst = this.dataTemplates.getInstanceOf(D.PROTOTYPE)
+					.add(D.METADATA, metadata)
+					.add(D.DATA, data);
 
-			dataSection.add("e", stringConst);
+			dataSection.add(P.E, stringConst);
 		}
 	}
 
@@ -178,35 +181,35 @@ public class MIPSGen {
 			final Integer value = entry.getKey();
 			final Integer index = entry.getValue();
 
-			final ST metadata = this.dataTemplates.getInstanceOf("metadata")
-					.add("label", createConstLabel(Utils.INT, index))
-					.add("className", Utils.INT)
-					.add("tag", this.classTags.get(Utils.INT))
-					.add("size", 4);
+			final ST metadata = this.dataTemplates.getInstanceOf(D.METADATA)
+					.add(D.LABEL, createConstLabel(Utils.INT, index))
+					.add(D.CLASS_NAME, Utils.INT)
+					.add(D.TAG, this.classTags.get(Utils.INT))
+					.add(D.SIZE, 4);
 
-			final ST intConst = this.dataTemplates.getInstanceOf("prototype")
-					.add("metadata", metadata)
-					.add("data", this.dataTemplates.getInstanceOf("word")
-							.add("value", value));
+			final ST intConst = this.dataTemplates.getInstanceOf(D.PROTOTYPE)
+					.add(D.METADATA, metadata)
+					.add(D.DATA, this.dataTemplates.getInstanceOf(D.WORD)
+							.add(D.VALUE, value));
 
-			dataSection.add("e", intConst);
+			dataSection.add(P.E, intConst);
 		}
 	}
 
 	private void generateBoolConsts(final ST dataSection) {
 		for (int i = 0; i < 2; i++) {
-			final ST metadata = this.dataTemplates.getInstanceOf("metadata")
-					.add("label", createConstLabel(Utils.BOOL, i))
-					.add("className", Utils.BOOL)
-					.add("tag", this.classTags.get(Utils.BOOL))
-					.add("size", 4);
+			final ST metadata = this.dataTemplates.getInstanceOf(D.METADATA)
+					.add(D.LABEL, createConstLabel(Utils.BOOL, i))
+					.add(D.CLASS_NAME, Utils.BOOL)
+					.add(D.TAG, this.classTags.get(Utils.BOOL))
+					.add(D.SIZE, 4);
 
-			final ST boolConst = this.dataTemplates.getInstanceOf("prototype")
-					.add("metadata", metadata)
-					.add("data", this.dataTemplates.getInstanceOf("word")
-							.add("value", i));
+			final ST boolConst = this.dataTemplates.getInstanceOf(D.PROTOTYPE)
+					.add(D.METADATA, metadata)
+					.add(D.DATA, this.dataTemplates.getInstanceOf(D.WORD)
+							.add(D.VALUE, i));
 
-			dataSection.add("e", boolConst);
+			dataSection.add(P.E, boolConst);
 		}
 	}
 
@@ -215,16 +218,16 @@ public class MIPSGen {
 			final String name = entry.getKey();
 			final List<MethodSymbol> dispatchTable = entry.getValue();
 
-			final ST dispatchTableContent = this.programTemplates.getInstanceOf("sequence");
+			final ST dispatchTableContent = this.programTemplates.getInstanceOf(P.SEQUENCE);
 
 			for (final MethodSymbol method : dispatchTable) {
-				dispatchTableContent.add("e", this.dataTemplates.getInstanceOf("word")
-						.add("value", method.getClassSymbol().getName() + "." + method.getName()));
+				dispatchTableContent.add(P.E, this.dataTemplates.getInstanceOf(D.WORD)
+						.add(D.VALUE, method.getClassSymbol().getName() + "." + method.getName()));
 			}
 
-			dataSection.add("e", this.dataTemplates.getInstanceOf("classDispTable")
-					.add("label", createDispatchTableLabel(name))
-					.add("classDispTable", dispatchTableContent));
+			dataSection.add(P.E, this.dataTemplates.getInstanceOf(D.CLASS_DISP_TABLE)
+					.add(D.LABEL, createDispatchTableLabel(name))
+					.add(D.CLASS_DISP_TABLE, dispatchTableContent));
 		}
 	}
 
