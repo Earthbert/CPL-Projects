@@ -20,7 +20,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private final MIPSGen mipsGen;
 
-	private ASTClass currentClassNode;
+	private String fileName;
 
 	private ClassSymbol currentClass;
 	private MethodSymbol currentMethod;
@@ -43,17 +43,17 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTClass astClass) {
 
-		this.currentClassNode = astClass;
+		this.fileName = new File(Compiler.fileNames.get(astClass.getCtx())).getName();
 		this.currentClass = astClass.getSymbol().orElseThrow();
 
-		final ST objectInit = this.mipsGen.getTextTemplate(T.INIT_OBJECT);
-		objectInit.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(this.currentClass.getName()));
-		objectInit.add(T.PARENT_INIT_LABEL, this.currentClass.getParent() == null ? null
-				: MIPSGen.createInitLabel(this.currentClass.getParent().getName()));
-		objectInit.add(T.STACK_SIZE, 12);
-		objectInit.add(T.FIELDS_INIT, astClass.getFeatures().stream().filter(ASTField.class::isInstance)
-				.map(feature -> feature.accept(this)).reduce(this.mipsGen.getProgramTemplate(P.SEQUENCE),
-						(accumulated, current) -> accumulated.add(P.E, current)));
+		final ST objectInit = this.mipsGen.getTextTemplate(T.INIT_OBJECT)
+				.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(this.currentClass.getName()))
+				.add(T.PARENT_INIT_LABEL, this.currentClass.getParent() == null ? null
+						: MIPSGen.createInitLabel(this.currentClass.getParent().getName()))
+				.add(T.STACK_SIZE, 12)
+				.add(T.FIELDS_INIT, astClass.getFeatures().stream().filter(ASTField.class::isInstance)
+						.map(feature -> feature.accept(this)).reduce(this.mipsGen.getProgramTemplate(P.SEQUENCE),
+								(accumulated, current) -> accumulated.add(P.E, current)));
 
 		final ST methods = astClass.getFeatures().stream().anyMatch(ASTMethod.class::isInstance)
 				? astClass.getFeatures().stream().filter(ASTMethod.class::isInstance)
@@ -106,14 +106,17 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		return this.mipsGen.getTextTemplate(T.METHOD_CALL)
 				.add(T.PARAMS, astCall.getArguments().isEmpty() ? null : params)
 				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(astCall.getSymbol().orElseThrow()))
-				.add(T.DISPATCH_LABEL, this.computeDispatchLabel())
-				.add(T.FILE_NAME_LABEL,
-						this.mipsGen.getStringLabel(
-								new File(Compiler.fileNames.get(this.currentClassNode.getCtx())).getName()))
+				.add(T.DISPATCH_LABEL, this.createDispatchLabel())
+				.add(T.FILE_NAME_LABEL, this.mipsGen.getStringLabel(this.fileName))
 				.add(T.LINE, astCall.getToken().getLine())
 				.add(T.METHOD_OFFSET, this.mipsGen.getMethodOffset(astCall.getSymbol().orElseThrow()))
 				.add(T.SUBJECT, astCall.getSubject().map(subject -> subject.accept(this))
 						.orElse(this.mipsGen.getTextTemplate(T.EVALUATE_SELF)));
+	}
+
+	@Override
+	public ST visit(final ASTLet astLet) {
+		return null;
 	}
 
 	@Override
@@ -171,7 +174,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				.add(T.ADDRESS, this.mipsGen.getBoolLabel(node.getValue()));
 	}
 
-	private String computeDispatchLabel() {
+	private String createDispatchLabel() {
 		return MIPSGen.createMethodLabel(this.currentMethod) + "_dispatch" + this.dispatchCounter++;
 	}
 }

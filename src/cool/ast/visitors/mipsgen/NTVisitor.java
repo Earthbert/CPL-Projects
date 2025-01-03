@@ -3,8 +3,13 @@ package cool.ast.visitors.mipsgen;
 import cool.ast.ASTVisitor;
 import cool.ast.nodes.*;
 import cool.semantic.symbol.ClassSymbol;
+import cool.semantic.symbol.MethodSymbol;
+import cool.semantic.symbol.Symbol;
 
 public class NTVisitor implements ASTVisitor<Integer> {
+
+	private Integer letOffset = 0;
+	private Symbol currentSymbol;
 
 	@Override
 	public Integer visit(final ASTRoot astRoot) {
@@ -16,6 +21,8 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	public Integer visit(final ASTClass astClass) {
 		final ClassSymbol classSymbol = astClass.getSymbol().orElseThrow();
 
+		this.currentSymbol = classSymbol;
+
 		classSymbol.setInitTempLocations(astClass.getFeatures().stream().filter(ASTField.class::isInstance)
 				.map(feature -> feature.accept(this)).max(Integer::compare).orElse(0));
 
@@ -26,10 +33,34 @@ public class NTVisitor implements ASTVisitor<Integer> {
 
 	@Override
 	public Integer visit(final ASTMethod astMethod) {
+
+		this.currentSymbol = astMethod.getSymbol().orElseThrow();
+
 		for (int i = 0; i < astMethod.getArguments().size(); i++)
 			astMethod.getArguments().get(i).getSymbol().orElseThrow().setOffset(i * 4);
 		astMethod.getSymbol().orElseThrow().setTempLocations(astMethod.getBody().accept(this));
 		return 0;
+	}
+
+	@Override
+	public Integer visit(final ASTLet astLet) {
+
+		final Integer init = astLet.getDef().getExpr().map(expr -> expr.accept(this)).orElse(0);
+
+		astLet.getDef().getId().getSymbol().setOffset(this.letOffset);
+		this.letOffset += 4;
+		switch (this.currentSymbol) {
+			case final ClassSymbol classSymbol ->
+				classSymbol.setInitLocals(Math.max(classSymbol.getInitLocals(), this.letOffset));
+			case final MethodSymbol methodSymbol ->
+				methodSymbol.setLocals(Math.max(methodSymbol.getLocals(), this.letOffset));
+			default ->
+				throw new RuntimeException("Invalid symbol type: " + this.currentSymbol);
+		}
+		final Integer expr = astLet.getExpr().accept(this);
+
+		this.letOffset -= 4;
+		return Math.max(init, expr);
 	}
 
 	@Override

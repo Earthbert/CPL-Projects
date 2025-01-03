@@ -14,6 +14,7 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 	protected ClassSymbol parent;
 
 	private Integer initTempLocations = 0;
+	private Integer initLocals = 0;
 
 	private final Map<String, IdSymbol> fields = new LinkedHashMap<>();
 	private final Map<String, MethodSymbol> methods = new LinkedHashMap<>();
@@ -152,6 +153,14 @@ public class ClassSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public void setInitTempLocations(final Integer tempLocalCount) {
 		this.initTempLocations = tempLocalCount;
+	}
+
+	public Integer getInitLocals() {
+		return this.initLocals;
+	}
+
+	public void setInitLocals(final Integer initLocals) {
+		this.initLocals = initLocals;
 	}
 
 	@Override

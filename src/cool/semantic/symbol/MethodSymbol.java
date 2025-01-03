@@ -15,6 +15,7 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 	private final Map<String, IdSymbol> symbols = new LinkedHashMap<>();
 
 	private Integer tempLocations = 0;
+	private Integer locals = 0;
 
 	public MethodSymbol(final String name, final ClassSymbol returnType, final ClassSymbol outerScope) {
 		super(name);
@@ -64,6 +65,14 @@ public class MethodSymbol extends Symbol implements Scope<IdSymbol> {
 
 	public void setTempLocations(final Integer tempLocalCount) {
 		this.tempLocations = tempLocalCount;
+	}
+
+	public Integer getLocals() {
+		return this.locals;
+	}
+
+	public void setLocals(final Integer locals) {
+		this.locals = locals;
 	}
 
 	public ClassSymbol getClassSymbol() {
