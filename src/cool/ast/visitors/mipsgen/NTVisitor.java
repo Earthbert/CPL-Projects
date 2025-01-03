@@ -81,6 +81,11 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	}
 
 	@Override
+	public Integer visit(final ASTNeg astNeg) {
+		return 0;
+	}
+
+	@Override
 	public Integer visit(final ASTNot astNot) {
 		return 0;
 	}
@@ -97,7 +102,7 @@ public class NTVisitor implements ASTVisitor<Integer> {
 			astArithmetic.setRight(temp);
 		}
 
-		return Math.max(astArithmetic.getLeft().accept(this), astArithmetic.getRight().accept(this) + 1);
+		return Math.max(astArithmetic.getLeft().accept(this), astArithmetic.getRight().accept(this) + 4);
 	}
 
 	@Override

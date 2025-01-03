@@ -1,14 +1,19 @@
 package cool.ast.nodes;
 
+import java.util.Optional;
+
 import org.antlr.v4.runtime.Token;
 
 import cool.ast.ASTVisitor;
+import cool.semantic.symbol.ClassSymbol;
 
 public abstract class ASTBinaryOp extends ASTExpression {
 
 	protected ASTExpression left;
 	protected ASTExpression right;
 	protected String operator;
+
+	protected Optional<ClassSymbol> equalsType;
 
 	public ASTBinaryOp(final Token token, final ASTExpression left, final ASTExpression right) {
 		super(token);
@@ -41,4 +46,13 @@ public abstract class ASTBinaryOp extends ASTExpression {
 	public String getOperator() {
 		return this.operator;
 	}
+
+	public Optional<ClassSymbol> getEqualsType() {
+		return this.equalsType;
+	}
+
+	public void setEqualsType(final ClassSymbol equalsType) {
+		this.equalsType = Optional.ofNullable(equalsType);
+	}
+
 }

@@ -63,6 +63,7 @@ public class TemplatesStrings {
 		public static final String OP = "op";
 
 		public static final String NOT = "not";
+		public static final String NEG = "neg";
 
 		public static final String EVALUATE_SELF = "evaluateSelf";
 

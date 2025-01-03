@@ -115,13 +115,21 @@ isvoid(expr, trueLabel, falseLabel, endLabel) ::= <<
 
 binaryArithmOp(left, right, op, offset) ::= <<
 <left>
-    sw      $a0 <offset>($fp)
+    sw      $a0 -<offset>($fp)
 <right>
     jal     Object.copy
-    lw      $t1 <offset>($fp)
+    lw      $t1 -<offset>($fp)
     lw      $t1 12($t1)
     lw      $t2 12($a0)
     <op.instruction>     $t1 $t1 $t2
+    sw      $t1 12($a0)
+>>
+
+neg(expr) ::= <<
+<expr>
+    jal     Object.copy
+    lw      $t1 12($a0)
+    neg     $t1 $t1
     sw      $t1 12($a0)
 >>
 

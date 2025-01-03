@@ -49,12 +49,16 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		this.currentClass = astClass.getSymbol().orElseThrow();
 
 		this.labelPrefix = MIPSGen.createInitLabel(this.currentClass.getName());
+		this.labelCounter = 0;
+		this.offset = this.currentClass.getInitLocals();
 
 		final ST objectInit = this.mipsGen.getTextTemplate(T.INIT_OBJECT)
 				.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(this.currentClass.getName()))
 				.add(T.PARENT_INIT_LABEL, this.currentClass.getParent() == null ? null
 						: MIPSGen.createInitLabel(this.currentClass.getParent().getName()))
-				.add(T.STACK_SIZE, new CustomSTValue(this.currentClass.getInitLocals().toString()))
+				.add(T.STACK_SIZE,
+						new CustomSTValue(String
+								.valueOf(this.currentClass.getInitLocals() + this.currentClass.getInitTempLocations())))
 				.add(T.FIELDS_INIT, astClass.getFeatures().stream().filter(ASTField.class::isInstance)
 						.map(feature -> feature.accept(this)).reduce(this.mipsGen.getProgramTemplate(P.SEQUENCE),
 								(accumulated, current) -> accumulated.add(P.E, current)));
@@ -74,10 +78,11 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		final var methodSymbol = astMethod.getSymbol().orElseThrow();
 		this.labelPrefix = MIPSGen.createMethodLabel(methodSymbol);
 		this.labelCounter = 0;
+		this.offset = methodSymbol.getLocals();
 
 		final ST method = this.mipsGen.getTextTemplate(T.METHOD_DEFINITION)
 				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(methodSymbol))
-				.add(T.STACK_SIZE, new CustomSTValue(methodSymbol.getLocals().toString()))
+				.add(T.STACK_SIZE, new CustomSTValue(String.valueOf(methodSymbol.getLocals() + methodSymbol.getTempLocations())))
 				.add(T.METHOD_BODY, astMethod.getBody().accept(this))
 				.add(T.PARAMS_SIZE, new CustomSTValue(String.valueOf(astMethod.getArguments().size() * 4)));
 
@@ -181,14 +186,20 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		final var st = this.mipsGen.getTextTemplate(T.BINARY_ARITHM_OP);
 
 		final ST left = astArithmetic.getLeft().accept(this);
-		this.offset -= 4;
-		final ST right = astArithmetic.getRight().accept(this);
 		this.offset += 4;
+		final ST right = astArithmetic.getRight().accept(this);
+		this.offset -= 4;
 
-		return st.add(T.OFFSET, this.offset - 4)
+		return st.add(T.OFFSET, this.offset + 4)
 				.add(T.LEFT, left)
 				.add(T.RIGHT, right)
 				.add(T.OP, new CustomSTValue(astArithmetic.getToken().getText()));
+	}
+
+	@Override
+	public ST visit(final ASTNeg astNeg) {
+		return this.mipsGen.getTextTemplate(T.NEG)
+				.add(T.EXPR, astNeg.getExpression().accept(this));
 	}
 
 	@Override

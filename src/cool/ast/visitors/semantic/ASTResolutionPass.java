@@ -383,22 +383,22 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	}
 
 	@Override
-	public Optional<ClassSymbol> visit(final ASTBinaryOp ast2OperandOp) {
+	public Optional<ClassSymbol> visit(final ASTBinaryOp astNode) {
 
 		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
 		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
 		final ClassSymbol stringType = SymbolTable.getGlobals().lookup(Utils.STRING).orElseThrow();
 
-		final Optional<ClassSymbol> leftType = ast2OperandOp.getLeft().accept(this);
-		final Optional<ClassSymbol> rightType = ast2OperandOp.getRight().accept(this);
+		final Optional<ClassSymbol> leftType = astNode.getLeft().accept(this);
+		final Optional<ClassSymbol> rightType = astNode.getRight().accept(this);
 
-		if (ast2OperandOp.getToken().getType() != CoolLexer.EQ) {
+		if (astNode.getToken().getType() != CoolLexer.EQ) {
 			List.of(leftType, rightType).forEach(t -> {
 				t.ifPresent(lt -> {
 					if (lt != intType) {
 						SymbolTable.error(this.ctx,
-								((t == leftType) ? ast2OperandOp.getLeft() : ast2OperandOp.getRight()).getToken(),
-								"Operand of " + ast2OperandOp.getOperator() + " has type " + lt.getName()
+								((t == leftType) ? astNode.getLeft() : astNode.getRight()).getToken(),
+								"Operand of " + astNode.getOperator() + " has type " + lt.getName()
 										+ " instead of " + intType.getName());
 					}
 				});
@@ -408,15 +408,16 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 				if (leftType.get() != rightType.get()
 						&& (List.of(intType, boolType, stringType).contains(leftType.get()) ||
 								List.of(intType, boolType, stringType).contains(rightType.get()))) {
-					SymbolTable.error(this.ctx, ast2OperandOp.getToken(),
+					SymbolTable.error(this.ctx, astNode.getToken(),
 							"Cannot compare " + leftType.get().getName()
 									+ " with " + rightType.get().getName());
 				}
 			}
+			astNode.setEqualsType(leftType.orElseThrow());
 		}
 
 		return Optional.of(List.of(CoolLexer.LE, CoolLexer.LT, CoolLexer.EQ)
-				.contains(ast2OperandOp.getToken().getType()) ? boolType : intType);
+				.contains(astNode.getToken().getType()) ? boolType : intType);
 	}
 
 	@Override
