@@ -57,7 +57,7 @@ public class MIPSGen {
 						.add(T.OBJECT_LABEL, createInitLabel(classSymbol.getName()))
 						.add(T.PARENT_INIT_LABEL, classSymbol.getParent() == null ? null
 								: createInitLabel(classSymbol.getParent().getName()))
-						.add(T.STACK_SIZE, 12));
+						.add(T.STACK_SIZE, new CustomSTValue("0")));
 			}
 
 			classSymbol.computeFieldsOffsets();

@@ -11,6 +11,10 @@ public class CustomSTValue {
         return this.value.toLowerCase();
     }
 
+    public Boolean isZero() {
+        return "0".equals(this.value);
+    }
+
     @Override
     public String toString() {
         return this.value.toString();

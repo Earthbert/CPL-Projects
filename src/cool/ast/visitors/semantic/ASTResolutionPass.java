@@ -52,7 +52,8 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 			SymbolTable.error(this.ctx, astMethod.getBody().getToken(),
 					"Type " + bodyType.get().getName() + " of the body of method "
 							+ astMethod.getId().getToken().getText()
-							+ " is incompatible with declared return type " + this.currentMethod.getReturnType().getName());
+							+ " is incompatible with declared return type "
+							+ this.currentMethod.getReturnType().getName());
 		}
 
 		return Optional.empty();
@@ -199,6 +200,8 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 					"Type " + defType.get().getName() + " of initialization expression of identifier " + variableName
 							+ " is incompatible with declared type " + type.get().getName());
 		}
+
+		astLet.getDef().getId().setSymbol(letSymbol);
 
 		this.currentScope.add(letSymbol);
 

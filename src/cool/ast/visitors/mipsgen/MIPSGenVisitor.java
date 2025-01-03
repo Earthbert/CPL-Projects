@@ -7,6 +7,7 @@ import org.stringtemplate.v4.ST;
 import cool.ast.ASTVisitor;
 import cool.ast.nodes.*;
 import cool.compiler.Compiler;
+import cool.mipsgen.CustomSTValue;
 import cool.mipsgen.MIPSGen;
 import cool.mipsgen.TemplatesStrings.P;
 import cool.mipsgen.TemplatesStrings.T;
@@ -50,7 +51,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(this.currentClass.getName()))
 				.add(T.PARENT_INIT_LABEL, this.currentClass.getParent() == null ? null
 						: MIPSGen.createInitLabel(this.currentClass.getParent().getName()))
-				.add(T.STACK_SIZE, 12)
+				.add(T.STACK_SIZE, new CustomSTValue(this.currentClass.getInitLocals().toString()))
 				.add(T.FIELDS_INIT, astClass.getFeatures().stream().filter(ASTField.class::isInstance)
 						.map(feature -> feature.accept(this)).reduce(this.mipsGen.getProgramTemplate(P.SEQUENCE),
 								(accumulated, current) -> accumulated.add(P.E, current)));
@@ -72,9 +73,9 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 		final ST method = this.mipsGen.getTextTemplate(T.METHOD_DEFINITION)
 				.add(T.METHOD_LABEL, MIPSGen.createMethodLabel(this.currentMethod))
-				.add(T.STACK_SIZE, 12)
+				.add(T.STACK_SIZE, new CustomSTValue(this.currentMethod.getLocals().toString()))
 				.add(T.METHOD_BODY, astMethod.getBody().accept(this))
-				.add(T.PARAMS_SIZE, astMethod.getArguments().size() > 0 ? astMethod.getArguments().size() * 4 : null);
+				.add(T.PARAMS_SIZE, new CustomSTValue(String.valueOf(astMethod.getArguments().size() * 4)));
 
 		return method;
 	}
@@ -116,7 +117,22 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	@Override
 	public ST visit(final ASTLet astLet) {
-		return null;
+
+		final ST initValue = astLet.getDef().getExpr().map(expr -> expr.accept(this))
+				.orElse(switch (astLet.getDef().getId().getSymbol().getValueType().getName()) {
+					case Utils.STRING -> this.mipsGen.getTextTemplate(T.LOAD_ADDRESS)
+							.add(T.ADDRESS, this.mipsGen.getStringLabel(""));
+					case Utils.INT -> this.mipsGen.getTextTemplate(T.LOAD_ADDRESS)
+							.add(T.ADDRESS, this.mipsGen.getIntLabel(0));
+					case Utils.BOOL -> this.mipsGen.getTextTemplate(T.LOAD_ADDRESS)
+							.add(T.ADDRESS, this.mipsGen.getBoolLabel(false));
+					default -> this.mipsGen.getTextTemplate(T.LOAD_IMMEDIATE).add(T.VALUE, 0);
+				});
+
+		return this.mipsGen.getTextTemplate(T.LET)
+				.add(T.INIT_EXPR, initValue)
+				.add(T.OFFSET, astLet.getDef().getId().getSymbol().getOffset())
+				.add(T.EXPR, astLet.getExpr().accept(this));
 	}
 
 	@Override
@@ -135,7 +151,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 			case FIELD -> this.mipsGen.getTextTemplate(T.LOAD_FIELD).add(T.OFFSET, astId.getSymbol().getOffset() + 12);
 			case FORMAL ->
 				this.mipsGen.getTextTemplate(T.LOAD_FORMAL).add(T.OFFSET, astId.getSymbol().getOffset() + 12);
-			case LOCAL -> this.mipsGen.getTextTemplate("").add(T.OFFSET, astId.getSymbol().getOffset());
+			case LOCAL -> this.mipsGen.getTextTemplate(T.LOAD_LOCAL).add(T.OFFSET, astId.getSymbol().getOffset());
 		};
 	}
 
@@ -148,7 +164,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				this.mipsGen.getTextTemplate(T.STORE_FIELD).add(T.OFFSET, symbol.getOffset() + 12);
 			case IDSymbolType.FORMAL ->
 				this.mipsGen.getTextTemplate(T.STORE_FORMAL).add(T.OFFSET, symbol.getOffset() + 12);
-			case IDSymbolType.LOCAL -> this.mipsGen.getTextTemplate("").add(T.OFFSET, symbol.getOffset());
+			case IDSymbolType.LOCAL -> this.mipsGen.getTextTemplate(T.STORE_LOCAL).add(T.OFFSET, symbol.getOffset());
 		};
 
 		return this.mipsGen.getProgramTemplate(P.SEQUENCE)

@@ -9,45 +9,53 @@ prologue() ::= <<
 
 initObject(objectLabel, fieldsInit, parentInitLabel, stackSize) ::= <<
 <objectLabel>:
-    addiu   $sp $sp -<stackSize>
+    addiu   $sp $sp -12
     sw      $fp 12($sp)
     sw      $s0 8($sp)
     sw      $ra 4($sp)
     addiu   $fp $sp 4
+<if(!stackSize.zero)>
+    addiu   $sp $sp -<stackSize>
+<else><endif>
     move    $s0 $a0
 <if(parentInitLabel)>
     jal     <parentInitLabel>
 <else><endif>
 <fieldsInit>
     move    $a0 $s0
-    lw      $fp 12($sp)
-    lw      $s0 8($sp)
-    lw      $ra 4($sp)
-    addiu   $sp $sp <stackSize>
+    addiu   $sp $fp 8
+    lw      $ra 0($fp)
+    lw      $s0 4($fp)
+    lw      $fp 8($fp)
     jr      $ra
 >>
 
 methodDefinition(methodLabel, stackSize, methodBody, paramsSize) ::= <<
 <methodLabel>:
-    addiu   $sp $sp -<stackSize>
+    addiu   $sp $sp -12
     sw      $fp 12($sp)
     sw      $s0 8($sp)
     sw      $ra 4($sp)
     addiu   $fp $sp 4
+<if(!stackSize.zero)>
+    addiu   $sp $sp -<stackSize>
+<else><endif>
     move    $s0 $a0
 <methodBody>
-    lw      $fp 12($sp)
-    lw      $s0 8($sp)
-    lw      $ra 4($sp)
-    addiu   $sp $sp <stackSize>
-    <if(paramsSize)>
+    addiu   $sp $fp 8
+    lw      $ra 0($fp)
+    lw      $s0 4($fp)
+    lw      $fp 8($fp)
+<if(!paramsSize.zero)>
     addiu   $sp $sp <paramsSize>
 <else><endif>
     jr      $ra
 >>
 
 methodCall(subject, methodLabel, methodOffset, dispatchLabel, fileNameLabel, line, params) ::= <<
+<if(params)>
 <params>
+<else><endif>
 <subject>
     bnez    $a0 <dispatchLabel>
     la      $a0 <fileNameLabel>
@@ -57,6 +65,12 @@ methodCall(subject, methodLabel, methodOffset, dispatchLabel, fileNameLabel, lin
     lw      $t1 8($a0)
     lw      $t1 <methodOffset>($t1)
     jalr    $t1
+>>
+
+let(initExpr, offset, expr) ::= <<
+<initExpr>
+    sw      $a0 -<offset>($fp)
+<expr>
 >>
 
 reserveStack(size) ::= <<
@@ -89,4 +103,16 @@ storeFormal(offset) ::= <<
 
 loadFormal(offset) ::= <<
     lw      $a0 <offset>($fp)
+>>
+
+storeLocal(offset) ::= <<
+    sw      $a0 -<offset>($fp)
+>>
+
+loadLocal(offset) ::= <<
+    lw      $a0 -<offset>($fp)
+>>
+
+loadImmediate(value) ::= <<
+    li      $a0 <value>
 >>

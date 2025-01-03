@@ -47,8 +47,8 @@ public class NTVisitor implements ASTVisitor<Integer> {
 
 		final Integer init = astLet.getDef().getExpr().map(expr -> expr.accept(this)).orElse(0);
 
-		astLet.getDef().getId().getSymbol().setOffset(this.letOffset);
 		this.letOffset += 4;
+		astLet.getDef().getId().getSymbol().setOffset(this.letOffset);
 		switch (this.currentSymbol) {
 			case final ClassSymbol classSymbol ->
 				classSymbol.setInitLocals(Math.max(classSymbol.getInitLocals(), this.letOffset));

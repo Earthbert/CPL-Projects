@@ -25,6 +25,7 @@ public class TemplatesStrings {
 		public static final String METHOD_LABEL = "methodLabel";
 		public static final String METHOD_BODY = "methodBody";
 		public static final String PARAMS_SIZE = "paramsSize";
+		public static final String FP_OFFSET = "fpOffset";
 		
 		public static final String STACK_SIZE = "stackSize";
 
@@ -35,6 +36,10 @@ public class TemplatesStrings {
 		public static final String FILE_NAME_LABEL = "fileNameLabel";
 		public static final String LINE = "line";
 		public static final String PARAMS = "params";
+
+		public static final String LET = "let";
+		public static final String INIT_EXPR = "initExpr";
+		public static final String EXPR = "expr";
 
 		public static final String EVALUATE_SELF = "evaluateSelf";
 
@@ -47,7 +52,11 @@ public class TemplatesStrings {
 		public static final String LOAD_FIELD = "loadField";
 		public static final String STORE_FORMAL = "storeFormal";
 		public static final String LOAD_FORMAL = "loadFormal";
-
+		public static final String LOAD_LOCAL = "loadLocal";
+		public static final String STORE_LOCAL = "storeLocal";
+		public static final String LOAD_IMMEDIATE = "loadImmediate";
+		
+		public static final String VALUE = "value";
 		public static final String SIZE = "size";
 		public static final String OFFSET = "offset";
 	}
