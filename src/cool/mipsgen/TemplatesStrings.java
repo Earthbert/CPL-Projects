@@ -62,6 +62,8 @@ public class TemplatesStrings {
 		public static final String RIGHT = "right";
 		public static final String OP = "op";
 
+		public static final String EQUALS = "equals";
+
 		public static final String NOT = "not";
 		public static final String NEG = "neg";
 

@@ -92,17 +92,28 @@ public class NTVisitor implements ASTVisitor<Integer> {
 
 	@Override
 	public Integer visit(final ASTArithmetic astArithmetic) {
-		final Integer left = astArithmetic.getLeft().accept(this);
-		final Integer right = astArithmetic.getRight().accept(this);
+		return this.visit((ASTBinaryOp) astArithmetic);
+	}
 
-		if ((astArithmetic.getToken().getType() == CoolParser.PLUS
-				|| astArithmetic.getToken().getType() == CoolParser.TIMES) && left < right) {
-			final ASTExpression temp = astArithmetic.getLeft();
-			astArithmetic.setLeft(astArithmetic.getRight());
-			astArithmetic.setRight(temp);
+	@Override
+	public Integer visit(final ASTComparison astComparison) {
+		return this.visit((ASTBinaryOp) astComparison);
+	}
+
+	@Override
+	public Integer visit(final ASTBinaryOp astNode) {
+		final Integer left = astNode.getLeft().accept(this);
+		final Integer right = astNode.getRight().accept(this);
+
+		if ((astNode.getToken().getType() == CoolParser.PLUS
+				|| astNode.getToken().getType() == CoolParser.TIMES
+				|| astNode.getToken().getType() == CoolParser.EQ) && left < right) {
+			final ASTExpression temp = astNode.getLeft();
+			astNode.setLeft(astNode.getRight());
+			astNode.setRight(temp);
 		}
 
-		return Math.max(astArithmetic.getLeft().accept(this), astArithmetic.getRight().accept(this) + 4);
+		return Math.max(astNode.getLeft().accept(this), astNode.getRight().accept(this) + 4);
 	}
 
 	@Override

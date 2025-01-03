@@ -177,7 +177,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				.add(T.THEN_BRANCH, astIf.getThenBranch().accept(this))
 				.add(T.ELSE_BRANCH, astIf.getElseBranch().accept(this))
 				.add(T.ELSE_LABEL, this.createElseLabel())
-				.add(T.END_LABEL, this.createEndLabel());
+				.add(T.END_LABEL, this.createEndIfLabel());
 	}
 
 	@Override
@@ -204,6 +204,23 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	@Override
 	public ST visit(final ASTComparison astComparison) {
+		
+		if (astComparison.getEqualsType().isPresent()) {
+			final ST st = this.mipsGen.getTextTemplate(T.EQUALS);
+
+			final ST left = astComparison.getLeft().accept(this);
+			this.offset += 4;
+			final ST right = astComparison.getRight().accept(this);
+			this.offset -= 4;
+
+			return st.add(T.OFFSET, this.offset + 4)
+					.add(T.LEFT, left)
+					.add(T.RIGHT, right)
+					.add(T.TRUE_LABEL, this.mipsGen.getBoolLabel(true))
+					.add(T.FALSE_LABEL, this.mipsGen.getBoolLabel(false))
+					.add(T.END_LABEL, this.createEqLabel());
+		}
+
 		return null;
 	}
 
@@ -268,7 +285,7 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		return this.labelPrefix + "_else_" + this.labelCounter++;
 	}
 
-	private String createEndLabel() {
+	private String createEndIfLabel() {
 		return this.labelPrefix + "_endif_" + this.labelCounter++;
 	}
 
@@ -278,5 +295,9 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private String createNotLabel() {
 		return this.labelPrefix + "_endNot_" + this.labelCounter++;
+	}
+
+	private String createEqLabel() {
+		return this.labelPrefix + "_endEq_" + this.labelCounter++;
 	}
 }

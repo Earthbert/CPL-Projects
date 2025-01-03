@@ -125,6 +125,19 @@ binaryArithmOp(left, right, op, offset) ::= <<
     sw      $t1 12($a0)
 >>
 
+equals(left, right, trueLabel, falseLabel, endLabel, offset) ::= <<
+<left>
+    sw      $a0 -<offset>($fp)
+<right>
+    lw      $t1 -<offset>($fp)
+    move    $t2 $a0
+    la      $a0 <trueLabel>
+    beq     $t1 $t2 <endLabel>
+    la      $a1 <falseLabel>
+    jal     equality_test
+<endLabel>:
+>>
+
 neg(expr) ::= <<
 <expr>
     jal     Object.copy
