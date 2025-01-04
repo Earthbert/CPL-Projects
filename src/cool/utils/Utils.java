@@ -24,6 +24,4 @@ public class Utils {
 
 	public static final String MAIN = "Main";
 	public static final String MAIN_METHOD = "main";
-
-	public static final String stTemplatesPath = "src/cool/mipsgen/templates";
 }

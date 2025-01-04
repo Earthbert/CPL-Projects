@@ -27,9 +27,9 @@ public class MIPSGen {
 	private final Map<String, Integer> constStrings = new LinkedHashMap<>();
 	private final Map<Integer, Integer> constInts = new LinkedHashMap<>();
 
-	private final STGroupFile programTemplates = new STGroupFile(Utils.stTemplatesPath + "/program.stg");
-	private final STGroupFile dataTemplates = new STGroupFile(Utils.stTemplatesPath + "/data.stg");
-	private final STGroupFile textTemplates = new STGroupFile(Utils.stTemplatesPath + "/text.stg");
+	private final STGroupFile programTemplates = new STGroupFile(this.getClass().getResource("templates/program.stg").getPath());
+	private final STGroupFile dataTemplates = new STGroupFile(this.getClass().getResource("templates/data.stg").getPath());
+	private final STGroupFile textTemplates = new STGroupFile(this.getClass().getResource("templates/text.stg").getPath());
 
 	public ST generateProgram(final ASTNode astRoot) {
 		final var program = this.programTemplates.getInstanceOf(P.PROGRAM);
