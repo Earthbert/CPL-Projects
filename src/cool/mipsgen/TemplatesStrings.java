@@ -53,6 +53,10 @@ public class TemplatesStrings {
 		public static final String ELSE_LABEL = "elseLabel";
 		public static final String END_LABEL = "endLabel";
 
+		public static final String WHILE = "while";
+		public static final String BODY = "body";
+		public static final String WHILE_LABEL = "whileLabel";
+
 		public static final String ISVOID = "isvoid";
 		public static final String TRUE_LABEL = "trueLabel";
 		public static final String FALSE_LABEL = "falseLabel";

@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/27-compare.cl",
+			"args": "tests/tema3/28-while.cl",
 			"mainClass": "cool.compiler.Compiler",
 			"env": {
 				"OUTPUT_FILE": "output.s"

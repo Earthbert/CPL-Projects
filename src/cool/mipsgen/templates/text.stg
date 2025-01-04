@@ -104,6 +104,17 @@ iff(condition, thenBranch, elseBranch, elseLabel, endLabel) ::= <<
 <endLabel>:
 >>
 
+while(condition, body, whileLabel, endLabel) ::= <<
+<whileLabel>:
+<condition>
+    lw      $t1 12($a0)
+    beqz    $t1 <endLabel>
+<body>
+    b       <whileLabel>
+<endLabel>:
+    move    $a0 $zero
+>>
+
 isvoid(expr, trueLabel, falseLabel, endLabel) ::= <<
 <expr>
     move    $t1 $a0

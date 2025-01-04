@@ -27,8 +27,6 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private Integer offset = 0;
 
-	private Integer labelCounter = 0;
-
 	public MIPSGenVisitor(final MIPSGen mipsGen) {
 		this.mipsGen = mipsGen;
 	}
@@ -49,7 +47,6 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 		final ClassSymbol classSymbol = astClass.getSymbol().orElseThrow();
 
 		this.labelPrefix = MIPSGen.createInitLabel(classSymbol.getName());
-		this.labelCounter = 0;
 		this.offset = classSymbol.getInitLocals();
 
 		final ST objectInit = this.mipsGen.getTextTemplate(T.INIT_OBJECT)
@@ -77,7 +74,6 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 		final var methodSymbol = astMethod.getSymbol().orElseThrow();
 		this.labelPrefix = MIPSGen.createMethodLabel(methodSymbol);
-		this.labelCounter = 0;
 		this.offset = methodSymbol.getLocals();
 
 		return this.mipsGen.getTextTemplate(T.METHOD_DEFINITION)
@@ -177,6 +173,15 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 				.add(T.ELSE_BRANCH, astIf.getElseBranch().accept(this))
 				.add(T.ELSE_LABEL, this.createElseLabel())
 				.add(T.END_LABEL, this.createEndIfLabel());
+	}
+
+	@Override
+	public ST visit(final ASTWhile astWhile) {
+		return this.mipsGen.getTextTemplate(T.WHILE)
+			.add(T.CONDITION, astWhile.getCondition().accept(this))
+			.add(T.BODY, astWhile.getBody().accept(this))
+			.add(T.WHILE_LABEL, this.createWhileLabel())
+			.add(T.END_LABEL, this.createEndWhileLabel());
 	}
 
 	@Override
@@ -305,5 +310,13 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private String createCompareLabel() {
 		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endCompare");
+	}
+
+	private String createWhileLabel() {
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_while");
+	}
+
+	private String createEndWhileLabel() {
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endWhile");
 	}
 }

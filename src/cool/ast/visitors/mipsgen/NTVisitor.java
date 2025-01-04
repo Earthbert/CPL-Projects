@@ -76,6 +76,11 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	}
 
 	@Override
+	public Integer visit(final ASTWhile astWhile) {
+		return Math.max(astWhile.getCondition().accept(this), astWhile.getBody().accept(this));
+	}
+
+	@Override
 	public Integer visit(final ASTIsVoid astIsVoid) {
 		return 0;
 	}
