@@ -1,5 +1,6 @@
 package cool.mipsgen;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class MIPSGen {
 
 	private final Map<String, Integer> constStrings = new LinkedHashMap<>();
 	private final Map<Integer, Integer> constInts = new LinkedHashMap<>();
+
+	private final Map<String, Integer> uniqueTextLabels = new HashMap<>();
 
 	private final STGroupFile programTemplates = new STGroupFile(this.getClass().getResource("templates/program.stg").getPath());
 	private final STGroupFile dataTemplates = new STGroupFile(this.getClass().getResource("templates/data.stg").getPath());
@@ -237,6 +240,10 @@ public class MIPSGen {
 
 	public ST getProgramTemplate(final String name) {
 		return this.programTemplates.getInstanceOf(name);
+	}
+
+	public String getUniqueTextLabel(final String name) {
+		return name + "_" + this.uniqueTextLabels.compute(name, (k, v) -> v == null ? 0 : v + 1);
 	}
 
 	public ST getTextTemplate(final String name) {

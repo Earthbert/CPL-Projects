@@ -23,7 +23,6 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private String fileName;
 
-	private ClassSymbol currentClass;
 	private String labelPrefix;
 
 	private Integer offset = 0;
@@ -47,19 +46,19 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	public ST visit(final ASTClass astClass) {
 
 		this.fileName = new File(Compiler.fileNames.get(astClass.getCtx())).getName();
-		this.currentClass = astClass.getSymbol().orElseThrow();
+		final ClassSymbol classSymbol = astClass.getSymbol().orElseThrow();
 
-		this.labelPrefix = MIPSGen.createInitLabel(this.currentClass.getName());
+		this.labelPrefix = MIPSGen.createInitLabel(classSymbol.getName());
 		this.labelCounter = 0;
-		this.offset = this.currentClass.getInitLocals();
+		this.offset = classSymbol.getInitLocals();
 
 		final ST objectInit = this.mipsGen.getTextTemplate(T.INIT_OBJECT)
-				.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(this.currentClass.getName()))
-				.add(T.PARENT_INIT_LABEL, this.currentClass.getParent() == null ? null
-						: MIPSGen.createInitLabel(this.currentClass.getParent().getName()))
+				.add(T.OBJECT_LABEL, MIPSGen.createInitLabel(classSymbol.getName()))
+				.add(T.PARENT_INIT_LABEL, classSymbol.getParent() == null ? null
+						: MIPSGen.createInitLabel(classSymbol.getParent().getName()))
 				.add(T.STACK_SIZE,
 						new CustomSTValue(String
-								.valueOf(this.currentClass.getInitLocals() + this.currentClass.getInitTempLocations())))
+								.valueOf(classSymbol.getInitLocals() + classSymbol.getInitTempLocations())))
 				.add(T.FIELDS_INIT, astClass.getFeatures().stream().filter(ASTField.class::isInstance)
 						.map(feature -> feature.accept(this)).reduce(this.mipsGen.getProgramTemplate(P.SEQUENCE),
 								(accumulated, current) -> accumulated.add(P.E, current)));
@@ -281,30 +280,30 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	}
 
 	private String createDispatchLabel() {
-		return this.labelPrefix + "_dispatch_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_dispatch");
 	}
 
 	private String createElseLabel() {
-		return this.labelPrefix + "_else_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_else");
 	}
 
 	private String createEndIfLabel() {
-		return this.labelPrefix + "_endif_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endif");
 	}
 
 	private String createIsVoidLabel() {
-		return this.labelPrefix + "_endIsVoid_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endIsVoid");
 	}
 
 	private String createNotLabel() {
-		return this.labelPrefix + "_endNot_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endNot");
 	}
 
 	private String createEqLabel() {
-		return this.labelPrefix + "_endEq_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endEq");
 	}
 
 	private String createCompareLabel() {
-		return this.labelPrefix + "_endCompare_" + this.labelCounter++;
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endCompare");
 	}
 }
