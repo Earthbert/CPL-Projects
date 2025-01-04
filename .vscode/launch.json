@@ -19,7 +19,7 @@
 			"type": "java",
 			"name": "Compiler",
 			"request": "launch",
-			"args": "tests/tema3/28-while.cl",
+			"args": "tests/tema3/32-big.cl",
 			"mainClass": "cool.compiler.Compiler",
 			"env": {
 				"OUTPUT_FILE": "output.s"

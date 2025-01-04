@@ -57,6 +57,15 @@ public class TemplatesStrings {
 		public static final String BODY = "body";
 		public static final String WHILE_LABEL = "whileLabel";
 
+		public static final String CASE = "case";
+		public static final String CASE_EXPR = "expr";
+		public static final String CASE_BRANCHES = "branches";
+		public static final String CASE_BRANCH = "caseBranch";
+		public static final String CASE_LABEL = "caseLabel";
+		public static final String NEXT_LABEL = "nextLabel";
+		public static final String LB = "lb";
+		public static final String UB = "ub";
+
 		public static final String ISVOID = "isvoid";
 		public static final String TRUE_LABEL = "trueLabel";
 		public static final String FALSE_LABEL = "falseLabel";

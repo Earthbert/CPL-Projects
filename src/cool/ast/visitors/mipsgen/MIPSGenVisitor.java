@@ -1,11 +1,13 @@
 package cool.ast.visitors.mipsgen;
 
 import java.io.File;
+import java.util.List;
 
 import org.stringtemplate.v4.ST;
 
 import cool.ast.ASTVisitor;
 import cool.ast.nodes.*;
+import cool.ast.nodes.ASTCase.ASTCaseBranch;
 import cool.compiler.Compiler;
 import cool.mipsgen.CustomSTValue;
 import cool.mipsgen.MIPSGen;
@@ -178,10 +180,42 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTWhile astWhile) {
 		return this.mipsGen.getTextTemplate(T.WHILE)
-			.add(T.CONDITION, astWhile.getCondition().accept(this))
-			.add(T.BODY, astWhile.getBody().accept(this))
-			.add(T.WHILE_LABEL, this.createWhileLabel())
-			.add(T.END_LABEL, this.createEndWhileLabel());
+				.add(T.CONDITION, astWhile.getCondition().accept(this))
+				.add(T.BODY, astWhile.getBody().accept(this))
+				.add(T.WHILE_LABEL, this.createWhileLabel())
+				.add(T.END_LABEL, this.createEndWhileLabel());
+	}
+
+	@Override
+	public ST visit(final ASTCase astCase) {
+		final List<ASTCaseBranch> branches = astCase.getBranches().stream()
+				.sorted((b1,
+						b2) -> b1.getId().getSymbol().getValueType()
+								.isSuperClassOf(b2.getId().getSymbol().getValueType()) ? 1 : -1)
+				.toList();
+
+		final String endLabel = this.createEndCaseLabel();
+
+		final ST branchesST = this.mipsGen.getProgramTemplate(P.SEQUENCE);
+		for (final var caseBranch : branches) {
+			branchesST.add(P.E, this.mipsGen.getTextTemplate(T.CASE_BRANCH)
+					.add(T.BODY, caseBranch.getBody().accept(this))
+					.add(T.NEXT_LABEL, this.createCaseBranchLabel())
+					.add(T.END_LABEL, endLabel)
+					.add(T.LB, this.mipsGen.getClassTag(caseBranch.getId().getSymbol().getValueType()))
+					.add(T.UB, this.mipsGen.getTagUpperBound(caseBranch.getId().getSymbol().getValueType())));
+		}
+
+		final ST result = this.mipsGen.getTextTemplate(T.CASE)
+				.add(T.CASE_EXPR, astCase.getValue().accept(this))
+				.add(T.CASE_BRANCHES, branchesST)
+				.add(T.CASE_LABEL, this.createCaseLabel())
+				.add(T.END_LABEL, endLabel)
+				.add(T.FILE_NAME_LABEL, this.mipsGen.getStringLabel(this.fileName))
+				.add(T.LINE, astCase.getToken().getLine())
+				.add(T.OFFSET, branches.getFirst().getId().getSymbol().getOffset());
+
+		return result;
 	}
 
 	@Override
@@ -318,5 +352,17 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 
 	private String createEndWhileLabel() {
 		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endWhile");
+	}
+
+	private String createCaseLabel() {
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_case");
+	}
+
+	private String createEndCaseLabel() {
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_endCase");
+	}
+
+	private String createCaseBranchLabel() {
+		return this.mipsGen.getUniqueTextLabel(this.labelPrefix + "_caseBranch");
 	}
 }

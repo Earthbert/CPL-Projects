@@ -81,6 +81,29 @@ public class NTVisitor implements ASTVisitor<Integer> {
 	}
 
 	@Override
+	public Integer visit(final ASTCase astCase) {
+
+		this.letOffset += 4;
+
+		astCase.getBranches().forEach(branch -> branch.getId().getSymbol().setOffset(this.letOffset));
+
+		final Integer expr = astCase.getBranches().stream().map(branch -> branch.getBody().accept(this))
+				.max(Integer::compare).orElse(0);
+
+		switch (this.currentSymbol) {
+			case final ClassSymbol classSymbol ->
+				classSymbol.setInitLocals(Math.max(classSymbol.getInitLocals(), this.letOffset));
+			case final MethodSymbol methodSymbol ->
+				methodSymbol.setLocals(Math.max(methodSymbol.getLocals(), this.letOffset));
+			default ->
+				throw new RuntimeException("Invalid symbol type: " + this.currentSymbol);
+		}
+
+		this.letOffset -= 4;
+		return Math.max(astCase.getValue().accept(this), expr);
+	}
+
+	@Override
 	public Integer visit(final ASTIsVoid astIsVoid) {
 		return 0;
 	}

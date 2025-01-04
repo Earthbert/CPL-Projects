@@ -115,6 +115,29 @@ while(condition, body, whileLabel, endLabel) ::= <<
     move    $a0 $zero
 >>
 
+case(expr, branches, caseLabel, endLabel, offset, fileNameLabel, line) ::= <<
+<expr>
+    bnez    $a0 <caseLabel>
+    la      $a0 <fileNameLabel>
+    li      $t1 <line>
+    jal     _case_abort2
+<caseLabel>:
+    sw      $a0 -<offset>($fp)
+    lw      $t1 0($a0)
+<branches>
+    lw      $a0 -<offset>($fp)
+    jal     _case_abort
+<endLabel>:
+>>
+
+caseBranch(body, nextLabel, lb, ub, endLabel) ::= <<
+    blt     $t1 <lb> <nextLabel>
+    bgt     $t1 <ub> <nextLabel>
+<body>
+    b       <endLabel>
+<nextLabel>:
+>>
+
 isvoid(expr, trueLabel, falseLabel, endLabel) ::= <<
 <expr>
     move    $t1 $a0

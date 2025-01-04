@@ -14,6 +14,7 @@ import cool.ast.visitors.mipsgen.NTVisitor;
 import cool.mipsgen.TemplatesStrings.D;
 import cool.mipsgen.TemplatesStrings.P;
 import cool.mipsgen.TemplatesStrings.T;
+import cool.semantic.symbol.ClassSymbol;
 import cool.semantic.symbol.IdSymbol;
 import cool.semantic.symbol.MethodSymbol;
 import cool.semantic.symbol.SymbolTable;
@@ -30,9 +31,12 @@ public class MIPSGen {
 
 	private final Map<String, Integer> uniqueTextLabels = new HashMap<>();
 
-	private final STGroupFile programTemplates = new STGroupFile(this.getClass().getResource("templates/program.stg").getPath());
-	private final STGroupFile dataTemplates = new STGroupFile(this.getClass().getResource("templates/data.stg").getPath());
-	private final STGroupFile textTemplates = new STGroupFile(this.getClass().getResource("templates/text.stg").getPath());
+	private final STGroupFile programTemplates = new STGroupFile(
+			this.getClass().getResource("templates/program.stg").getPath());
+	private final STGroupFile dataTemplates = new STGroupFile(
+			this.getClass().getResource("templates/data.stg").getPath());
+	private final STGroupFile textTemplates = new STGroupFile(
+			this.getClass().getResource("templates/text.stg").getPath());
 
 	public ST generateProgram(final ASTNode astRoot) {
 		final var program = this.programTemplates.getInstanceOf(P.PROGRAM);
@@ -54,7 +58,10 @@ public class MIPSGen {
 
 		textSection.add(P.E, this.textTemplates.getInstanceOf(T.PROLOGUE));
 
-		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
+		final List<ClassSymbol> sortedClasses = SymbolTable.getGlobals().getClasses().values().stream()
+				.sorted((c1, c2) -> c1.isSuperClassOf(c2) ? -1 : 1).toList();
+
+		for (final var classSymbol : sortedClasses) {
 			if (List.of(Utils.OBJECT, Utils.IO, Utils.INT, Utils.STRING, Utils.BOOL).contains(classSymbol.getName())) {
 				textSection.add(P.E, this.textTemplates.getInstanceOf(T.INIT_OBJECT)
 						.add(T.OBJECT_LABEL, createInitLabel(classSymbol.getName()))
@@ -62,7 +69,7 @@ public class MIPSGen {
 								: createInitLabel(classSymbol.getParent().getName()))
 						.add(T.STACK_SIZE, new CustomSTValue("0")));
 			}
-
+			this.classTags.put(classSymbol.getName(), this.classTags.size());
 			classSymbol.computeFieldsOffsets();
 		}
 		astRoot.accept(new NTVisitor());
@@ -79,22 +86,21 @@ public class MIPSGen {
 		final ST classNamesTable = this.programTemplates.getInstanceOf(P.SEQUENCE);
 		final ST classObjTable = this.programTemplates.getInstanceOf(P.SEQUENCE);
 
-		for (final var classSymbol : SymbolTable.getGlobals().getClasses().values()) {
-			this.classTags.put(classSymbol.getName(), this.classTags.size());
-			if (List.of(Utils.INT, Utils.STRING, Utils.BOOL).contains(classSymbol.getName())) {
+		for (final var clazz : this.classTags.keySet()) {
+			if (List.of(Utils.INT, Utils.STRING, Utils.BOOL).contains(clazz)) {
 				dataSection.add(P.E,
 						this.dataTemplates.getInstanceOf(D.CLASS_TAG)
-								.add(D.NAME, classSymbol.getName().toLowerCase())
-								.add(D.TAG, this.classTags.get(classSymbol.getName())));
+								.add(D.NAME, clazz.toLowerCase())
+								.add(D.TAG, this.classTags.get(clazz)));
 			}
 			classNamesTable
 					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD).add(D.VALUE,
-							this.getStringLabel(classSymbol.getName())));
+							this.getStringLabel(clazz)));
 			classObjTable
 					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD).add(D.VALUE,
-							createProtObjLabel(classSymbol.getName())))
+							createProtObjLabel(clazz)))
 					.add(P.E, this.dataTemplates.getInstanceOf(D.WORD).add(D.VALUE,
-							createInitLabel(classSymbol.getName())));
+							createInitLabel(clazz)));
 		}
 
 		dataSection.add(P.E,
@@ -232,6 +238,19 @@ public class MIPSGen {
 					.add(D.LABEL, createDispatchTableLabel(name))
 					.add(D.CLASS_DISP_TABLE, dispatchTableContent));
 		}
+	}
+
+	public Integer getClassTag(final ClassSymbol classSymbol) {
+		return this.classTags.get(classSymbol.getName());
+	}
+
+	public Integer getTagUpperBound(final ClassSymbol classSymbol) {
+		return this.classTags.entrySet().stream()
+				.filter(entry -> SymbolTable.getGlobals().lookup(entry.getKey()).orElseThrow()
+						.isSuperClassOf(classSymbol))
+				.map(Map.Entry::getValue)
+				.max(Integer::compareTo)
+				.orElseThrow();
 	}
 
 	public Integer getMethodOffset(final MethodSymbol method) {

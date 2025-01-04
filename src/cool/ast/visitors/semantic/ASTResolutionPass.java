@@ -260,6 +260,7 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 		this.currentScope = letSymbol;
 
 		final Optional<ClassSymbol> exprType = astCaseBranch.getBody().accept(this);
+		astCaseBranch.getId().setSymbol(letSymbol);
 
 		this.currentScope = letSymbol.getOuterScope().orElseThrow();
 
