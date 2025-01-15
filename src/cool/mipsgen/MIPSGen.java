@@ -32,11 +32,11 @@ public class MIPSGen {
 	private final Map<String, Integer> uniqueTextLabels = new HashMap<>();
 
 	private final STGroupFile programTemplates = new STGroupFile(
-			this.getClass().getResource("templates/program.stg").getPath());
+			this.getClass().getResource("templates/program.stg"));
 	private final STGroupFile dataTemplates = new STGroupFile(
-			this.getClass().getResource("templates/data.stg").getPath());
+			this.getClass().getResource("templates/data.stg"));
 	private final STGroupFile textTemplates = new STGroupFile(
-			this.getClass().getResource("templates/text.stg").getPath());
+			this.getClass().getResource("templates/text.stg"));
 
 	public ST generateProgram(final ASTNode astRoot) {
 		final var program = this.programTemplates.getInstanceOf(P.PROGRAM);
