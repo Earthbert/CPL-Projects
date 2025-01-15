@@ -172,6 +172,17 @@ equals(left, right, trueLabel, falseLabel, endLabel, offset) ::= <<
 <endLabel>:
 >>
 
+compare_strings(left, right, trueLabel, falseLabel, offset, le) ::= <<
+<left>
+    sw      $a0 -<offset>($fp)
+<right>
+    lw      $t1 -<offset>($fp)
+    move    $t2 $a0
+    la      $a0 <trueLabel>
+    la      $a1 <falseLabel>
+    jal     <if(le)>string_le<else>string_lt<endif>
+>>
+
 compare(left, right, op, trueLabel, falseLabel, endLabel, offset) ::= <<
 <left>
     sw      $a0 -<offset>($fp)

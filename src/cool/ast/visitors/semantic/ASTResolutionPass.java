@@ -333,12 +333,80 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 
 	@Override
 	public Optional<ClassSymbol> visit(final ASTArithmetic astArithmetic) {
-		return this.visit((ASTBinaryOp) astArithmetic);
+
+		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
+
+		final Optional<ClassSymbol> leftType = astArithmetic.getLeft().accept(this);
+		final Optional<ClassSymbol> rightType = astArithmetic.getRight().accept(this);
+
+		List.of(leftType, rightType).forEach(t -> {
+			t.ifPresent(lt -> {
+				if (lt != intType) {
+					SymbolTable.error(this.ctx,
+							((t == leftType) ? astArithmetic.getLeft() : astArithmetic.getRight()).getToken(),
+							"Operand of " + astArithmetic.getOperator() + " has type " + lt.getName()
+									+ " instead of " + intType.getName());
+				}
+			});
+		});
+
+		return Optional.of(intType);
 	}
 
 	@Override
 	public Optional<ClassSymbol> visit(final ASTComparison astComparison) {
-		return this.visit((ASTBinaryOp) astComparison);
+
+		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
+		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
+		final ClassSymbol stringType = SymbolTable.getGlobals().lookup(Utils.STRING).orElseThrow();
+
+		final Optional<ClassSymbol> leftType = astComparison.getLeft().accept(this);
+		final Optional<ClassSymbol> rightType = astComparison.getRight().accept(this);
+
+		if (astComparison.getToken().getType() == CoolLexer.EQ
+				&& leftType.isPresent() && rightType.isPresent()
+				&& leftType.get() != rightType.get()
+				&& List.of(intType, boolType, stringType).contains(leftType.get())
+				&& List.of(intType, boolType, stringType).contains(rightType.get())) {
+
+			SymbolTable.error(this.ctx, astComparison.getToken(),
+					"Cannot compare " + leftType.get().getName()
+							+ " with " + rightType.get().getName());
+
+			return Optional.of(boolType);
+		}
+
+		if (astComparison.getToken().getType() == CoolLexer.EQ)
+			return Optional.of(boolType);
+
+		if (leftType.isPresent() && rightType.isPresent()
+				&& leftType.get() != rightType.get()
+				&& List.of(intType, stringType).contains(leftType.get())
+				&& List.of(intType, stringType).contains(rightType.get())) {
+
+			SymbolTable.error(this.ctx, astComparison.getToken(),
+					"Cannot compare " + leftType.get().getName()
+							+ " with " + rightType.get().getName());
+
+			return Optional.of(boolType);
+		}
+
+		List.of(leftType, rightType).forEach(t -> {
+			t.ifPresent(lt -> {
+
+				if (!List.of(intType, stringType).contains(lt)) {
+					SymbolTable.error(this.ctx,
+							((t == leftType) ? astComparison.getLeft() : astComparison.getRight()).getToken(),
+							"Operand of " + astComparison.getOperator() + " has type " + lt.getName()
+									+ " instead of " + intType.getName() + " or " + stringType.getName());
+				}
+			});
+		});
+
+		if (leftType.orElseThrow().equals(stringType))
+			astComparison.setStringComparison(true);
+
+		return Optional.of(boolType);
 	}
 
 	@Override
@@ -381,43 +449,6 @@ public class ASTResolutionPass extends ASTSemanticVisitor<Optional<ClassSymbol>>
 	public Optional<ClassSymbol> visit(final ASTIsVoid astIsVoid) {
 		astIsVoid.getExpression().accept(this);
 		return SymbolTable.getGlobals().lookup(Utils.BOOL);
-	}
-
-	@Override
-	public Optional<ClassSymbol> visit(final ASTBinaryOp astNode) {
-
-		final ClassSymbol intType = SymbolTable.getGlobals().lookup(Utils.INT).orElseThrow();
-		final ClassSymbol boolType = SymbolTable.getGlobals().lookup(Utils.BOOL).orElseThrow();
-		final ClassSymbol stringType = SymbolTable.getGlobals().lookup(Utils.STRING).orElseThrow();
-
-		final Optional<ClassSymbol> leftType = astNode.getLeft().accept(this);
-		final Optional<ClassSymbol> rightType = astNode.getRight().accept(this);
-
-		if (astNode.getToken().getType() != CoolLexer.EQ) {
-			List.of(leftType, rightType).forEach(t -> {
-				t.ifPresent(lt -> {
-					if (lt != intType) {
-						SymbolTable.error(this.ctx,
-								((t == leftType) ? astNode.getLeft() : astNode.getRight()).getToken(),
-								"Operand of " + astNode.getOperator() + " has type " + lt.getName()
-										+ " instead of " + intType.getName());
-					}
-				});
-			});
-		} else {
-			if (leftType.isPresent() && rightType.isPresent()) {
-				if (leftType.get() != rightType.get()
-						&& (List.of(intType, boolType, stringType).contains(leftType.get()) ||
-								List.of(intType, boolType, stringType).contains(rightType.get()))) {
-					SymbolTable.error(this.ctx, astNode.getToken(),
-							"Cannot compare " + leftType.get().getName()
-									+ " with " + rightType.get().getName());
-				}
-			}
-		}
-
-		return Optional.of(List.of(CoolLexer.LE, CoolLexer.LT, CoolLexer.EQ)
-				.contains(astNode.getToken().getType()) ? boolType : intType);
 	}
 
 	@Override

@@ -194,6 +194,64 @@ __start:
 	li $v0 10
 	syscall		# syscall 10 (exit)
 
+
+	.globl string_lt
+string_lt:	# ops in $t1 $t2
+	beq	$t1 $zero string_lt_false
+	beq	$t2 $zero string_lt_true
+	add	$t1 str_field		# Point to start of string
+	add	$t2 str_field
+
+string_lt_loop:
+	lbu $t3 0($t1) # take the first char
+	lbu $t4 0($t2)
+	bnez $t3 string_lt_1_not_null # check end of 1st string
+	beqz $t4 string_lt_false
+	b string_lt_true
+string_lt_1_not_null:
+	beqz $t4 string_lt_false
+
+	blt $t3 $t4 string_lt_true
+	bgt $t3 $t4 string_lt_false
+	addiu $t1 $t1 1
+	addiu $t2 $t2 1
+	b string_lt_loop
+
+string_lt_true:
+	jr	$ra		# return true
+string_lt_false:
+	move	$a0 $a1		# move false into accumulator
+	jr	$ra
+
+
+	.globl string_le
+string_le:	# ops in $t1 $t2
+	beq	$t1 $zero string_le_false
+	beq	$t2 $zero string_le_false
+	add	$t1 str_field		# Point to start of string
+	add	$t2 str_field
+
+string_le_loop:
+	lbu $t3 0($t1)  # take the first char
+	lbu $t4 0($t2)
+	bnez $t3 string_le_1_not_null # check end of 1st string
+	beqz $t4 string_le_true
+	b string_le_false
+string_le_1_not_null:
+	beqz $t4 string_le_false
+
+	blt $t3 $t4 string_le_true
+	bgt $t3 $t4 string_le_false
+	addiu $t1 $t1 1
+	addiu $t2 $t2 1
+	b string_le_loop
+
+string_le_true:
+	jr	$ra		# return true
+string_le_false:
+	move	$a0 $a1		# move false into accumulator
+	jr	$ra
+
 #
 #  Polymorphic equality testing function:
 #  Two objects are equal if they are

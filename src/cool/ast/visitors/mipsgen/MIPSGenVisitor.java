@@ -243,19 +243,26 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	@Override
 	public ST visit(final ASTComparison astComparison) {
 
-		final ST st = this.mipsGen
-				.getTextTemplate(astComparison.getToken().getType() == CoolParser.EQ ? T.EQUALS : T.COMPARE);
+		ST st;
 
 		final ST left = astComparison.getLeft().accept(this);
 		this.offset += 4;
 		final ST right = astComparison.getRight().accept(this);
 		this.offset -= 4;
 
-		if (astComparison.getToken().getType() != CoolParser.EQ) {
+		if (astComparison.getToken().getType() == CoolParser.EQ) {
+			st = this.mipsGen.getTextTemplate(T.EQUALS);
+			st.add(T.END_LABEL, this.createEqLabel());
+
+		} else if (astComparison.getStringComparison()) {
+			st = this.mipsGen.getTextTemplate(T.COMPARE_STRINGS);
+			if (astComparison.getToken().getType() == CoolParser.LE)
+				st.add(T.LE, true);
+
+		} else {
+			st = this.mipsGen.getTextTemplate(T.COMPARE);
 			st.add(T.OP, new CustomSTValue(astComparison.getToken().getText()));
 			st.add(T.END_LABEL, this.createCompareLabel());
-		} else {
-			st.add(T.END_LABEL, this.createEqLabel());
 		}
 
 		return st.add(T.OFFSET, this.offset + 4)

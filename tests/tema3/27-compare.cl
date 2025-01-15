@@ -42,6 +42,12 @@ class Main inherits E {
             out_string(if 5 <= 3 then "OK" else "failed" fi);
             out_string(if 3 < 3 then "OK" else "failed" fi);
             out_string(if 3 <= 3 then "OK" else "failed" fi);
+
+            out_string(if "aaa" < "aa" then "OK" else "failed" fi);
+            out_string(if "aaa" < "aaa" then "OK" else "failed" fi);
+            out_string(if "aaa" <= "aaa" then "OK" else "failed" fi);
+            out_string(if "aba" < "aaa" then "OK" else "failed" fi);
+            out_string(if "aaa" < "aba" then "OK" else "failed" fi);
         }
     };
 };

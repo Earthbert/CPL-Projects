@@ -74,9 +74,11 @@ public class TemplatesStrings {
 		public static final String LEFT = "left";
 		public static final String RIGHT = "right";
 		public static final String OP = "op";
+		public static final String LE = "le";
 
 		public static final String EQUALS = "equals";
 		public static final String COMPARE = "compare";
+		public static final String COMPARE_STRINGS = "compare_strings";
 
 		public static final String NOT = "not";
 		public static final String NEG = "neg";
