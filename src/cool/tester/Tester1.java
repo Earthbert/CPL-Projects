@@ -11,6 +11,7 @@ import java.util.Arrays;
 import cool.compiler.Compiler;
 
 public class Tester1 {
+
 	// java -cp "bin;antlr-4.8-complete.jar;%CLASSPATH%" cool.tester.Tester1
 	public static void main(final String[] args) throws IOException {
 		final String TEST_DIR_NAME = "tests/tema1";
@@ -36,6 +37,7 @@ public class Tester1 {
 			final var newOut = new PrintStream(outPath, "UTF-8");
 			System.setOut(newOut);
 			System.setErr(newOut);
+			Compiler.printAST = true;
 			Compiler.main(new String[] { inPath });
 
 			oldOut.printf("%-30s -> ", file.getName());

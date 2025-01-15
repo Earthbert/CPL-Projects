@@ -15,6 +15,7 @@ import org.stringtemplate.v4.ST;
 
 import cool.ast.ASTBuilderVisitor;
 import cool.ast.nodes.ASTNode;
+import cool.ast.visitors.ASTPrintVisitor;
 import cool.ast.visitors.semantic.ASTSemanticVisitor;
 import cool.lexer.CoolLexer;
 import cool.mipsgen.MIPSGen;
@@ -24,6 +25,8 @@ import cool.semantic.symbol.SymbolTable;
 public class Compiler {
 	// Annotates class nodes with the names of files where they are defined.
 	public static ParseTreeProperty<String> fileNames = new ParseTreeProperty<>();
+
+	public static Boolean printAST = false;
 
 	public static void main(final String[] args) throws IOException {
 		if (args.length == 0) {
@@ -120,6 +123,11 @@ public class Compiler {
 		}
 
 		final ASTNode astRoot = globalTree.accept(new ASTBuilderVisitor());
+
+		if (printAST) {
+			astRoot.accept(new ASTPrintVisitor());
+			return;
+		}
 
 		SymbolTable.defineBasicClasses();
 
