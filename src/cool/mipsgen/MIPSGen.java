@@ -246,8 +246,8 @@ public class MIPSGen {
 
 	public Integer getTagUpperBound(final ClassSymbol classSymbol) {
 		return this.classTags.entrySet().stream()
-				.filter(entry -> SymbolTable.getGlobals().lookup(entry.getKey()).orElseThrow()
-						.isSuperClassOf(classSymbol))
+				.filter(entry -> classSymbol
+						.isSuperClassOf(SymbolTable.getGlobals().lookup(entry.getKey()).orElseThrow()))
 				.map(Map.Entry::getValue)
 				.max(Integer::compareTo)
 				.orElseThrow();
