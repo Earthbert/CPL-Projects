@@ -190,8 +190,8 @@ public class MIPSGenVisitor implements ASTVisitor<ST> {
 	public ST visit(final ASTCase astCase) {
 		final List<ASTCaseBranch> branches = astCase.getBranches().stream()
 				.sorted((b1,
-						b2) -> b1.getId().getSymbol().getValueType()
-								.isSuperClassOf(b2.getId().getSymbol().getValueType()) ? 1 : -1)
+						b2) -> this.mipsGen.getClassTag(b2.getId().getSymbol().getValueType())
+								.compareTo(this.mipsGen.getClassTag(b1.getId().getSymbol().getValueType())))
 				.toList();
 
 		final String endLabel = this.createEndCaseLabel();

@@ -1,9 +1,12 @@
 package cool.mipsgen;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroupFile;
@@ -58,8 +61,7 @@ public class MIPSGen {
 
 		textSection.add(P.E, this.textTemplates.getInstanceOf(T.PROLOGUE));
 
-		final List<ClassSymbol> sortedClasses = SymbolTable.getGlobals().getClasses().values().stream()
-				.sorted((c1, c2) -> c1.isSuperClassOf(c2) ? -1 : 1).toList();
+		final List<ClassSymbol> sortedClasses = sortClassesTopologically(new ArrayList<>(SymbolTable.getGlobals().getClasses().values()));
 
 		for (final var classSymbol : sortedClasses) {
 			if (List.of(Utils.OBJECT, Utils.IO, Utils.INT, Utils.STRING, Utils.BOOL).contains(classSymbol.getName())) {
@@ -299,5 +301,32 @@ public class MIPSGen {
 
 	public static String createMethodLabel(final MethodSymbol method) {
 		return method.getClassSymbol().getName() + "." + method.getName();
+	}
+
+	public static List<ClassSymbol> sortClassesTopologically(final List<ClassSymbol> classes) {
+		Collections.shuffle(classes);
+
+		final Map<ClassSymbol, List<ClassSymbol>> graph = new HashMap<>();
+
+		ClassSymbol root = null;
+		for (final var classSymbol : classes) {
+			if (classSymbol.getParent() == null) {
+				root = classSymbol;
+				continue;
+			}
+			graph.computeIfAbsent(classSymbol.getParent(), k -> new ArrayList<>()).add(classSymbol);
+		}
+
+		final List<ClassSymbol> sorted = new ArrayList<>();
+		final Stack<ClassSymbol> stack = new Stack<>();
+		stack.push(root);
+
+		while (!stack.isEmpty()) {
+			final ClassSymbol current = stack.pop();
+			sorted.add(current);
+			graph.getOrDefault(current, new ArrayList<>()).forEach(stack::push);
+		}
+
+		return sorted;
 	}
 }
